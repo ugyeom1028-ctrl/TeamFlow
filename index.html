@@ -209,12 +209,11 @@
   <div id="toast" class="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs font-medium flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-2"></div>
 
 <script>
+// ==========================================
+    // Supabase 실제 접속 정보 설정 완료
     // ==========================================
-    // Supabase 클라이언트 초기화 (전역 네임스페이스 충돌 방지)
-    // ==========================================
-    const SUPABASE_URL = 'https://ugyeom1028-ctrl.supabase.co'; 
-    // 사용 중이신 실제 anon key가 있다면 교체해 주세요.
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVneWVvbTEwMjgtY3RybCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzM1MDAwMDAwLCJleHAiOjIwNTAwMDAwMDB9.EXAMPLE_KEY';
+    const SUPABASE_URL = 'https://etpkmddranmbseymkllb.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0cGttZGRyYW5tYnNleW1rbGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NjMxNDksImV4cCI6MjEwODQzOTE0OX0.4NbOzaf3vw-VTg9YOciYj_UmmKTmnMDs_CtlX6pK4t8';
     
     let sbClient = null;
     try {
