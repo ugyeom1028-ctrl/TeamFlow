@@ -60,7 +60,7 @@
   </main>
 
   <!-- 업무 생성 모달 -->
-  <div id="createTaskModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div id="createTaskModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="glass-panel w-full max-w-lg rounded-2xl p-6 shadow-2xl relative">
       <div class="flex items-center justify-between pb-4 border-b border-slate-800">
         <h3 class="text-base font-semibold text-white flex items-center gap-2">
@@ -98,7 +98,7 @@
   </div>
 
   <!-- 업무 상세 및 결과물 모달 -->
-  <div id="taskDetailModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div id="taskDetailModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="glass-panel w-full max-w-2xl rounded-2xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
       <div class="flex items-center justify-between pb-4 border-b border-slate-800">
         <div class="flex items-center gap-2.5">
@@ -113,7 +113,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-900/50 border border-slate-800/80 text-xs">
           <div>
             <div class="text-slate-500 mb-1">담당자</div>
-            <select id="modalAssigneeSelect" onchange="handleAssigneeChange(event)" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-slate-200 focus:outline-none focus:border-indigo-500 w-full">
+            <select id="modalAssigneeSelect" onchange="handleAssigneeChange(event)" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-slate-200 focus:outline-none focus:border-indigo-500">
               <option value="">미정</option>
             </select>
           </div>
@@ -123,7 +123,7 @@
           </div>
           <div>
             <div class="text-slate-500 mb-1">상태 변경</div>
-            <select id="modalStatusSelect" onchange="handleStatusChange(event)" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-slate-200 focus:outline-none focus:border-indigo-500 w-full">
+            <select id="modalStatusSelect" onchange="handleStatusChange(event)" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-slate-200 focus:outline-none focus:border-indigo-500">
               <option value="todo">대기</option>
               <option value="in_progress">진행 중</option>
               <option value="review">검토 요청</option>
@@ -179,7 +179,7 @@
   </div>
 
   <!-- 초대 모달 -->
-  <div id="inviteModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div id="inviteModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="glass-panel w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <h3 class="text-sm font-semibold text-white flex items-center gap-2">
@@ -209,9 +209,6 @@
   <div id="toast" class="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs font-medium flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-2"></div>
 
   <script>
-    // ==========================================
-    // Supabase 실제 접속 정보 연동 완료
-    // ==========================================
     const SUPABASE_URL = 'https://etpkmddranmbseymkllb.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0cGttZGRyYW5tYnNleW1rbGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NjMxNDksImV4cCI6MjEwODQzOTE0OX0.4NbOzaf3vw-VTg9YOciYj_UmmKTmnMDs_CtlX6pK4t8';
     
@@ -224,7 +221,7 @@
       console.warn("Supabase Init Alert:", e);
     }
 
-    // 전역 상태 관리
+    // 전역 상태
     let currentProjectId = new URLSearchParams(window.location.search).get('p');
     let currentProject = null;
     let currentMembers = [];
@@ -232,10 +229,8 @@
     let activeTask = null;
     let currentUserId = localStorage.getItem('teamflow_user_id') || null;
     let currentUserName = localStorage.getItem('teamflow_user_name') || null;
+    let currentView = 'kanban'; // 'kanban' | 'map'
 
-    // ==========================================
-    // 앱 초기 실행 진입점
-    // ==========================================
     document.addEventListener('DOMContentLoaded', async () => {
       try {
         if (!currentProjectId) {
@@ -255,7 +250,7 @@
     });
 
     // ==========================================
-    // 1. 로비 화면 (신규 프로젝트 개설)
+    // 1. 로비 & 온보딩
     // ==========================================
     function renderLobby() {
       const headerTitle = document.getElementById('headerProjectTitle');
@@ -332,9 +327,6 @@
       }
     }
 
-    // ==========================================
-    // 2. 초대 링크 온보딩 (팀원 입장)
-    // ==========================================
     function renderOnboarding() {
       const app = document.getElementById('appContainer');
       app.innerHTML = `
@@ -386,7 +378,7 @@
     }
 
     // ==========================================
-    // 3. 메인 워크스페이스 로드 & 렌더링
+    // 2. 워크스페이스 로드 & 뷰 전환
     // ==========================================
     async function loadWorkspace() {
       try {
@@ -401,7 +393,6 @@
         const { data: ts } = await sbClient.from('tasks').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true });
         currentTasks = ts || [];
 
-        // 현재 로그인한 유저가 이 프로젝트의 멤버 목록에 없으면 자동 추가
         if (currentUserName && !currentMembers.some(m => m.name === currentUserName)) {
           await sbClient.from('members').insert([{
             project_id: currentProjectId,
@@ -413,7 +404,6 @@
           currentMembers = updatedMems || [];
         }
 
-        // 헤더 갱신
         const titleEl = document.getElementById('headerProjectTitle');
         titleEl.textContent = currentProject.title;
         titleEl.classList.remove('hidden');
@@ -427,6 +417,11 @@
       }
     }
 
+    function switchView(viewName) {
+      currentView = viewName;
+      renderWorkspaceView();
+    }
+
     function renderWorkspaceView() {
       const app = document.getElementById('appContainer');
 
@@ -435,7 +430,8 @@
       const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
 
       app.innerHTML = `
-        <div class="glass-panel rounded-2xl p-6 mb-8 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <!-- 프로젝트 요약 대시보드 카드 -->
+        <div class="glass-panel rounded-2xl p-6 mb-6 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div class="space-y-1">
             <div class="flex items-center gap-2">
               <span class="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 text-[11px] font-medium border border-indigo-500/20">Active</span>
@@ -461,6 +457,26 @@
           </div>
         </div>
 
+        <!-- 뷰 전환 탭 네비게이션 -->
+        <div class="flex items-center gap-2 mb-6 border-b border-slate-800 pb-3">
+          <button onclick="switchView('kanban')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-2 ${currentView === 'kanban' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'}">
+            <i class="fa-solid fa-table-columns text-xs"></i> 칸반 보드
+          </button>
+          <button onclick="switchView('map')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-2 ${currentView === 'map' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'}">
+            <i class="fa-solid fa-diagram-project text-xs"></i> 프로젝트 맵 (로드맵)
+          </button>
+        </div>
+
+        <!-- 선택된 뷰 영역 -->
+        ${currentView === 'kanban' ? renderKanbanView() : renderProjectMapView()}
+      `;
+    }
+
+    // ==========================================
+    // 3. 뷰: 칸반 보드
+    // ==========================================
+    function renderKanbanView() {
+      return `
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1 items-start">
           ${renderKanbanColumn('todo', '대기', 'fa-regular fa-circle', currentTasks.filter(t => t.status === 'todo'))}
           ${renderKanbanColumn('in_progress', '진행 중', 'fa-solid fa-spinner text-blue-400', currentTasks.filter(t => t.status === 'in_progress'))}
@@ -516,37 +532,61 @@
     }
 
     // ==========================================
-    // 4. 실시간 동기화 (Supabase Realtime)
+    // 4. 뷰: 프로젝트 맵 (로드맵)
     // ==========================================
-    function initRealtimeSubscription() {
-      if (!sbClient || !currentProjectId) return;
+    function renderProjectMapView() {
+      // 4단계 표준 대학 팀플 워크플로우 맵
+      const stages = [
+        { id: 1, name: '1단계: 사전조사 & 주제설정', desc: '주제 브레인스토밍, 자료 조사, 역할 분담' },
+        { id: 2, name: '2단계: 분석 & 초안 작성', desc: '데이터 수집, 본문 파트별 초안 작성' },
+        { id: 3, name: '3단계: 산출물 제작 & 취합', desc: 'PPT 제작, 보고서 통합, 데모 개발' },
+        { id: 4, name: '4단계: 최종 검토 & 발표', desc: '교정 교열, 발표 대본 작성 및 리허설' }
+      ];
 
-      sbClient
-        .channel(`project-sync-${currentProjectId}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks', filter: `project_id=eq.${currentProjectId}` }, async () => {
-          await refreshTasksOnly();
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'members', filter: `project_id=eq.${currentProjectId}` }, async () => {
-          const { data: mems } = await sbClient.from('members').select('*').eq('project_id', currentProjectId);
-          currentMembers = mems || [];
-          renderWorkspaceView();
-        })
-        .subscribe();
-    }
+      return `
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            ${stages.map((stg, idx) => {
+              // 등록 순서대로 단계를 균등 배분하여 맵 뷰 제공
+              const stageTasks = currentTasks.filter((_, tIdx) => (tIdx % 4) === idx);
+              const isStageDone = stageTasks.length > 0 && stageTasks.every(t => t.status === 'done');
 
-    async function refreshTasksOnly() {
-      if (!sbClient) return;
-      const { data: ts } = await sbClient.from('tasks').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true });
-      currentTasks = ts || [];
-      renderWorkspaceView();
+              return `
+                <div class="glass-panel rounded-2xl p-5 relative overflow-hidden flex flex-col">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded ${isStageDone ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'}">
+                      Stage 0${stg.id}
+                    </span>
+                    ${isStageDone ? '<i class="fa-solid fa-check-double text-emerald-400 text-xs"></i>' : ''}
+                  </div>
+                  <h3 class="text-sm font-semibold text-white mb-1">${stg.name}</h3>
+                  <p class="text-[11px] text-slate-500 mb-4 leading-snug">${stg.desc}</p>
 
-      if (activeTask) {
-        const updated = currentTasks.find(t => String(t.id) === String(activeTask.id));
-        if (updated) {
-          activeTask = updated;
-          renderTaskDetailModalContent();
-        }
-      }
+                  <div class="space-y-2 flex-1 pt-2 border-t border-slate-800/80">
+                    ${stageTasks.length === 0 ? `
+                      <div class="h-16 flex items-center justify-center text-[11px] text-slate-600 border border-dashed border-slate-800/40 rounded-xl">
+                        배정된 업무 없음
+                      </div>
+                    ` : stageTasks.map(task => `
+                      <div onclick="openTaskDetailModal('${task.id}')" class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-indigo-500/40 cursor-pointer transition flex items-center justify-between gap-2">
+                        <div class="truncate">
+                          <div class="text-xs text-slate-200 truncate">${escapeHTML(task.title)}</div>
+                          <div class="text-[10px] text-slate-500 mt-0.5 flex items-center gap-1">
+                            <i class="fa-regular fa-user text-[9px]"></i> ${escapeHTML(task.assignee_name || '미정')}
+                          </div>
+                        </div>
+                        <span class="text-[9px] px-2 py-0.5 rounded font-medium badge-${task.status} whitespace-nowrap">
+                          ${task.status === 'done' ? '완료' : (task.status === 'in_progress' ? '진행' : (task.status === 'review' ? '검토' : '대기'))}
+                        </span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
     }
 
     // ==========================================
@@ -560,7 +600,10 @@
       document.getElementById('taskTitleInput').value = '';
       document.getElementById('taskDescInput').value = '';
       document.getElementById('taskDueDateInput').value = '';
-      document.getElementById('createTaskModal').classList.remove('hidden');
+      
+      const modal = document.getElementById('createTaskModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
     async function handleCreateTask(e) {
@@ -588,8 +631,8 @@
         }]);
 
         if (error) throw error;
-        await refreshTasksOnly();
         closeModal('createTaskModal');
+        await refreshTasksOnly();
         showToast('새 업무가 등록되었습니다.', 'success');
       } catch (err) {
         showToast('업무 등록 오류: ' + err.message, 'error');
@@ -600,10 +643,15 @@
 
     function openTaskDetailModal(taskId) {
       activeTask = currentTasks.find(t => String(t.id) === String(taskId));
-      if (!activeTask) return;
+      if (!activeTask) {
+        showToast('업무 데이터를 찾을 수 없습니다.', 'error');
+        return;
+      }
 
       renderTaskDetailModalContent();
-      document.getElementById('taskDetailModal').classList.remove('hidden');
+      const modal = document.getElementById('taskDetailModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
     function renderTaskDetailModalContent() {
@@ -770,13 +818,46 @@
     }
 
     // ==========================================
-    // 6. 초대 링크 모달 및 유틸리티
+    // 6. 실시간 동기화 & 유틸리티
     // ==========================================
+    function initRealtimeSubscription() {
+      if (!sbClient || !currentProjectId) return;
+
+      sbClient
+        .channel(`project-sync-${currentProjectId}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks', filter: `project_id=eq.${currentProjectId}` }, async () => {
+          await refreshTasksOnly();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'members', filter: `project_id=eq.${currentProjectId}` }, async () => {
+          const { data: mems } = await sbClient.from('members').select('*').eq('project_id', currentProjectId);
+          currentMembers = mems || [];
+          renderWorkspaceView();
+        })
+        .subscribe();
+    }
+
+    async function refreshTasksOnly() {
+      if (!sbClient) return;
+      const { data: ts } = await sbClient.from('tasks').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true });
+      currentTasks = ts || [];
+      renderWorkspaceView();
+
+      if (activeTask) {
+        const updated = currentTasks.find(t => String(t.id) === String(activeTask.id));
+        if (updated) {
+          activeTask = updated;
+          renderTaskDetailModalContent();
+        }
+      }
+    }
+
     function openInviteModal() {
       const url = window.location.origin + window.location.pathname + `?p=${currentProjectId}`;
       document.getElementById('inviteUrlField').value = url;
       document.getElementById('inviteCodeField').textContent = currentProjectId;
-      document.getElementById('inviteModal').classList.remove('hidden');
+      const modal = document.getElementById('inviteModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
     function copyInviteUrl() {
@@ -791,7 +872,9 @@
     }
 
     function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
+      const modal = document.getElementById(id);
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
     }
 
     function showToast(msg, type = 'info') {
