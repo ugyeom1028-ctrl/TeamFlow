@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TeamFlow · 클라우드 실시간 협업 v1.3</title>
+<!-- Supabase 클라이언트 SDK 로드 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#f5f6f8;--surface:#fff;--ink:#17202f;--muted:#697386;--line:#e2e6ed;--primary:#3c63e8;--primary-soft:#eef2ff;--green:#16845b;--green-soft:#e8f7f0;--amber:#9a6411;--amber-soft:#fff5dd;--red:#b54747;--red-soft:#fff0f0;--shadow:0 8px 24px rgba(18,32,58,.06);--radius:16px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #b8c7ff;outline-offset:2px}.app{max-width:1240px;margin:0 auto;padding:26px 22px 48px}.topbar{display:flex;align-items:center;gap:14px;margin-bottom:22px}.brandmark{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--primary);color:white;font-weight:800;font-size:18px}.brand h1{margin:0;font-size:21px;letter-spacing:-.5px}.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}.top-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}.btn{border:1px solid var(--line);background:white;color:var(--ink);padding:10px 13px;border-radius:10px;font-weight:650;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none}.btn:hover{background:#f9faff}.btn.primary{background:var(--primary);border-color:var(--primary);color:white}.btn.primary:hover{background:#2e53d2}.btn.small{font-size:13px;padding:7px 10px}.btn.danger{color:var(--red)}.project-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}.project-heading h2{font-size:25px;letter-spacing:-.7px;margin:0 0 5px}.subtle{color:var(--muted)}.project-meta{font-size:13px;color:var(--muted)}.project-meta.online{color:var(--green);font-weight:700}.tabs{display:flex;gap:5px;padding:4px;background:#e9ecf2;border-radius:12px;width:max-content;margin:18px 0 22px}.tab{border:0;background:transparent;padding:9px 16px;border-radius:9px;color:#626c7d;font-weight:700}.tab.active{background:white;color:var(--ink);box-shadow:0 1px 3px #17202f12}.view{display:none}.view.active{display:block}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 12px}.section-head h3{font-size:17px;margin:0}.section-head p{font-size:13px;margin:3px 0 0;color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:24px}.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px 18px;box-shadow:0 2px 7px #101b3105}.stat .label{font-size:13px;color:var(--muted)}.stat .value{font-size:28px;font-weight:760;letter-spacing:-.8px;margin:5px 0 2px}.stat .hint{font-size:12px;color:var(--muted)}.two-col{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.85fr);gap:18px}.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:0 2px 7px #101b3104;min-width:0}.task-list{display:grid;gap:9px}.task-row{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:white;cursor:pointer;min-width:0}.task-row:hover,.map-node:hover{border-color:#b9c7ff;box-shadow:0 4px 14px #17202f0a}.task-icon{width:34px;height:34px;border-radius:10px;background:#f0f2f7;display:grid;place-items:center;flex:0 0 auto;font-size:17px}.task-main{min-width:0;flex:1}.task-title{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.task-detail{font-size:12px;color:var(--muted);margin-top:3px}.task-right{display:flex;align-items:flex-end;gap:7px;flex-direction:column}.badge-group{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.status{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:750;white-space:nowrap;background:#eff1f5;color:#596273}.status.blue{background:var(--primary-soft);color:#394fbc}.status.done{background:var(--green-soft);color:var(--green)}.status.review{background:var(--primary-soft);color:#394fbc}.status.blocked,.status.overdue{background:var(--red-soft);color:var(--red)}.empty{border:1px dashed #cfd5df;border-radius:12px;padding:24px;color:var(--muted);text-align:center;font-size:13px}.note{padding:12px 13px;background:#f8f9fb;border-radius:11px;color:var(--muted);font-size:12px;margin-top:13px}.progress-track{height:7px;border-radius:999px;background:#edf0f5;overflow:hidden;margin-top:9px}.progress-fill{height:100%;background:var(--primary);border-radius:999px;width:0;transition:width .2s}.filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:15px}.filter-chip{border:1px solid var(--line);background:white;border-radius:999px;padding:7px 11px;color:#5b6575;font-size:12px;font-weight:700}.filter-chip.active{border-color:#c8d1ff;background:var(--primary-soft);color:#334eb2}.map-legend{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 14px;color:var(--muted);font-size:12px}.legend-item{display:flex;align-items:center;gap:6px}.dot{width:8px;height:8px;border-radius:50%;background:#aab2c1}.dot.green{background:#28a16f}.dot.blue{background:#5977e8}.dot.red{background:#d76a6a}.map-viewport{border:1px solid var(--line);border-radius:14px;background:#fbfcfe;overflow:auto;min-height:430px;position:relative}.map-canvas{position:relative;width:max-content;min-width:100%;padding:24px 26px 30px;min-height:420px}.map-edges{position:absolute;top:0;left:0;z-index:0;pointer-events:none;overflow:visible}.map-columns{position:relative;z-index:1;display:grid;grid-auto-flow:column;grid-auto-columns:235px;gap:48px;align-items:start;width:max-content;min-height:360px}.map-stage{min-width:235px}.stage-title{font-size:11px;color:#778194;font-weight:800;letter-spacing:.7px;text-transform:uppercase;margin:0 0 13px;padding-bottom:9px;border-bottom:1px solid #e8ebf1}.stage-items{display:grid;gap:13px}.map-node{width:235px;text-align:left;border:1px solid #dfe4ed;background:white;border-radius:13px;padding:12px;box-shadow:0 2px 6px #17202f07;cursor:pointer;position:relative}.map-node.is-blocked{border-color:#efbcbc}.node-title{font-size:13px;font-weight:760;line-height:1.35;margin-bottom:7px}.node-meta{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:7px}.node-status{margin-top:9px;display:flex;align-items:center;justify-content:space-between;gap:6px}.node-status .status{font-size:10px}.map-help{display:flex;align-items:start;gap:9px;padding:13px;border:1px solid var(--line);border-radius:12px;background:white;margin-top:13px;font-size:12px;color:var(--muted)}.footer{margin-top:22px;font-size:11px;color:#8b93a1;text-align:center}.modal-backdrop{display:none;position:fixed;inset:0;background:#10182bcc;z-index:20;padding:20px;overflow:auto;align-items:center;justify-content:center}.modal-backdrop.open{display:flex}.modal{width:min(660px,100%);background:white;border-radius:18px;padding:22px;box-shadow:0 20px 70px #0003;max-height:calc(100vh - 40px);overflow:auto}.modal-head{display:flex;align-items:start;gap:12px;margin-bottom:18px}.modal-head h3{font-size:20px;margin:0}.modal-head p{margin:4px 0 0;color:var(--muted);font-size:12px}.icon-btn{margin-left:auto;border:0;border-radius:9px;background:#f1f3f7;width:35px;height:35px;font-size:20px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{display:grid;gap:6px;margin-bottom:13px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:750;color:#4f5969}.field input,.field select,.field textarea{width:100%;border:1px solid #dce1ea;border-radius:10px;padding:10px 11px;background:white;color:var(--ink)}.field textarea{min-height:74px;resize:vertical}.helper{font-size:11px;color:var(--muted)}.modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}.dependency-list{display:grid;gap:8px;max-height:160px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:10px}.check-row{display:flex;gap:8px;align-items:center;font-size:13px}.check-row input{width:auto}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}.detail-item{background:#f7f8fb;border-radius:10px;padding:11px}.detail-item .label{font-size:11px;color:var(--muted);margin-bottom:4px}.detail-item .value{font-size:13px;font-weight:700}.detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.callout{background:#f8f9fc;border:1px solid var(--line);border-radius:11px;padding:12px;font-size:12px;color:var(--muted);margin-top:12px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:#17202f;color:white;padding:11px 15px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;z-index:40;pointer-events:none}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.deliverables-box{background:#f8faff;border:1px solid #d8e2ff;border-radius:12px;padding:14px;margin-top:14px}
+.deliverable-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:white;border:1px solid #e1e7f5;border-radius:8px;margin-top:6px;font-size:13px}
+.deliverable-meta{font-size:11px;color:var(--muted);margin-left:4px}
+.deliverable-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#3c63e8;background:#eef2ff;padding:2px 6px;border-radius:6px;font-weight:700}
+.user-selector{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;background:white;border:1px solid var(--line);padding:4px 8px;border-radius:8px}
+
+.drop-zone{border:2px dashed #b9c7ff;border-radius:10px;padding:16px;text-align:center;background:#fff;cursor:pointer;transition:.2s;font-size:13px;color:#55637d}
+.drop-zone.dragover{background:#eef2ff;border-color:var(--primary)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brandmark">T</div>
+    <div class="brand"><h1>TeamFlow</h1><p>덜 묻고, 더 명확하게 협업하기</p></div>
+    <div class="top-actions">
+      <div class="user-selector">
+        <label for="currentUserSelect">내 계정:</label>
+        <select id="currentUserSelect" style="border:0;background:transparent;font-weight:700;color:var(--primary)"></select>
+      </div>
+      <button class="btn" id="syncStatusBtn">클라우드 동기화 중...</button>
+      <button class="btn primary" id="addTaskTop">＋ 업무 추가</button>
+    </div>
+  </header>
+  <section class="project-heading">
+    <div><h2 id="projectTitle">캡스톤 디자인 프로젝트</h2><div class="project-meta" id="projectMeta">연결 확인 중...</div></div>
+    <button class="btn small" id="renameProjectBtn">프로젝트 이름 변경</button>
+  </section>
+  <nav class="tabs" aria-label="화면 전환"><button class="tab active" data-view="dashboard">현황</button><button class="tab" data-view="map">프로젝트 맵</button></nav>
+
+  <main>
+    <section class="view active" id="dashboardView">
+      <div class="stats">
+        <div class="stat"><div class="label">전체 업무</div><div class="value" id="statTotal">0</div><div class="hint" id="statProgressHint">프로젝트의 모든 작업</div></div>
+        <div class="stat"><div class="label">완료</div><div class="value" id="statDone">0</div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
+        <div class="stat"><div class="label">확인 필요</div><div class="value" id="statAttention">0</div><div class="hint">검토 대기 · 차단됨 · 지연</div></div>
+      </div>
+      <div class="two-col">
+        <section class="panel">
+          <div class="section-head"><div><h3>내 할 일</h3><p>내가 담당자인 업무</p></div><button class="btn small" id="viewAllTasks">전체 업무 보기</button></div>
+          <div class="task-list" id="myTasks"></div>
+        </section>
+        <section class="panel">
+          <div class="section-head"><div><h3>확인 필요</h3><p>한 번 확인하면 좋은 업무</p></div></div>
+          <div class="task-list" id="attentionTasks"></div>
+          <div class="note">검토 대기, 차단, 마감 지남 등 조치가 필요한 항목만 보여줍니다.</div>
+        </section>
+      </div>
+      <section class="panel" style="margin-top:18px">
+        <div class="section-head"><div><h3>전체 업무</h3><p>업무를 선택하면 결과물 첨부 및 상세 정보 확인이 가능합니다.</p></div><button class="btn small" id="addTaskInline">＋ 추가</button></div>
+        <div class="filter-row" id="dashboardFilters"><button class="filter-chip active" data-filter="all">전체</button><button class="filter-chip" data-filter="open">미완료</button><button class="filter-chip" data-filter="mine">내 업무</button><button class="filter-chip" data-filter="attention">확인 필요</button></div>
+        <div class="task-list" id="allTasks"></div>
+      </section>
+    </section>
+
+    <section class="view" id="mapView">
+      <div class="section-head"><div><h3>프로젝트 맵</h3><p>업무 간 선후 관계를 한눈에 확인하세요.</p></div><button class="btn primary" id="addTaskMap">＋ 업무 추가</button></div>
+      <div class="filter-row" id="mapFilters"><button class="filter-chip active" data-map-filter="all">전체 업무</button><button class="filter-chip" data-map-filter="mine">내 업무</button><button class="filter-chip" data-map-filter="attention">확인 필요</button></div>
+      <div class="map-legend"><span class="legend-item"><i class="dot green"></i>완료</span><span class="legend-item"><i class="dot blue"></i>진행/검토</span><span class="legend-item"><i class="dot red"></i>차단/지연</span><span class="legend-item">화살표 = 선행 → 후속 업무</span></div>
+      <div class="map-viewport" id="mapViewport"><div class="map-canvas" id="mapCanvas"><svg class="map-edges" id="mapEdges" aria-hidden="true"></svg><div class="map-columns" id="mapColumns"></div></div></div>
+      <div class="map-help"><span>ⓘ</span><span>결과물이 등록된 카드는 📎 배지가 표시됩니다. 카드를 누르면 파일 다운로드 또는 협업 링크로 이동할 수 있습니다.</span></div>
+    </section>
+  </main>
+  <div class="footer">TeamFlow v1.3 · 담당자 전용 결과물 등록 및 다중 일괄 등록 지원</div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal" id="modalBody"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(()=>{
+  const SUPABASE_URL = 'https://etpkmddranmbseymkllb.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0cGttZGRyYW5tYnNleW1rbGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NjMxNDksImV4cCI6MjEwODQzOTE0OX0.4NbOzaf3vw-VTg9YOciYj_UmmKTmnMDs_CtlX6pK4t8';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const MEMBERS=['나','민수','지민','서연','현우'];
+  let currentUserId = localStorage.getItem('teamflow_current_user') || '나';
+
+  const today=new Date(); today.setHours(0,0,0,0);
+  const dateISO=(offset)=>{const d=new Date(today);d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+
+  const demo=()=>({
+    projectName:'캡스톤 디자인 프로젝트',
+    tasks:[
+      {id:'t1',title:'자료 조사',description:'주제 관련 참고 자료를 수집하고 출처를 정리한다.',assignee:'민수',dueDate:dateISO(0),status:'done',completionPolicy:'self',reviewer:'',dependsOn:[],files:[],links:[],updatedAt:Date.now()-50000},
+      {id:'t2',title:'설문 분석',description:'설문 응답을 정리하고 주요 결과를 도출한다.',assignee:'나',dueDate:dateISO(1),status:'doing',completionPolicy:'self',reviewer:'',dependsOn:[],files:[],links:[],updatedAt:Date.now()-40000},
+      {id:'t3',title:'보고서 초안 작성',description:'자료 조사와 설문 분석 결과를 묶어 초안을 작성한다.',assignee:'나',dueDate:dateISO(3),status:'todo',completionPolicy:'self',reviewer:'',dependsOn:['t1','t2'],files:[],links:[],updatedAt:Date.now()-30000},
+      {id:'t4',title:'발표 자료 제작',description:'보고서 초안을 바탕으로 발표 슬라이드를 만든다.',assignee:'지민',dueDate:dateISO(5),status:'review',completionPolicy:'review',reviewer:'민수',dependsOn:['t3'],files:[],links:[],updatedAt:Date.now()-20000},
+      {id:'t5',title:'최종 검토 및 제출',description:'최종 자료를 확인하고 제출한다.',assignee:'서연',dueDate:dateISO(7),status:'todo',completionPolicy:'review',reviewer:'나',dependsOn:['t4'],files:[],links:[],updatedAt:Date.now()-10000}
+    ]
+  });
+
+  let state = demo();
+  let dashboardFilter='all', mapFilter='all';
+  const $=id=>document.getElementById(id);
+
+  function initUserSelector(){
+    const sel = $('currentUserSelect');
+    sel.innerHTML = MEMBERS.map(m=>`<option value="${m}" ${m===currentUserId?'selected':''}>${m}</option>`).join('');
+    sel.addEventListener('change', (e)=>{
+      currentUserId = e.target.value;
+      localStorage.setItem('teamflow_current_user', currentUserId);
+      render();
+      toast(`현재 사용자가 ‘${currentUserId}’(으)로 전환되었어.`);
+    });
+  }
+
+  async function fetchRemoteData(){
+    try{
+      $('syncStatusBtn').textContent = '동기화 중...';
+      const { data, error } = await supabase.from('teamflow_store').select('data').eq('id', 'main_project').single();
+      if(error && error.code !== 'PGRST116'){ console.error(error); return; }
+      if(data && data.data){
+        state = data.data;
+        $('syncStatusBtn').textContent = '✓ 클라우드 연결됨';
+      }else{
+        await saveRemoteData(true);
+        $('syncStatusBtn').textContent = '✓ 클라우드 연결됨';
+      }
+      render();
+    }catch(e){
+      console.error(e);
+      $('syncStatusBtn').textContent = '⚠ 오프라인 모드';
+    }
+  }
+
+  let saveTimer = null;
+  async function saveRemoteData(immediate=false){
+    if(saveTimer) clearTimeout(saveTimer);
+    const doSave = async ()=>{
+      $('syncStatusBtn').textContent = '저장 중...';
+      try{
+        await supabase.from('teamflow_store').upsert({ id: 'main_project', data: state, updated_at: new Date().toISOString() });
+        $('syncStatusBtn').textContent = '✓ 클라우드 연결됨';
+      }catch(e){
+        $('syncStatusBtn').textContent = '저장 실패';
+      }
+    };
+    if(immediate) await doSave();
+    else saveTimer = setTimeout(doSave, 800);
+  }
+
+  function escapeHTML(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  const statusMeta={todo:{label:'시작 전',cls:''},doing:{label:'진행 중',cls:'blue'},review:{label:'검토 대기',cls:'review'},done:{label:'완료',cls:'done'},blocked:{label:'차단됨',cls:'blocked'}};
+  function taskById(id){return state.tasks.find(t=>t.id===id)}
+  function deps(t){return (t.dependsOn||[]).map(taskById).filter(Boolean)}
+  function unmetDeps(t){return deps(t).filter(d=>d.status!=='done')}
+  function isOverdue(t){return t.status!=='done'&&t.dueDate&&t.dueDate<dateISO(0)}
+  function needsAttention(t){return t.status==='review'||t.status==='blocked'||isOverdue(t)}
+  function effective(t){
+    if(t.status==='blocked')return {label:'차단됨',cls:'blocked',kind:'blocked'};
+    if(isOverdue(t))return {label:'마감 지남',cls:'overdue',kind:'overdue'};
+    const m=statusMeta[t.status]||statusMeta.todo;
+    return {label:m.label,cls:m.cls,kind:t.status};
+  }
+  function statusBadge(t){
+    const m=effective(t);
+    let html=`<span class="status ${m.cls}">${escapeHTML(m.label)}</span>`;
+    if(m.kind!=='overdue'&&isOverdue(t)) html+=`<span class="status overdue">마감 지남</span>`;
+    const count = (t.files?t.files.length:0) + (t.links?t.links.length:0);
+    if(count > 0) html+=`<span class="deliverable-badge">📎 결과물 ${count}</span>`;
+    return `<span class="badge-group">${html}</span>`;
+  }
+  function formatDate(s){if(!s)return '마감일 미정';const [y,m,d]=s.split('-');return `${Number(m)}월 ${Number(d)}일`}
+  function completedCount(){return state.tasks.filter(t=>t.status==='done').length}
+  function attentionList(){return state.tasks.filter(needsAttention)}
+
+  function taskRow(t){
+    return `<div class="task-row" role="button" tabindex="0" data-open-task="${escapeHTML(t.id)}">
+      <div class="task-icon">${t.status==='done'?'✓':t.status==='review'?'◷':t.status==='blocked'?'!':t.status==='doing'?'▶':'□'}</div>
+      <div class="task-main">
+        <div class="task-title">${escapeHTML(t.title)}</div>
+        <div class="task-detail">${escapeHTML(t.assignee)} · ${escapeHTML(formatDate(t.dueDate))}</div>
+      </div>
+      <div class="task-right">${statusBadge(t)}<span class="task-detail">상세 보기 ›</span></div>
+    </div>`;
+  }
+  function empty(msg){return `<div class="empty">${escapeHTML(msg)}</div>`}
+
+  function renderDashboard(){
+    const total=state.tasks.length, done=completedCount(), attention=attentionList().length;
+    $('statTotal').textContent=total;$('statDone').textContent=done;$('statAttention').textContent=attention;
+    $('progressFill').style.width=total?`${Math.round(done/total*100)}%`:'0%';
+    $('statProgressHint').textContent=total?`완료율 ${Math.round(done/total*100)}%`:'아직 업무가 없어';
+
+    const mine=state.tasks.filter(t=>t.assignee===currentUserId&&t.status!=='done');
+    $('myTasks').innerHTML=mine.length?mine.slice().sort(sortTask).map(taskRow).join(''):empty(`‘${currentUserId}’ 님이 맡은 미완료 업무가 없어.`);
+    const attentions=attentionList().slice().sort((a,b)=>(a.dueDate||'9999').localeCompare(b.dueDate||'9999'));
+    $('attentionTasks').innerHTML=attentions.length?attentions.map(taskRow).join(''):empty('지금 확인이 필요한 업무가 없어.');
+
+    let tasks=state.tasks.slice();
+    if(dashboardFilter==='open')tasks=tasks.filter(t=>t.status!=='done');
+    if(dashboardFilter==='mine')tasks=tasks.filter(t=>t.assignee===currentUserId);
+    if(dashboardFilter==='attention')tasks=tasks.filter(needsAttention);
+    $('allTasks').innerHTML=tasks.length?tasks.sort(sortTask).map(taskRow).join(''):empty('조건에 맞는 업무가 없어.');
+  }
+
+  function sortTask(a,b){const order={blocked:0,review:1,doing:2,todo:3,done:4};return (order[a.status]??9)-(order[b.status]??9)||(a.dueDate||'9999').localeCompare(b.dueDate||'9999')}
+
+  function graphDepths(){
+    const depths={},visiting=new Set();
+    function depth(t){
+      if(depths[t.id]!=null)return depths[t.id];
+      if(visiting.has(t.id))return 0;
+      visiting.add(t.id);
+      const ds=deps(t);let d=0;
+      if(ds.length)d=Math.max(...ds.map(x=>depth(x)+1));
+      visiting.delete(t.id);
+      depths[t.id]=d;
+      return d;
+    }
+    state.tasks.forEach(depth);
+    return depths;
+  }
+
+  function renderMap(){
+    const all=state.tasks;let tasks=all.slice();
+    if(mapFilter==='mine')tasks=tasks.filter(t=>t.assignee===currentUserId);
+    if(mapFilter==='attention')tasks=tasks.filter(needsAttention);
+
+    const included=new Set(tasks.map(t=>t.id));
+    function addParents(t){for(const d of deps(t)){if(!included.has(d.id)){included.add(d.id);tasks.push(d);addParents(d)}}}
+    tasks.slice().forEach(addParents);
+
+    const depths=graphDepths();let maxDepth=Math.max(0,...tasks.map(t=>depths[t.id]||0));
+    const columns=$('mapColumns');columns.innerHTML='';$('mapEdges').innerHTML='';
+
+    for(let i=0;i<=maxDepth;i++){
+      const group=tasks.filter(t=>(depths[t.id]||0)===i).sort(sortTask);
+      const col=document.createElement('div');col.className='map-stage';
+      col.innerHTML=`<div class="stage-title">단계 ${i+1} <span style="font-weight:500">· ${group.length}개 업무</span></div><div class="stage-items">${group.map(t=>{
+        const cls=t.status==='blocked'?'is-blocked':'';
+        return `<button class="map-node ${cls}" data-open-task="${escapeHTML(t.id)}">
+          <div class="node-title">${escapeHTML(t.title)}</div>
+          <div class="node-meta"><span>${escapeHTML(t.assignee)}</span><span>${escapeHTML(formatDate(t.dueDate))}</span></div>
+          <div class="node-status">${statusBadge(t)}<span style="color:#8791a2;font-size:11px">상세 ›</span></div>
+        </button>`;
+      }).join('')||'<div class="empty">업무 없음</div>'}</div>`;
+      columns.appendChild(col);
+    }
+    requestAnimationFrame(()=>drawEdges(tasks));
+  }
+
+  function drawEdges(tasks){
+    const canvas=$('mapCanvas'),svg=$('mapEdges');if(!canvas||!svg)return;
+    const c=canvas.getBoundingClientRect();const width=Math.max(canvas.scrollWidth,900),height=Math.max(canvas.scrollHeight,420);
+    svg.setAttribute('width',width);svg.setAttribute('height',height);svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
+    svg.innerHTML='<defs><marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#aab4c5"/></marker></defs>';
+    for(const t of tasks){
+      const target=canvas.querySelector(`[data-open-task="${CSS.escape(t.id)}"]`);if(!target)continue;
+      for(const d of deps(t)){
+        const source=canvas.querySelector(`[data-open-task="${CSS.escape(d.id)}"]`);if(!source)continue;
+        const sr=source.getBoundingClientRect(),tr=target.getBoundingClientRect();
+        const sx=sr.right-c.left,sy=sr.top-c.top+sr.height/2,tx=tr.left-c.left,ty=tr.top-c.top+tr.height/2;
+        const bend=Math.max(30,(tx-sx)*.45);
+        const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d',`M ${sx} ${sy} C ${sx+bend} ${sy}, ${tx-bend} ${ty}, ${tx} ${ty}`);
+        path.setAttribute('fill','none');path.setAttribute('stroke',d.status==='done'?'#b8c3d3':'#8b9bb7');path.setAttribute('stroke-width','2');path.setAttribute('marker-end','url(#arrowhead)');
+        svg.appendChild(path);
+      }
+    }
+  }
+
+  function render(){
+    $('projectTitle').textContent=state.projectName;
+    $('projectMeta').textContent=`팀 프로젝트 · ${state.tasks.length}개 업무 · 실시간 클라우드 보관`;
+    $('projectMeta').classList.add('online');
+    renderDashboard();renderMap();
+  }
+
+  function switchView(view){
+    document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===(view==='dashboard'?'dashboardView':'mapView')));
+    if(view==='map')requestAnimationFrame(()=>drawEdges(state.tasks));
+  }
+
+  function toast(msg){
+    const el=$('toast');el.textContent=msg;el.classList.add('show');
+    clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2600);
+  }
+
+  function openModal(html){
+    $('modalBody').innerHTML=html;$('modalBackdrop').classList.add('open');
+    document.body.style.overflow='hidden';
+    const first=$('modalBody').querySelector('input,select,button');if(first)first.focus();
+  }
+  function closeModal(){$('modalBackdrop').classList.remove('open');document.body.style.overflow=''}
+
+  function addTaskModal(){
+    const options=state.tasks.map(t=>`<label class="check-row"><input type="checkbox" name="dependsOn" value="${escapeHTML(t.id)}"><span>${escapeHTML(t.title)} <span class="subtle">(${escapeHTML(t.assignee)})</span></span></label>`).join('');
+    openModal(`<div class="modal-head"><div><h3 id="modalTitle">새 업무 추가</h3><p>필수 정보를 입력해 업무를 만드세요.</p></div><button class="icon-btn" data-close aria-label="닫기">×</button></div>
+    <form id="addTaskForm">
+      <div class="field"><label for="taskTitle">업무 이름 *</label><input id="taskTitle" name="title" required maxlength="90" placeholder="예: 발표 자료 초안 작성"></div>
+      <div class="field"><label for="taskDescription">설명 및 완료 조건</label><textarea id="taskDescription" name="description" placeholder="어디까지 해야 완료인지 적어주세요."></textarea></div>
+      <div class="form-grid">
+        <div class="field"><label for="assignee">담당자 *</label><select id="assignee" name="assignee" required>${MEMBERS.map(n=>`<option ${n===currentUserId?'selected':''}>${n}</option>`).join('')}</select></div>
+        <div class="field"><label for="dueDate">마감일</label><input type="date" id="dueDate" name="dueDate" value="${dateISO(3)}"></div>
+        <div class="field"><label for="completionPolicy">완료 방식</label><select id="completionPolicy" name="completionPolicy"><option value="self">담당자가 직접 완료</option><option value="review">검토 승인 필요</option></select></div>
+        <div class="field" id="reviewerField" style="display:none"><label for="reviewer">검토자</label><select id="reviewer" name="reviewer">${MEMBERS.map(n=>`<option>${n}</option>`).join('')}</select></div>
+      </div>
+      <div class="field"><label>선행 업무 <span class="helper">(선택)</span></label><div class="dependency-list">${options||'<span class="helper">먼저 업무를 추가해 줘.</span>'}</div></div>
+      <div class="modal-actions"><button type="button" class="btn" data-close>취소</button><button type="submit" class="btn primary">업무 만들기</button></div>
+    </form>`);
+    $('completionPolicy').addEventListener('change',e=>{$('reviewerField').style.display=e.target.value==='review'?'grid':'none'});
+    $('addTaskForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const fd=new FormData(e.currentTarget);const title=String(fd.get('title')||'').trim();if(!title)return;
+      const policy=String(fd.get('completionPolicy')||'self')==='review'?'review':'self';
+      state.tasks.push({
+        id:'t'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+        title,description:String(fd.get('description')||'').trim(),
+        assignee:String(fd.get('assignee')||currentUserId),
+        dueDate:String(fd.get('dueDate')||''),
+        status:'todo',completionPolicy:policy,
+        reviewer:policy==='review'?String(fd.get('reviewer')||currentUserId):'',
+        dependsOn:[...new Set(fd.getAll('dependsOn').map(String))],
+        files:[],links:[],
+        updatedAt:Date.now()
+      });
+      saveRemoteData();closeModal();render();toast('업무를 추가했어.');
+    });
+  }
+
+  function detailModal(id){
+    const t=taskById(id);if(!t)return;
+    if(!t.files) t.files=[];
+    if(!t.links) t.links=[];
+
+    const d=deps(t),waiting=unmetDeps(t),followups=state.tasks.filter(x=>(x.dependsOn||[]).includes(t.id));
+    const review=t.completionPolicy==='review';
+    const isAssignee = (currentUserId === t.assignee);
+
+    const depText=d.length?d.map(x=>`<div class="task-detail">${escapeHTML(x.title)} · ${x.status==='done'?'완료':'미완료'}</div>`).join(''):'<div class="task-detail">선행 업무 없음</div>';
+    const nextText=followups.length?followups.map(x=>`<div class="task-detail">${escapeHTML(x.title)}</div>`).join(''):'<div class="task-detail">연결된 후속 업무 없음</div>';
+
+    let actions='';
+    if(t.status==='done'){actions=`<button class="btn" data-action="reopen" data-id="${escapeHTML(t.id)}">다시 열기</button>`;}
+    else if(t.status==='review'){actions=`<button class="btn primary" data-action="approve" data-id="${escapeHTML(t.id)}">✓ 승인하고 완료</button><button class="btn" data-action="revise" data-id="${escapeHTML(t.id)}">수정 요청</button>`;}
+    else{
+      if(t.status==='todo') actions+=`<button class="btn" data-action="start" data-id="${escapeHTML(t.id)}">진행 시작</button>`;
+      actions+=review?`<button class="btn primary" data-action="request-review" data-id="${escapeHTML(t.id)}">검토 요청</button>`:`<button class="btn primary" data-action="complete" data-id="${escapeHTML(t.id)}">✓ 완료 처리</button>`;
+    }
+    if(t.status!=='blocked'&&t.status!=='done') actions+=`<button class="btn" data-action="block" data-id="${escapeHTML(t.id)}">진행 차단</button>`;
+    if(t.status==='blocked') actions+=`<button class="btn" data-action="unblock" data-id="${escapeHTML(t.id)}">차단 해제</button>`;
+
+    const fileListHTML = t.files.length ? t.files.map((f,idx)=>{
+      const delBtn = isAssignee ? `<button class="btn small danger" onclick="removeDeliverableFile('${t.id}', ${idx})">삭제</button>` : '';
+      return `
+        <div class="deliverable-item">
+          <div>
+            <span>📄 <strong>${escapeHTML(f.name)}</strong></span>
+            <span class="deliverable-meta">· 담당자: ${escapeHTML(f.uploader || t.assignee)}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <a href="${f.url}" target="_blank" download="${escapeHTML(f.name)}" class="btn small">다운로드</a>
+            ${delBtn}
+          </div>
+        </div>
+      `;
+    }).join('') : '<div class="subtle" style="font-size:12px;margin:6px 0">등록된 파일이 없습니다.</div>';
+
+    const linkListHTML = t.links.length ? t.links.map((l,idx)=>{
+      const delBtn = isAssignee ? `<button class="btn small danger" onclick="removeDeliverableLink('${t.id}', ${idx})">삭제</button>` : '';
+      return `
+        <div class="deliverable-item">
+          <div>
+            <span>🔗 <a href="${l.url}" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:700">${escapeHTML(l.title||l.url)}</a></span>
+            <span class="deliverable-meta">· 등록자: ${escapeHTML(l.creator || t.assignee)}</span>
+          </div>
+          ${delBtn}
+        </div>
+      `;
+    }).join('') : '<div class="subtle" style="font-size:12px;margin:6px 0">등록된 링크가 없습니다.</div>';
+
+    const assigneeControlsHTML = isAssignee ? `
+      <div class="drop-zone" id="fileDropZone" style="margin-top:8px">
+        <div>📂 <strong>여기로 여러 파일을 한꺼번에 드래그해서 놓거나 클릭하세요</strong></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">(Ctrl이나 Shift로 여러 개 파일 동시 선택 가능)</div>
+      </div>
+      <input type="file" id="taskFileInput" multiple style="display:none">
+    ` : `<div style="font-size:12px;color:var(--muted);margin-top:6px;background:#fff;padding:8px;border-radius:6px;border:1px dashed #dce2f0">※ 파일 등록 및 관리는 업무 담당자(${escapeHTML(t.assignee)})만 가능합니다.</div>`;
+
+    const assigneeLinkControlsHTML = isAssignee ? `
+      <div style="margin-top:10px;background:white;padding:10px;border-radius:8px;border:1px solid #e1e7f5">
+        <div style="font-size:12px;font-weight:600;margin-bottom:4px">여러 링크 한 번에 등록 (한 줄에 하나씩)</div>
+        <textarea id="bulkLinksInput" placeholder="예시)&#10;발표 슬라이드: https://docs.google.com/presentation/...&#10;피그마 시안: https://figma.com/..." style="width:100%;font-size:12px;min-height:70px;padding:8px"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+          <span style="font-size:11px;color:var(--muted)">줄바꿈으로 여러 개를 동시에 붙여넣을 수 있습니다.</span>
+          <button class="btn small primary" onclick="addBulkLinks('${t.id}')">링크 일괄 등록</button>
+        </div>
+      </div>
+    ` : `<div style="font-size:12px;color:var(--muted);margin-top:6px;background:#fff;padding:8px;border-radius:6px;border:1px dashed #dce2f0">※ 협업 링크 등록 및 관리는 업무 담당자(${escapeHTML(t.assignee)})만 가능합니다.</div>`;
+
+    openModal(`
+      <div class="modal-head"><div><h3 id="modalTitle">${escapeHTML(t.title)}</h3><p>업무 상세 및 결과물 관리</p></div><button class="icon-btn" data-close aria-label="닫기">×</button></div>
+      <div>${statusBadge(t)}</div>
+      <p style="margin:13px 0 4px">${escapeHTML(t.description||'설명이 아직 없어.')}</p>
+
+      <div class="detail-grid">
+        <div class="detail-item"><div class="label">담당자</div><div class="value">${escapeHTML(t.assignee)}</div></div>
+        <div class="detail-item"><div class="label">마감일</div><div class="value">${escapeHTML(formatDate(t.dueDate))}</div></div>
+        <div class="detail-item"><div class="label">완료 방식</div><div class="value">${review?'검토자 승인 필요':'담당자 직접 완료'}</div></div>
+        <div class="detail-item"><div class="label">검토자</div><div class="value">${review?escapeHTML(t.reviewer||'미지정'):'해당 없음'}</div></div>
+      </div>
+
+      <div class="deliverables-box">
+        <div style="font-weight:750;font-size:13px;margin-bottom:4px">📦 작업 결과물 (문서 / 링크)</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">결과물은 후속 작업자가 다운로드하거나 바로 열람할 수 있습니다.</div>
+
+        <div style="margin-bottom:16px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">📁 첨부 파일 목록 (${t.files.length}개)</div>
+          ${fileListHTML}
+          ${assigneeControlsHTML}
+        </div>
+
+        <div style="border-top:1px dashed #dce2f0;padding-top:14px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">🔗 공동 작업 링크 목록 (${t.links.length}개)</div>
+          ${linkListHTML}
+          ${assigneeLinkControlsHTML}
+        </div>
+      </div>
+
+      ${waiting.length?`<div class="callout">⚠ 선행 업무 ${waiting.length}개가 미완료 상태입니다: ${waiting.map(x=>escapeHTML(x.title)).join(', ')}</div>`:''}
+      <div class="field" style="margin-top:15px"><label>선행 업무</label><div class="task-detail">${depText}</div></div>
+      <div class="field"><label>후속 업무</label><div class="task-detail">${nextText}</div></div>
+      <div class="detail-actions">${actions}<button class="btn danger" data-action="delete" data-id="${escapeHTML(t.id)}">삭제</button></div>
+      <div class="modal-actions"><button class="btn" data-close>닫기</button></div>
+    `);
+
+    if(isAssignee){
+      const dropZone = $('fileDropZone');
+      const fileInput = $('taskFileInput');
+
+      if(dropZone && fileInput){
+        dropZone.addEventListener('click', ()=> fileInput.click());
+        fileInput.addEventListener('change', (e)=> handleFilesUpload(t.id, e.target.files));
+
+        dropZone.addEventListener('dragover', (e)=>{ e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', ()=>{ dropZone.classList.remove('dragover'); });
+        dropZone.addEventListener('drop', (e)=>{
+          e.preventDefault();
+          dropZone.classList.remove('dragover');
+          if(e.dataTransfer && e.dataTransfer.files) handleFilesUpload(t.id, e.dataTransfer.files);
+        });
+      }
+    }
+  }
+
+  async function handleFilesUpload(taskId, fileList){
+    if(!fileList || fileList.length === 0) return;
+    const files = Array.from(fileList);
+    const task = taskById(taskId);
+
+    if(currentUserId !== task.assignee){
+      toast('업무 담당자만 파일을 등록할 수 있습니다.');
+      return;
+    }
+
+    toast(`${files.length}개 파일 클라우드 전송 시작...`);
+
+    let successCount = 0;
+    for(const file of files){
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${taskId}_${Date.now()}_${Math.random().toString(36).slice(2,6)}.${fileExt}`;
+
+      const { data, error } = await supabase.storage.from('attachments').upload(filePath, file);
+      if(error){
+        console.error(error);
+        toast(`‘${file.name}’ 실패: ` + error.message);
+        continue;
+      }
+      const { data: urlData } = supabase.storage.from('attachments').getPublicUrl(filePath);
+      task.files.push({
+        name: file.name,
+        url: urlData.publicUrl,
+        path: filePath,
+        uploader: currentUserId,
+        createdAt: Date.now()
+      });
+      successCount++;
+    }
+
+    task.updatedAt = Date.now();
+    await saveRemoteData(true);
+    render();
+    detailModal(taskId);
+    toast(`${successCount}개 파일 업로드가 완료되었습니다.`);
+  }
+
+  window.removeDeliverableFile = async function(taskId, idx){
+    const task = taskById(taskId);
+    if(currentUserId !== task.assignee){
+      toast('업무 담당자만 파일을 삭제할 수 있습니다.');
+      return;
+    }
+    const file = task.files[idx];
+    if(!file) return;
+
+    if(!confirm(`‘${file.name}’ 파일을 삭제하시겠습니까?`)) return;
+
+    task.files.splice(idx, 1);
+    await saveRemoteData(true);
+    render();
+    detailModal(taskId);
+    toast('첨부 파일이 삭제되었습니다.');
+  };
+
+  window.addBulkLinks = async function(taskId){
+    const bulkInput = $('bulkLinksInput');
+    const text = bulkInput.value.trim();
+    if(!text){ toast('등록할 링크를 입력해 주세요.'); return; }
+
+    const task = taskById(taskId);
+    if(currentUserId !== task.assignee){
+      toast('업무 담당자만 링크를 등록할 수 있습니다.');
+      return;
+    }
+
+    const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+    let addedCount = 0;
+
+    for(const line of lines){
+      let title = '';
+      let url = line;
+
+      const colonIdx = line.indexOf('http');
+      if(colonIdx > 0 && (line.includes(':') || line.includes('-'))){
+        const prefix = line.slice(0, colonIdx).replace(/[:\-]/g, '').trim();
+        if(prefix) title = prefix;
+        url = line.slice(colonIdx).trim();
+      }
+
+      if(!url.startsWith('http')) url = 'https://' + url;
+
+      task.links.push({
+        title: title || url,
+        url: url,
+        creator: currentUserId,
+        createdAt: Date.now()
+      });
+      addedCount++;
+    }
+
+    task.updatedAt = Date.now();
+    await saveRemoteData(true);
+    render();
+    detailModal(taskId);
+    toast(`${addedCount}개의 협업 링크가 일괄 등록되었습니다.`);
+  };
+
+  window.removeDeliverableLink = async function(taskId, idx){
+    const task = taskById(taskId);
+    if(currentUserId !== task.assignee){
+      toast('업무 담당자만 링크를 삭제할 수 있습니다.');
+      return;
+    }
+
+    task.links.splice(idx, 1);
+    await saveRemoteData(true);
+    render();
+    detailModal(taskId);
+    toast('링크가 삭제되었습니다.');
+  };
+
+  function doAction(action,id){
+    const t=taskById(id);if(!t)return;
+    if(action==='start') t.status='doing';
+    else if(action==='complete') t.status='done';
+    else if(action==='request-review') t.status='review';
+    else if(action==='approve') t.status='done';
+    else if(action==='revise') t.status='doing';
+    else if(action==='block') t.status='blocked';
+    else if(action==='unblock') t.status='doing';
+    else if(action==='reopen') t.status=t.completionPolicy==='review'?'doing':'todo';
+    else if(action==='delete'){
+      if(!confirm(`“${t.title}” 업무를 삭제할까?`))return;
+      state.tasks=state.tasks.filter(x=>x.id!==id);
+      state.tasks.forEach(x=>x.dependsOn=(x.dependsOn||[]).filter(d=>d!==id));
+      saveRemoteData();closeModal();render();toast('업무를 삭제했어.');return;
+    }
+    t.updatedAt=Date.now();
+    saveRemoteData();closeModal();render();toast('업무 상태를 업데이트했어.');
+  }
+
+  document.addEventListener('click',e=>{
+    const tab=e.target.closest('[data-view]');if(tab){switchView(tab.dataset.view);return}
+    const opener=e.target.closest('[data-open-task]');if(opener){detailModal(opener.dataset.openTask);return}
+    if(e.target.closest('[data-close]'))closeModal();
+    const action=e.target.closest('[data-action]');if(action){doAction(action.dataset.action,action.dataset.id);return}
+    const chip=e.target.closest('[data-filter]');if(chip){
+      dashboardFilter=chip.dataset.filter;
+      document.querySelectorAll('#dashboardFilters .filter-chip').forEach(b=>b.classList.toggle('active',b===chip));
+      renderDashboard();return;
+    }
+    const mapChip=e.target.closest('[data-map-filter]');if(mapChip){
+      mapFilter=mapChip.dataset.mapFilter;
+      document.querySelectorAll('#mapFilters .filter-chip').forEach(b=>b.classList.toggle('active',b===mapChip));
+      renderMap();return;
+    }
+  });
+
+  $('modalBackdrop').addEventListener('click',e=>{if(e.target===$('modalBackdrop'))closeModal()});
+  $('addTaskTop').addEventListener('click',addTaskModal);
+  $('addTaskInline').addEventListener('click',addTaskModal);
+  $('addTaskMap').addEventListener('click',addTaskModal);
+
+  $('viewAllTasks').addEventListener('click',()=>{
+    dashboardFilter='all';
+    document.querySelectorAll('#dashboardFilters .filter-chip').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));
+    renderDashboard();
+    $('allTasks').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  $('renameProjectBtn').addEventListener('click',()=>{
+    openModal(`<div class="modal-head"><div><h3 id="modalTitle">프로젝트 이름 변경</h3></div><button class="icon-btn" data-close>×</button></div>
+    <form id="renameForm">
+      <div class="field"><label>프로젝트 이름</label><input name="name" maxlength="80" required value="${escapeHTML(state.projectName)}"></div>
+      <div class="modal-actions"><button type="button" class="btn" data-close>취소</button><button class="btn primary">저장</button></div>
+    </form>`);
+    $('renameForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      state.projectName=new FormData(e.currentTarget).get('name').trim()||'내 프로젝트';
+      saveRemoteData();closeModal();render();toast('프로젝트 이름을 바꿨어.');
+    });
+  });
+
+  window.addEventListener('resize',()=>{if($('mapView').classList.contains('active'))drawEdges(state.tasks)});
+
+  initUserSelector();
+  fetchRemoteData();
+})();
+</script>
+</body>
+</html>
