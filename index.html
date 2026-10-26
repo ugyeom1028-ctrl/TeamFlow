@@ -1,286 +1,459 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TeamFlow — 대학생을 위한 스마트 워크스페이스</title>
+  <title>TeamFlow — Enterprise Workspace</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <style>
-    * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
-    body { background-color: #0b0f17; color: #e2e8f0; }
-    .glass-panel { background: rgba(18, 24, 38, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glass-card { background: rgba(26, 34, 52, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.06); transition: all 0.2s ease; }
-    .glass-card:hover { transform: translateY(-2px); border-color: rgba(99, 102, 241, 0.4); box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4); }
-    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
-    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.5); border-radius: 9999px; }
-    .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.5); }
-    .badge-todo { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
-    .badge-in_progress { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
-    .badge-review { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .badge-done { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    :root {
+      --bg-base: #09090b;
+      --bg-surface: #121215;
+      --bg-elevated: #18181c;
+      --border-hairline: #27272a;
+      --border-subtle: #1f1f23;
+      --accent: #6366f1;
+    }
+    * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; box-sizing: border-box; }
+    body { background-color: var(--bg-base); color: #f4f4f5; overflow: hidden; height: 100vh; }
+    
+    /* Linear / Vercel Style Hairline Borders & Surfaces */
+    .surface-panel { background-color: var(--bg-surface); border: 1px solid var(--border-hairline); }
+    .surface-card { background-color: var(--bg-elevated); border: 1px solid var(--border-hairline); transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease; }
+    .surface-card:hover { border-color: #3f3f46; }
+    
+    /* Dot Matrix Canvas Background */
+    .canvas-grid {
+      background-color: #09090b;
+      background-image: radial-gradient(#27272a 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+    /* Priority & Status Badges */
+    .pri-urgent { background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); }
+    .pri-high { background: rgba(249, 115, 22, 0.12); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.25); }
+    .pri-medium { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.25); }
+    .pri-low { background: rgba(161, 161, 170, 0.12); color: #a1a1aa; border: 1px solid rgba(161, 161, 170, 0.25); }
+
+    .st-todo { color: #a1a1aa; }
+    .st-in_progress { color: #60a5fa; }
+    .st-review { color: #fbbf24; }
+    .st-done { color: #34d399; }
+
+    /* Node Canvas Styles */
+    .map-node {
+      position: absolute;
+      width: 240px;
+      user-select: none;
+      cursor: grab;
+      z-index: 10;
+    }
+    .map-node:active { cursor: grabbing; z-index: 30; }
+    .map-node.connect-source { border-color: #6366f1 !important; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4); }
+    
+    .edge-path { fill: none; stroke-width: 2; transition: stroke 0.2s, stroke-width 0.2s; pointer-events: stroke; cursor: pointer; }
+    .edge-path:hover { stroke: #f43f5e !important; stroke-width: 3.5; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+<body class="flex flex-col select-none">
 
-  <!-- 네비게이션 헤더 -->
-  <header id="mainHeader" class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href = window.location.pathname">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-          <i class="fa-solid fa-cubes-stacked text-white text-base"></i>
+  <!-- Top Navigation Bar (Linear Style) -->
+  <header class="h-12 border-b border-zinc-800/80 bg-[#09090b] px-4 flex items-center justify-between shrink-0 z-30">
+    <div class="flex items-center gap-3">
+      <div onclick="window.location.href = window.location.pathname" class="flex items-center gap-2 cursor-pointer group">
+        <div class="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm group-hover:bg-indigo-500 transition">
+          <i class="fa-solid fa-layer-group text-[11px]"></i>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">TeamFlow</span>
-          <span id="headerProjectTitle" class="text-sm font-medium text-slate-400 pl-2 border-l border-slate-700/60 hidden"></span>
+        <span class="font-semibold text-sm tracking-tight text-zinc-100">TeamFlow</span>
+      </div>
+
+      <span id="headerDivider" class="text-zinc-700 text-xs hidden">/</span>
+      
+      <!-- Project Title & View Switcher -->
+      <div id="headerProjectArea" class="items-center gap-4 hidden">
+        <span id="headerProjectTitle" class="text-xs font-medium text-zinc-300 px-2 py-1 rounded bg-zinc-900 border border-zinc-800"></span>
+        
+        <nav class="flex items-center bg-zinc-900/90 p-0.5 rounded-lg border border-zinc-800/80">
+          <button onclick="switchView('map')" id="tabBtn-map" class="px-2.5 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5">
+            <i class="fa-solid fa-diagram-project text-[10px]"></i> 워크플로우 맵
+          </button>
+          <button onclick="switchView('kanban')" id="tabBtn-kanban" class="px-2.5 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5">
+            <i class="fa-solid fa-table-columns text-[10px]"></i> 칸반 보드
+          </button>
+          <button onclick="switchView('docs')" id="tabBtn-docs" class="px-2.5 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5">
+            <i class="fa-regular fa-file-lines text-[10px]"></i> 팀 독스 (Wiki)
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Right Actions -->
+    <div id="headerActions" class="items-center gap-2 hidden">
+      <!-- Progress Pill -->
+      <div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-[11px]">
+        <span class="text-zinc-400">진척도</span>
+        <span id="headerProgressText" class="font-mono font-semibold text-emerald-400">0%</span>
+        <div class="w-14 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+          <div id="headerProgressBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
         </div>
       </div>
 
-      <div id="headerActions" class="flex items-center gap-2.5 hidden">
-        <button onclick="openInviteModal()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 transition flex items-center gap-1.5">
-          <i class="fa-solid fa-user-plus text-[11px]"></i> 팀원 초대
-        </button>
-        <div class="h-4 w-[1px] bg-slate-800 mx-1"></div>
-        <div id="userBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="currentUserName">팀원</span>
-        </div>
+      <button onclick="openCreateTaskModal()" class="px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-plus text-[10px]"></i> 새 업무
+      </button>
+
+      <button onclick="openInviteModal()" class="px-2.5 py-1 rounded-md text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition flex items-center gap-1.5">
+        <i class="fa-solid fa-user-plus text-[10px] text-zinc-400"></i> 초대
+      </button>
+
+      <button onclick="toggleChatDrawer()" id="chatToggleBtn" class="px-2.5 py-1 rounded-md text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition flex items-center gap-1.5 relative">
+        <i class="fa-regular fa-comment-dots text-xs text-indigo-400"></i> 채팅
+        <span id="chatUnreadDot" class="w-1.5 h-1.5 rounded-full bg-rose-500 absolute top-1 right-1 hidden"></span>
+      </button>
+
+      <div class="h-3.5 w-[1px] bg-zinc-800 mx-0.5"></div>
+
+      <div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900/60 border border-zinc-800/80 text-xs text-zinc-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <span id="currentUserName" class="font-medium text-[11px]">팀원</span>
       </div>
     </div>
   </header>
 
-  <!-- 메인 뷰포트 영역 -->
-  <main id="appContainer" class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col">
-    <!-- 동적 렌더링 영역 -->
-  </main>
+  <!-- Notice Callout Bar (Notion Style) -->
+  <div id="noticeBar" class="bg-[#101014] border-b border-zinc-800/80 px-4 py-1.5 hidden items-center justify-between text-xs">
+    <div onclick="handleEditNotice()" class="flex items-center gap-2 text-zinc-300 hover:text-white cursor-pointer truncate flex-1">
+      <span class="px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-medium text-[10px] shrink-0">공지 & 목표</span>
+      <span id="noticeText" class="truncate text-zinc-300"></span>
+      <i class="fa-solid fa-pen text-[9px] text-zinc-600 ml-1"></i>
+    </div>
+    <div id="memberListPills" class="hidden md:flex items-center gap-1 shrink-0 ml-4"></div>
+  </div>
 
-  <!-- 업무 생성 모달 -->
-  <div id="createTaskModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="glass-panel w-full max-w-lg rounded-2xl p-6 shadow-2xl relative">
-      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
-        <h3 class="text-base font-semibold text-white flex items-center gap-2">
-          <i class="fa-solid fa-plus-circle text-indigo-400"></i> 새 업무 생성
-        </h3>
-        <button onclick="closeModal('createTaskModal')" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+  <!-- Main Workspace Area + Right Chat Drawer -->
+  <div class="flex-1 flex overflow-hidden relative">
+    <!-- Primary Viewport -->
+    <main id="appContainer" class="flex-1 flex flex-col overflow-hidden relative"></main>
+
+    <!-- Right Collapsible Chat Drawer -->
+    <aside id="chatDrawer" class="w-80 border-l border-zinc-800 bg-[#0c0c0f] flex-col shrink-0 hidden z-20">
+      <div class="h-10 px-3.5 border-b border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-regular fa-comments text-indigo-400 text-xs"></i>
+          <span class="text-xs font-semibold text-zinc-200">팀 실시간 채팅</span>
+        </div>
+        <button onclick="toggleChatDrawer()" class="text-zinc-500 hover:text-zinc-300 text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
-      <form id="createTaskForm" onsubmit="handleCreateTask(event)" class="mt-4 space-y-4">
+
+      <div id="chatMessagesList" class="flex-1 overflow-y-auto p-3 space-y-2.5 select-text"></div>
+
+      <!-- Task Reference Preview in Chat -->
+      <div id="chatTaskRefBanner" class="px-3 py-1.5 bg-indigo-950/40 border-t border-indigo-500/30 hidden items-center justify-between text-[11px] text-indigo-300">
+        <span id="chatTaskRefText" class="truncate"></span>
+        <button onclick="clearChatTaskRef()" class="text-indigo-400 hover:text-white ml-2"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form onsubmit="handleSendMessage(event)" class="p-2.5 border-t border-zinc-800 bg-[#09090b] flex gap-1.5">
+        <input type="text" id="chatInput" placeholder="메시지 입력... (엔터로 전송)" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-md px-2.5 py-1.5 text-xs text-zinc-100 focus:outline-none focus:border-indigo-500">
+        <button type="submit" class="px-2.5 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition">
+          <i class="fa-solid fa-paper-plane text-[10px]"></i>
+        </button>
+      </form>
+    </aside>
+  </div>
+
+  <!-- ==========================================
+       MODALS (Create Task / Task Detail / Invite)
+  =========================================== -->
+
+  <!-- 1. Create Task Modal -->
+  <div id="createTaskModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="surface-panel w-full max-w-lg rounded-xl shadow-2xl overflow-hidden animate-fade-in">
+      <div class="px-5 py-3.5 border-b border-zinc-800 flex items-center justify-between">
+        <h3 class="text-xs font-semibold text-zinc-200 uppercase tracking-wider flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-indigo-500"></span> 새 업무 생성
+        </h3>
+        <button onclick="closeModal('createTaskModal')" class="text-zinc-500 hover:text-zinc-300"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form onsubmit="handleCreateTask(event)" class="p-5 space-y-4">
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">업무명 *</label>
-          <input type="text" id="taskTitleInput" required placeholder="예: 선행 논문 요약 및 인터뷰 질문지 작성" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
+          <input type="text" id="taskTitleInput" required placeholder="업무 제목을 입력하세요..." class="w-full bg-zinc-900/90 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-medium text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500">
         </div>
+
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">상세 설명</label>
-          <textarea id="taskDescInput" rows="3" placeholder="업무의 세부 요구사항이나 참고할 내용을 기록하세요" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition"></textarea>
+          <textarea id="taskDescInput" rows="3" placeholder="상세 설명이나 요구사항 메모 (선택)" class="w-full bg-zinc-900/90 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500"></textarea>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">담당자 배정</label>
-            <select id="taskAssigneeSelect" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
-              <option value="">미정 (나중에 지정)</option>
+            <label class="block text-[10px] font-medium text-zinc-400 mb-1">담당자</label>
+            <select id="taskAssigneeSelect" class="w-full bg-zinc-900 border border-zinc-800 rounded-md px-2 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500">
+              <option value="">미정</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">마감 기한</label>
-            <input type="date" id="taskDueDateInput" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
+            <label class="block text-[10px] font-medium text-zinc-400 mb-1">우선순위</label>
+            <select id="taskPrioritySelect" class="w-full bg-zinc-900 border border-zinc-800 rounded-md px-2 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500">
+              <option value="medium">보통 (Medium)</option>
+              <option value="urgent">긴급 (Urgent)</option>
+              <option value="high">높음 (High)</option>
+              <option value="low">낮음 (Low)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-medium text-zinc-400 mb-1">라벨 (태그)</label>
+            <input type="text" id="taskLabelInput" placeholder="예: 기획, 디자인, 개발" value="일반" class="w-full bg-zinc-900 border border-zinc-800 rounded-md px-2 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-[10px] font-medium text-zinc-400 mb-1">마감일</label>
+            <input type="date" id="taskDueDateInput" class="w-full bg-zinc-900 border border-zinc-800 rounded-md px-2 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500">
           </div>
         </div>
-        <div class="pt-3 flex justify-end gap-2 border-t border-slate-800">
-          <button type="button" onclick="closeModal('createTaskModal')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white transition">취소</button>
-          <button type="submit" id="createTaskSubmitBtn" class="px-4 py-2 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition shadow-lg shadow-indigo-600/30">등록하기</button>
+
+        <div class="pt-2 flex items-center justify-between border-t border-zinc-800/80">
+          <label class="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer">
+            <input type="checkbox" id="taskPutInMapCheck" class="rounded bg-zinc-900 border-zinc-700 text-indigo-600 focus:ring-0">
+            <span>생성 즉시 워크플로우 맵 캔버스에 올리기 (기본: 트레이 보관)</span>
+          </label>
+          <div class="flex gap-2">
+            <button type="button" onclick="closeModal('createTaskModal')" class="px-3 py-1.5 rounded-md text-xs text-zinc-400 hover:text-zinc-200">취소</button>
+            <button type="submit" id="createTaskSubmitBtn" class="px-3.5 py-1.5 rounded-md text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm">업무 등록</button>
+          </div>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- 업무 상세 및 결과물 모달 -->
-  <div id="taskDetailModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="glass-panel w-full max-w-2xl rounded-2xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
-      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
-        <div class="flex items-center gap-2.5">
-          <span id="modalTaskStatusBadge" class="text-xs px-2.5 py-1 rounded-full font-medium">대기</span>
-          <h3 id="modalTaskTitle" class="text-base font-semibold text-white"></h3>
+  <!-- 2. Task Detail Modal (Notion Page Style) -->
+  <div id="taskDetailModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="surface-panel w-full max-w-3xl rounded-xl shadow-2xl max-h-[90vh] flex flex-col overflow-hidden select-text">
+      <!-- Top Bar -->
+      <div class="px-5 py-3 border-b border-zinc-800 flex items-center justify-between bg-[#0c0c0f]">
+        <div class="flex items-center gap-2">
+          <span id="modalTaskLabelBadge" class="px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-800 text-zinc-300 border border-zinc-700">일반</span>
+          <span id="modalTaskPriorityBadge" class="px-2 py-0.5 rounded text-[10px] font-medium">보통</span>
+          <button onclick="shareActiveTaskToChat()" class="px-2 py-0.5 rounded text-[10px] font-medium bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20 transition flex items-center gap-1">
+            <i class="fa-regular fa-paper-plane text-[9px]"></i> 채팅에 언급
+          </button>
         </div>
-        <button onclick="closeModal('taskDetailModal')" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <div class="flex items-center gap-2">
+          <button onclick="handleDeleteTask()" class="text-xs text-zinc-500 hover:text-rose-400 px-2 py-1 transition" title="업무 삭제">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+          <button onclick="closeModal('taskDetailModal')" class="text-zinc-500 hover:text-zinc-200 px-1"><i class="fa-solid fa-xmark text-base"></i></button>
+        </div>
       </div>
 
-      <div class="flex-1 overflow-y-auto custom-scroll py-4 space-y-6">
-        <!-- 메타 정보 영역 -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-900/50 border border-slate-800/80 text-xs">
+      <!-- Content Body -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        <!-- Title & Description -->
+        <div>
+          <h2 id="modalTaskTitle" class="text-lg font-bold text-white tracking-tight mb-2"></h2>
+          <p id="modalTaskDesc" class="text-xs text-zinc-300 leading-relaxed whitespace-pre-wrap bg-zinc-900/50 p-3 rounded-lg border border-zinc-800/80"></p>
+        </div>
+
+        <!-- Properties Grid (Notion Property Style) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-lg bg-[#0c0c0f] border border-zinc-800/80 text-xs">
           <div>
-            <div class="text-slate-500 mb-1">담당자</div>
-            <select id="modalAssigneeSelect" onchange="handleAssigneeChange(event)" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-slate-200 focus:outline-none focus:border-indigo-500">
+            <span class="text-[10px] text-zinc-500 block mb-1">상태</span>
+            <select id="modalStatusSelect" onchange="handleTaskFieldUpdate('status', this.value)" class="w-full bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200">
+              <option value="todo">대기 (Todo)</option>
+              <option value="in_progress">진행 중 (In Progress)</option>
+              <option value="review">검토 요청 (Review)</option>
+              <option value="done">완료됨 (Done)</option>
+            </select>
+          </div>
+          <div>
+            <span class="text-[10px] text-zinc-500 block mb-1">담당자</span>
+            <select id="modalAssigneeSelect" onchange="handleTaskFieldUpdate('assignee_name', this.value || null)" class="w-full bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200">
               <option value="">미정</option>
             </select>
           </div>
           <div>
-            <div class="text-slate-500 mb-1">마감 기한</div>
-            <div id="modalTaskDueDate" class="text-slate-300 font-medium pt-1">미설정</div>
-          </div>
-          <div>
-            <div class="text-slate-500 mb-1">상태 변경</div>
-            <select id="modalStatusSelect" onchange="handleStatusChange(event)" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-slate-200 focus:outline-none focus:border-indigo-500">
-              <option value="todo">대기</option>
-              <option value="in_progress">진행 중</option>
-              <option value="review">검토 요청</option>
-              <option value="done">완료됨</option>
+            <span class="text-[10px] text-zinc-500 block mb-1">우선순위</span>
+            <select id="modalPrioritySelect" onchange="handleTaskFieldUpdate('priority', this.value)" class="w-full bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200">
+              <option value="urgent">긴급</option>
+              <option value="high">높음</option>
+              <option value="medium">보통</option>
+              <option value="low">낮음</option>
             </select>
           </div>
+          <div>
+            <span class="text-[10px] text-zinc-500 block mb-1">맵 캔버스 배치</span>
+            <button id="modalMapToggleBtn" onclick="toggleActiveTaskInMap()" class="w-full px-2 py-1 rounded text-xs font-medium border transition"></button>
+          </div>
         </div>
 
-        <div>
-          <h4 class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">업무 설명</h4>
-          <p id="modalTaskDesc" class="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap bg-slate-900/30 p-3.5 rounded-xl border border-slate-800/50"></p>
-        </div>
-
-        <!-- 결과물 등록 (다중 파일 및 링크) -->
-        <div class="space-y-4">
+        <!-- Optional Sub-Checklist Section -->
+        <div class="space-y-2">
           <div class="flex items-center justify-between">
-            <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">산출물 & 참고 링크</h4>
-            <span id="assigneeOnlyNotice" class="text-[11px] text-amber-400/80 hidden"><i class="fa-solid fa-shield-halved"></i> 담당자 전용 수정 모드</span>
+            <h4 class="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+              <i class="fa-solid fa-list-check text-indigo-400 text-[11px]"></i> 세부 체크리스트 (옵션)
+            </h4>
+            <button onclick="toggleChecklistInput()" class="text-[11px] text-indigo-400 hover:text-indigo-300">+ 항목 추가</button>
           </div>
 
-          <!-- 파일 첨부 폼 (담당자 전용) -->
-          <div id="uploadSection" class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+          <form id="checklistAddForm" onsubmit="handleAddChecklistItem(event)" class="hidden gap-1.5">
+            <input type="text" id="checklistInput" placeholder="세부 할 일 입력 후 엔터..." class="flex-1 bg-zinc-900 border border-zinc-800 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <button type="submit" class="px-2.5 py-1 rounded bg-indigo-600 text-white text-xs">추가</button>
+          </form>
+
+          <div id="modalChecklistContainer" class="space-y-1"></div>
+        </div>
+
+        <!-- Deliverables (Files & Links) -->
+        <div class="space-y-3 pt-2 border-t border-zinc-800/80">
+          <h4 class="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-paperclip text-indigo-400 text-[11px]"></i> 산출물 파일 & 레퍼런스 링크
+          </h4>
+
+          <div id="uploadSection" class="p-3 rounded-lg bg-[#0c0c0f] border border-zinc-800/80 space-y-2.5">
             <div class="flex flex-col sm:flex-row gap-2">
-              <input type="file" id="fileInputBatch" multiple class="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-indigo-600/30 file:text-indigo-300 hover:file:bg-indigo-600/50 cursor-pointer">
-              <button onclick="handleBatchFileUpload()" id="fileUploadBtn" class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition flex items-center justify-center gap-1.5 whitespace-nowrap">
-                <i class="fa-solid fa-cloud-arrow-up"></i> 파일 일괄 업로드
+              <input type="file" id="fileInputBatch" multiple class="block w-full text-xs text-zinc-400 file:mr-2.5 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-medium file:bg-zinc-800 file:text-zinc-200 hover:file:bg-zinc-700 cursor-pointer">
+              <button onclick="handleBatchFileUpload()" id="fileUploadBtn" class="px-3 py-1 rounded text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 whitespace-nowrap">
+                파일 업로드
               </button>
             </div>
-            <div class="flex gap-2">
-              <input type="text" id="linkTitleInput" placeholder="링크 제목 (예: 피그마, 노션)" class="w-1/3 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
-              <input type="url" id="linkUrlInput" placeholder="https://..." class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
-              <button onclick="handleAddLink()" class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition whitespace-nowrap">
-                링크 추가
+            <div class="flex gap-1.5">
+              <input type="text" id="linkTitleInput" placeholder="링크 제목 (예: 피그마, 깃허브)" class="w-1/3 bg-zinc-900 border border-zinc-800 rounded px-2.5 py-1 text-xs text-white">
+              <input type="url" id="linkUrlInput" placeholder="https://..." class="flex-1 bg-zinc-900 border border-zinc-800 rounded px-2.5 py-1 text-xs text-white">
+              <button onclick="handleAddLink()" class="px-3 py-1 rounded text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 whitespace-nowrap">
+                링크 등록
               </button>
             </div>
           </div>
 
-          <!-- 첨부 결과물 목록 -->
-          <div class="space-y-2">
-            <div id="modalFilesList" class="space-y-1.5"></div>
-            <div id="modalLinksList" class="space-y-1.5"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div id="modalFilesList" class="space-y-1"></div>
+            <div id="modalLinksList" class="space-y-1"></div>
           </div>
         </div>
-      </div>
 
-      <div class="pt-4 border-t border-slate-800 flex justify-between items-center">
-        <button onclick="handleDeleteTask()" class="text-xs text-rose-400 hover:text-rose-300 px-3 py-1.5 rounded-lg hover:bg-rose-500/10 transition">
-          <i class="fa-regular fa-trash-can mr-1"></i> 업무 삭제
-        </button>
-        <button onclick="closeModal('taskDetailModal')" class="px-4 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition">닫기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 초대 모달 -->
-  <div id="inviteModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="glass-panel w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <h3 class="text-sm font-semibold text-white flex items-center gap-2">
-          <i class="fa-solid fa-link text-indigo-400"></i> 팀원 초대 링크
-        </h3>
-        <button onclick="closeModal('inviteModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-      <div class="mt-4 space-y-4">
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">초대 링크 (URL)</label>
-          <div class="flex gap-2">
-            <input type="text" id="inviteUrlField" readonly class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 font-mono select-all">
-            <button onclick="copyInviteUrl()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-1.5 whitespace-nowrap">
-              <i class="fa-regular fa-copy"></i> 복사
-            </button>
-          </div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 text-xs text-slate-400 flex items-center justify-between">
-          <span>프로젝트 코드:</span>
-          <span id="inviteCodeField" class="font-mono text-indigo-300 font-semibold text-sm"></span>
+        <!-- Task Comments (Notion Discussion Style) -->
+        <div class="space-y-3 pt-3 border-t border-zinc-800/80">
+          <h4 class="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+            <i class="fa-regular fa-comments text-indigo-400 text-[11px]"></i> 업무 코멘트 & 피드백
+          </h4>
+          <div id="modalCommentsList" class="space-y-2 max-h-44 overflow-y-auto pr-1"></div>
+          <form onsubmit="handleAddComment(event)" class="flex gap-1.5">
+            <input type="text" id="commentInput" placeholder="이 업무에 대한 피드백이나 댓글 남기기..." class="flex-1 bg-zinc-900 border border-zinc-800 rounded-md px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <button type="submit" class="px-3 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium">등록</button>
+          </form>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 알림 토스트 UI -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs font-medium flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-2"></div>
+  <!-- 3. Invite Modal -->
+  <div id="inviteModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="surface-panel w-full max-w-md rounded-xl p-5 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
+        <h3 class="text-xs font-semibold text-zinc-200">팀원 초대 링크 공유</h3>
+        <button onclick="closeModal('inviteModal')" class="text-zinc-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="mt-4 space-y-3">
+        <div class="flex gap-1.5">
+          <input type="text" id="inviteUrlField" readonly class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-300 font-mono select-all">
+          <button onclick="copyInviteUrl()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white whitespace-nowrap">복사</button>
+        </div>
+        <div class="text-[11px] text-zinc-500 flex justify-between px-1">
+          <span>워크스페이스 ID</span>
+          <span id="inviteCodeField" class="font-mono text-zinc-300"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-3.5 py-2 rounded-lg shadow-xl text-xs font-medium transition-all duration-200 opacity-0 pointer-events-none"></div>
 
   <script>
+    // ==========================================
+    // 0. SUPABASE INITIALIZATION & STATE
+    // ==========================================
     const SUPABASE_URL = 'https://etpkmddranmbseymkllb.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0cGttZGRyYW5tYnNleW1rbGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NjMxNDksImV4cCI6MjEwODQzOTE0OX0.4NbOzaf3vw-VTg9YOciYj_UmmKTmnMDs_CtlX6pK4t8';
     
-    let sbClient = null;
-    try {
-      if (window.supabase) {
-        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      }
-    } catch (e) {
-      console.warn("Supabase Init Alert:", e);
-    }
+    const sbClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-    // 전역 상태
     let currentProjectId = new URLSearchParams(window.location.search).get('p');
     let currentProject = null;
     let currentMembers = [];
     let currentTasks = [];
+    let currentMessages = [];
+    let currentDocs = [];
     let activeTask = null;
+    let activeDocId = null;
+
     let currentUserId = localStorage.getItem('teamflow_user_id') || null;
     let currentUserName = localStorage.getItem('teamflow_user_name') || null;
-    let currentView = 'kanban'; // 'kanban' | 'map'
+    let currentView = 'map'; // 'map' | 'kanban' | 'docs'
+    let isChatOpen = false;
+    let chatTaskRef = null;
+
+    // Map Interaction State
+    let isConnectMode = false;
+    let connectSourceTaskId = null;
+    let draggingTaskId = null;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
 
     document.addEventListener('DOMContentLoaded', async () => {
-      try {
-        if (!currentProjectId) {
-          renderLobby();
-        } else {
-          if (!currentUserName) {
-            renderOnboarding();
-          } else {
-            await loadWorkspace();
-            initRealtimeSubscription();
-          }
-        }
-      } catch (err) {
-        console.error("Boot Error:", err);
+      if (!currentProjectId) {
         renderLobby();
+      } else if (!currentUserName) {
+        renderOnboarding();
+      } else {
+        await loadWorkspace();
+        initRealtimeSubscription();
       }
     });
 
     // ==========================================
-    // 1. 로비 & 온보딩
+    // 1. LOBBY & ONBOARDING
     // ==========================================
     function renderLobby() {
-      const headerTitle = document.getElementById('headerProjectTitle');
-      const headerActions = document.getElementById('headerActions');
-      if (headerTitle) headerTitle.classList.add('hidden');
-      if (headerActions) headerActions.classList.add('hidden');
-      
+      document.getElementById('headerProjectArea').classList.add('hidden');
+      document.getElementById('headerActions').classList.add('hidden');
+      document.getElementById('noticeBar').classList.add('hidden');
+
       const app = document.getElementById('appContainer');
       app.innerHTML = `
-        <div class="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto w-full py-12 text-center">
-          <div class="w-16 h-16 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6 shadow-xl shadow-indigo-500/5">
-            <i class="fa-solid fa-shapes text-2xl"></i>
-          </div>
-          <h1 class="text-3xl font-bold tracking-tight text-white mb-3">새 팀플 워크스페이스 시작하기</h1>
-          <p class="text-slate-400 text-sm mb-8 leading-relaxed">
-            대학 과제, 캡스톤 디자인, 해커톤까지.<br>
-            복잡한 설정 없이 팀플 링크 하나로 모든 업무와 결과물을 깔끔하게 정리하세요.
-          </p>
-          <div class="glass-panel w-full rounded-2xl p-6 text-left shadow-2xl">
-            <form onsubmit="handleCreateProject(event)" class="space-y-4">
-              <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1.5">프로젝트(팀플) 이름 *</label>
-                <input type="text" id="newProjectTitle" required placeholder="예: 경영정보시스템 3조 기말 프로젝트" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
+        <div class="flex-1 flex flex-col items-center justify-center p-6 canvas-grid">
+          <div class="w-full max-w-md surface-panel rounded-2xl p-7 shadow-2xl">
+            <div class="flex items-center gap-2.5 mb-5">
+              <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow">
+                <i class="fa-solid fa-layer-group text-sm"></i>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1.5">개설자 이름 (본인 닉네임) *</label>
-                <input type="text" id="newProjectLeader" required placeholder="예: 최유겸 (팀장)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
+                <h1 class="text-base font-bold text-white tracking-tight">TeamFlow Workspace</h1>
+                <p class="text-[11px] text-zinc-400">노드 파이프라인 맵 & 올인원 팀 협업 툴</p>
               </div>
-              <button type="submit" id="createProjectBtn" class="w-full py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
-                <span>워크스페이스 개설하기</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+            </div>
+
+            <form onsubmit="handleCreateProject(event)" class="space-y-3.5">
+              <div>
+                <label class="block text-[11px] font-medium text-zinc-400 mb-1">워크스페이스(팀/프로젝트) 이름</label>
+                <input type="text" id="newProjectTitle" required placeholder="예: 프로덕트 런칭 TF팀 / 캡스톤 디자인 2조" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="block text-[11px] font-medium text-zinc-400 mb-1">본인 이름 (닉네임/직책)</label>
+                <input type="text" id="newProjectLeader" required placeholder="예: 최유겸 (PM)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+              </div>
+              <button type="submit" id="createProjectBtn" class="w-full py-2.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-md mt-2">
+                워크스페이스 생성하기 →
               </button>
             </form>
           </div>
@@ -292,7 +465,7 @@
       e.preventDefault();
       const btn = document.getElementById('createProjectBtn');
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 개설 중...`;
+      btn.textContent = '생성 중...';
 
       const title = document.getElementById('newProjectTitle').value.trim();
       const leaderName = document.getElementById('newProjectLeader').value.trim();
@@ -300,51 +473,43 @@
       const userId = 'usr-' + Math.random().toString(36).substring(2, 9);
 
       try {
-        if (!sbClient) throw new Error('Supabase 클라이언트가 초기화되지 않았습니다.');
-        const { error: projErr } = await sbClient.from('projects').insert([{
+        const { error: pErr } = await sbClient.from('projects').insert([{
           id: projectCode,
-          title: title,
+          title,
           leader_name: leaderName,
-          created_at: new Date().toISOString()
+          notice: '💡 이곳을 클릭해 팀의 핵심 목표나 공지사항을 적어두세요.'
         }]);
-        if (projErr) throw projErr;
+        if (pErr) throw pErr;
 
-        await sbClient.from('members').insert([{
+        await sbClient.from('members').insert([{ project_id: projectCode, user_id: userId, name: leaderName, role: '리더' }]);
+        await sbClient.from('docs').insert([{
           project_id: projectCode,
-          user_id: userId,
-          name: leaderName,
-          role: '팀장'
+          title: '📌 프로젝트 킥오프 & 기본 규칙',
+          category: '공지/위키',
+          content: '1. 정기 회의 시간:\n2. 핵심 목표:\n3. 참고 레퍼런스:',
+          updated_by: leaderName
         }]);
 
         localStorage.setItem('teamflow_user_id', userId);
         localStorage.setItem('teamflow_user_name', leaderName);
-
         window.location.search = `?p=${projectCode}`;
       } catch (err) {
-        showToast('워크스페이스 생성 실패: ' + err.message, 'error');
+        showToast('생성 실패: ' + err.message, 'error');
         btn.disabled = false;
-        btn.innerHTML = `<span>워크스페이스 개설하기</span> <i class="fa-solid fa-arrow-right text-xs"></i>`;
+        btn.textContent = '워크스페이스 생성하기 →';
       }
     }
 
     function renderOnboarding() {
       const app = document.getElementById('appContainer');
       app.innerHTML = `
-        <div class="flex-1 flex flex-col items-center justify-center max-w-md mx-auto w-full py-12 text-center">
-          <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-5">
-            <i class="fa-solid fa-user-check text-xl"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-white mb-2">팀플 워크스페이스 입장</h2>
-          <p class="text-slate-400 text-xs mb-6">팀원들과 공유할 본인의 이름이나 역할을 입력해 주세요.</p>
-          <div class="glass-panel w-full rounded-2xl p-6 text-left shadow-2xl">
-            <form onsubmit="handleOnboardUser(event)" class="space-y-4">
-              <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1.5">이름 또는 닉네임 *</label>
-                <input type="text" id="onboardNameInput" required placeholder="예: 김민수 (자료조사)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
-              </div>
-              <button type="submit" class="w-full py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/30">
-                워크스페이스 입장
-              </button>
+        <div class="flex-1 flex flex-col items-center justify-center p-6 canvas-grid">
+          <div class="w-full max-w-sm surface-panel rounded-2xl p-6 shadow-2xl">
+            <h2 class="text-sm font-bold text-white mb-1">워크스페이스 참여하기</h2>
+            <p class="text-xs text-zinc-400 mb-4">팀원들이 알아볼 수 있도록 이름을 입력해 주세요.</p>
+            <form onsubmit="handleOnboardUser(event)" class="space-y-3">
+              <input type="text" id="onboardNameInput" required placeholder="이름 (예: 김민수 / 프론트엔드)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+              <button type="submit" class="w-full py-2 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition">입장하기</button>
             </form>
           </div>
         </div>
@@ -355,231 +520,468 @@
       e.preventDefault();
       const name = document.getElementById('onboardNameInput').value.trim();
       const userId = 'usr-' + Math.random().toString(36).substring(2, 9);
-
-      try {
-        if (!sbClient) throw new Error('Supabase 클라이언트가 초기화되지 않았습니다.');
-        await sbClient.from('members').insert([{
-          project_id: currentProjectId,
-          user_id: userId,
-          name: name,
-          role: '팀원'
-        }]);
-
-        localStorage.setItem('teamflow_user_id', userId);
-        localStorage.setItem('teamflow_user_name', name);
-        currentUserId = userId;
-        currentUserName = name;
-
-        await loadWorkspace();
-        initRealtimeSubscription();
-      } catch (err) {
-        showToast('입장 실패: ' + err.message, 'error');
-      }
+      await sbClient.from('members').insert([{ project_id: currentProjectId, user_id: userId, name, role: '멤버' }]);
+      localStorage.setItem('teamflow_user_id', userId);
+      localStorage.setItem('teamflow_user_name', name);
+      currentUserId = userId;
+      currentUserName = name;
+      await loadWorkspace();
+      initRealtimeSubscription();
     }
 
     // ==========================================
-    // 2. 워크스페이스 로드 & 뷰 전환
+    // 2. LOAD WORKSPACE & REALTIME SYNC
     // ==========================================
     async function loadWorkspace() {
       try {
-        if (!sbClient) throw new Error('Supabase 클라이언트가 초기화되지 않았습니다.');
-        const { data: proj, error: pErr } = await sbClient.from('projects').select('*').eq('id', currentProjectId).single();
-        if (pErr || !proj) throw new Error('프로젝트를 찾을 수 없습니다.');
+        const { data: proj, error } = await sbClient.from('projects').select('*').eq('id', currentProjectId).single();
+        if (error || !proj) throw new Error('존재하지 않는 워크스페이스입니다.');
         currentProject = proj;
 
-        const { data: mems } = await sbClient.from('members').select('*').eq('project_id', currentProjectId);
-        currentMembers = mems || [];
+        const [memsRes, tasksRes, msgsRes, docsRes] = await Promise.all([
+          sbClient.from('members').select('*').eq('project_id', currentProjectId),
+          sbClient.from('tasks').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true }),
+          sbClient.from('messages').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true }),
+          sbClient.from('docs').select('*').eq('project_id', currentProjectId).order('updated_at', { ascending: false })
+        ]);
 
-        const { data: ts } = await sbClient.from('tasks').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true });
-        currentTasks = ts || [];
+        currentMembers = memsRes.data || [];
+        currentTasks = tasksRes.data || [];
+        currentMessages = msgsRes.data || [];
+        currentDocs = docsRes.data || [];
 
         if (currentUserName && !currentMembers.some(m => m.name === currentUserName)) {
-          await sbClient.from('members').insert([{
-            project_id: currentProjectId,
-            user_id: currentUserId || ('usr-' + Math.random().toString(36).substring(2, 9)),
-            name: currentUserName,
-            role: '팀원'
-          }]);
-          const { data: updatedMems } = await sbClient.from('members').select('*').eq('project_id', currentProjectId);
-          currentMembers = updatedMems || [];
+          await sbClient.from('members').insert([{ project_id: currentProjectId, user_id: currentUserId, name: currentUserName, role: '멤버' }]);
+          const { data: m2 } = await sbClient.from('members').select('*').eq('project_id', currentProjectId);
+          currentMembers = m2 || [];
         }
 
-        const titleEl = document.getElementById('headerProjectTitle');
-        titleEl.textContent = currentProject.title;
-        titleEl.classList.remove('hidden');
-
+        // Setup Top UI
+        document.getElementById('headerDivider').classList.remove('hidden');
+        document.getElementById('headerProjectArea').classList.remove('hidden');
+        document.getElementById('headerProjectArea').classList.add('flex');
         document.getElementById('headerActions').classList.remove('hidden');
-        document.getElementById('currentUserName').textContent = currentUserName;
+        document.getElementById('headerActions').classList.add('flex');
+        document.getElementById('noticeBar').classList.remove('hidden');
+        document.getElementById('noticeBar').classList.add('flex');
 
-        renderWorkspaceView();
+        document.getElementById('currentUserName').textContent = currentUserName;
+        updateTopBarStats();
+        renderActiveViewport();
+        renderChatMessages();
       } catch (err) {
         showToast(err.message, 'error');
       }
     }
 
-    function switchView(viewName) {
-      currentView = viewName;
-      renderWorkspaceView();
-    }
-
-    function renderWorkspaceView() {
-      const app = document.getElementById('appContainer');
+    function updateTopBarStats() {
+      if (!currentProject) return;
+      document.getElementById('headerProjectTitle').textContent = currentProject.title;
+      document.getElementById('noticeText').textContent = currentProject.notice || '💡 팀 공지사항을 입력해 주세요.';
 
       const total = currentTasks.length;
-      const completed = currentTasks.filter(t => t.status === 'done').length;
-      const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+      const done = currentTasks.filter(t => t.status === 'done').length;
+      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      document.getElementById('headerProgressText').textContent = `${pct}%`;
+      document.getElementById('headerProgressBar').style.width = `${pct}%`;
+
+      const pills = document.getElementById('memberListPills');
+      pills.innerHTML = currentMembers.map(m => `
+        <span class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-400">${escapeHTML(m.name)}</span>
+      `).join('');
+
+      ['map', 'kanban', 'docs'].forEach(v => {
+        const btn = document.getElementById(`tabBtn-${v}`);
+        if (v === currentView) {
+          btn.className = 'px-2.5 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 bg-zinc-800 text-white shadow-xs';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 text-zinc-400 hover:text-zinc-200';
+        }
+      });
+    }
+
+    async function handleEditNotice() {
+      const next = prompt('팀 전체 공지사항 또는 핵심 목표를 입력하세요:', currentProject.notice || '');
+      if (next === null) return;
+      currentProject.notice = next;
+      updateTopBarStats();
+      await sbClient.from('projects').update({ notice: next }).eq('id', currentProjectId);
+    }
+
+    function switchView(view) {
+      currentView = view;
+      updateTopBarStats();
+      renderActiveViewport();
+    }
+
+    function renderActiveViewport() {
+      if (currentView === 'map') renderWorkflowMapView();
+      else if (currentView === 'kanban') renderKanbanBoardView();
+      else if (currentView === 'docs') renderDocsWikiView();
+    }
+
+    // Realtime Channel
+    function initRealtimeSubscription() {
+      if (!sbClient || !currentProjectId) return;
+      sbClient.channel(`tf-room-${currentProjectId}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks', filter: `project_id=eq.${currentProjectId}` }, async () => {
+          const { data } = await sbClient.from('tasks').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true });
+          currentTasks = data || [];
+          updateTopBarStats();
+          if (!draggingTaskId) renderActiveViewport();
+          if (activeTask) {
+            const found = currentTasks.find(t => String(t.id) === String(activeTask.id));
+            if (found) { activeTask = found; renderTaskDetailModalContent(); }
+          }
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `project_id=eq.${currentProjectId}` }, async () => {
+          const { data } = await sbClient.from('messages').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true });
+          currentMessages = data || [];
+          renderChatMessages();
+          if (!isChatOpen) document.getElementById('chatUnreadDot').classList.remove('hidden');
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'docs', filter: `project_id=eq.${currentProjectId}` }, async () => {
+          const { data } = await sbClient.from('docs').select('*').eq('project_id', currentProjectId).order('updated_at', { ascending: false });
+          currentDocs = data || [];
+          if (currentView === 'docs') renderDocsWikiView();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'projects', filter: `id=eq.${currentProjectId}` }, async (payload) => {
+          if (payload.new) { currentProject = payload.new; updateTopBarStats(); }
+        })
+        .subscribe();
+    }
+
+    // ==========================================
+    // 3. VIEW 1: NODE WORKFLOW MAP + TRAY
+    // ==========================================
+    function renderWorkflowMapView() {
+      const app = document.getElementById('appContainer');
+      const trayTasks = currentTasks.filter(t => !t.in_map);
+      const mapTasks = currentTasks.filter(t => t.in_map);
 
       app.innerHTML = `
-        <!-- 프로젝트 요약 대시보드 카드 -->
-        <div class="glass-panel rounded-2xl p-6 mb-6 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 text-[11px] font-medium border border-indigo-500/20">Active</span>
-              <h2 class="text-xl font-bold text-white tracking-tight">${escapeHTML(currentProject.title)}</h2>
-            </div>
-            <p class="text-xs text-slate-400">참여 팀원: ${currentMembers.map(m => escapeHTML(m.name)).join(', ') || '없음'}</p>
-          </div>
-
-          <div class="flex items-center gap-6">
-            <div class="text-right">
-              <div class="text-xs text-slate-400 mb-1">전체 진행률</div>
-              <div class="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                <span>${progress}%</span>
-                <span class="text-xs font-normal text-slate-500">(${completed}/${total})</span>
+        <div class="flex-1 flex overflow-hidden relative">
+          <!-- Left Unplaced Task Tray (Selective Placement) -->
+          <div class="w-64 border-r border-zinc-800/90 bg-[#0c0c0f] flex flex-col shrink-0 z-20">
+            <div class="p-3 border-b border-zinc-800 flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-inbox text-zinc-400 text-xs"></i>
+                <span class="text-xs font-semibold text-zinc-200">업무 보관 트레이</span>
               </div>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">${trayTasks.length}</span>
             </div>
-            <div class="w-32 bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
-              <div class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full transition-all duration-500 rounded-full" style="width: ${progress}%"></div>
+            <div class="px-3 py-2 bg-zinc-900/40 border-b border-zinc-800/60 text-[11px] text-zinc-400 leading-snug">
+              맵에 올릴 핵심 업무만 <span class="text-indigo-400 font-medium">[맵에 배치 →]</span>를 눌러 캔버스로 꺼내세요.
             </div>
-            <button onclick="openCreateTaskModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition shadow-lg shadow-indigo-600/30 flex items-center gap-1.5 whitespace-nowrap">
-              <i class="fa-solid fa-plus text-xs"></i> 새 업무
-            </button>
-          </div>
-        </div>
-
-        <!-- 뷰 전환 탭 네비게이션 -->
-        <div class="flex items-center gap-2 mb-6 border-b border-slate-800 pb-3">
-          <button onclick="switchView('kanban')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-2 ${currentView === 'kanban' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'}">
-            <i class="fa-solid fa-table-columns text-xs"></i> 칸반 보드
-          </button>
-          <button onclick="switchView('map')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-2 ${currentView === 'map' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'}">
-            <i class="fa-solid fa-diagram-project text-xs"></i> 프로젝트 맵 (로드맵)
-          </button>
-        </div>
-
-        <!-- 선택된 뷰 영역 -->
-        ${currentView === 'kanban' ? renderKanbanView() : renderProjectMapView()}
-      `;
-    }
-
-    // ==========================================
-    // 3. 뷰: 칸반 보드
-    // ==========================================
-    function renderKanbanView() {
-      return `
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1 items-start">
-          ${renderKanbanColumn('todo', '대기', 'fa-regular fa-circle', currentTasks.filter(t => t.status === 'todo'))}
-          ${renderKanbanColumn('in_progress', '진행 중', 'fa-solid fa-spinner text-blue-400', currentTasks.filter(t => t.status === 'in_progress'))}
-          ${renderKanbanColumn('review', '검토 요청', 'fa-solid fa-circle-exclamation text-amber-400', currentTasks.filter(t => t.status === 'review'))}
-          ${renderKanbanColumn('done', '완료됨', 'fa-solid fa-circle-check text-emerald-400', currentTasks.filter(t => t.status === 'done'))}
-        </div>
-      `;
-    }
-
-    function renderKanbanColumn(statusKey, title, iconClass, tasks) {
-      return `
-        <div class="glass-panel rounded-2xl p-4 flex flex-col min-h-[300px]">
-          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/80">
-            <div class="flex items-center gap-2">
-              <i class="${iconClass} text-xs"></i>
-              <span class="text-xs font-semibold text-slate-300">${title}</span>
-            </div>
-            <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800/80 text-slate-400 font-mono">${tasks.length}</span>
-          </div>
-
-          <div class="space-y-3 flex-1">
-            ${tasks.length === 0 ? `
-              <div class="h-24 flex items-center justify-center text-[11px] text-slate-600 border border-dashed border-slate-800/60 rounded-xl">
-                업무 없음
-              </div>
-            ` : tasks.map(task => `
-              <div onclick="openTaskDetailModal('${task.id}')" class="glass-card rounded-xl p-3.5 cursor-pointer space-y-2.5">
-                <div class="flex items-start justify-between gap-2">
-                  <h4 class="text-xs font-medium text-slate-200 leading-snug">${escapeHTML(task.title)}</h4>
+            <div class="flex-1 overflow-y-auto p-2.5 space-y-2">
+              ${trayTasks.length === 0 ? `
+                <div class="h-32 flex flex-col items-center justify-center text-[11px] text-zinc-600 text-center px-4">
+                  보관된 미배치 업무가 없습니다.<br>(모두 맵에 배치됨)
                 </div>
-                
-                <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/60">
-                  <span class="text-slate-400 flex items-center gap-1">
-                    <i class="fa-regular fa-user text-[10px]"></i>
-                    ${escapeHTML(task.assignee_name || '미정')}
-                  </span>
-                  ${task.due_date ? `
-                    <span class="text-slate-500 font-mono text-[10px]"><i class="fa-regular fa-calendar mr-1"></i>${task.due_date}</span>
-                  ` : ''}
-                </div>
-
-                ${(task.files?.length > 0 || task.links?.length > 0) ? `
-                  <div class="flex items-center gap-2 text-[10px] text-indigo-400 pt-0.5">
-                    ${task.files?.length > 0 ? `<span><i class="fa-solid fa-paperclip"></i> ${task.files.length}</span>` : ''}
-                    ${task.links?.length > 0 ? `<span><i class="fa-solid fa-link"></i> ${task.links.length}</span>` : ''}
+              ` : trayTasks.map(t => `
+                <div class="surface-card rounded-lg p-2.5 space-y-2 group">
+                  <div class="flex items-start justify-between gap-1.5">
+                    <span onclick="openTaskDetailModal('${t.id}')" class="text-xs font-medium text-zinc-200 hover:text-indigo-400 cursor-pointer leading-snug">${escapeHTML(t.title)}</span>
                   </div>
-                ` : ''}
+                  <div class="flex items-center justify-between pt-1">
+                    <span class="text-[10px] text-zinc-500"><i class="fa-regular fa-user mr-1"></i>${escapeHTML(t.assignee_name || '미정')}</span>
+                    <button onclick="placeTaskOnMap('${t.id}')" class="px-2 py-0.5 rounded text-[10px] font-medium bg-indigo-500/10 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-500/20 transition">
+                      맵에 배치 →
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Interactive 2D Node Canvas -->
+          <div class="flex-1 flex flex-col relative overflow-hidden">
+            <!-- Floating Canvas Toolbar -->
+            <div class="absolute top-3 left-3 z-20 flex items-center gap-2 bg-zinc-900/90 backdrop-blur-md p-1.5 rounded-lg border border-zinc-800 shadow-lg">
+              <button onclick="toggleConnectMode()" class="px-2.5 py-1 rounded text-xs font-medium transition flex items-center gap-1.5 ${isConnectMode ? 'bg-indigo-600 text-white shadow' : 'text-zinc-300 hover:bg-zinc-800'}">
+                <i class="fa-solid fa-bezier-curve text-[10px]"></i>
+                <span>${isConnectMode ? (connectSourceTaskId ? '후행 업무를 클릭하세요' : '선행 업무를 클릭하세요') : '화살표 연결 모드 (또는 Shift+클릭)'}</span>
+              </button>
+              <span class="text-[11px] text-zinc-500 px-2 hidden lg:inline">
+                💡 카드를 드래그해 자유 배치 · 선 클릭 시 연결 해제 · 더블클릭 시 상세창
+              </span>
+            </div>
+
+            <!-- Scrollable Canvas Area -->
+            <div id="mapCanvasViewport" class="flex-1 overflow-auto canvas-grid relative">
+              <div id="mapCanvasSurface" class="relative min-w-[2000px] min-h-[1300px]" onmousemove="handleCanvasMouseMove(event)" onmouseup="handleCanvasMouseUp(event)">
+                <!-- SVG Connections Layer -->
+                <svg id="mapEdgesSvg" class="absolute inset-0 w-full h-full pointer-events-none z-0">
+                  <defs>
+                    <marker id="arrow-done" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981" />
+                    </marker>
+                    <marker id="arrow-wait" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M 0 1 L 10 5 L 0 9 z" fill="#6366f1" />
+                    </marker>
+                  </defs>
+                  ${renderMapSvgEdges(mapTasks)}
+                </svg>
+
+                <!-- HTML Nodes Layer -->
+                ${mapTasks.map(t => renderMapNodeHTML(t, mapTasks)).join('')}
               </div>
-            `).join('')}
+            </div>
           </div>
         </div>
       `;
     }
 
+    function renderMapNodeHTML(task, mapTasks) {
+      const x = task.pos_x || 140;
+      const y = task.pos_y || 140;
+      const deps = Array.isArray(task.dependencies) ? task.dependencies : [];
+      const parentTasks = mapTasks.filter(p => deps.includes(String(p.id)) || deps.includes(Number(p.id)));
+      const isBlocked = parentTasks.some(p => p.status !== 'done');
+      const isSource = String(connectSourceTaskId) === String(task.id);
+
+      const priMap = { urgent: '긴급', high: '높음', medium: '보통', low: '낮음' };
+      const stIcon = {
+        todo: '<i class="fa-regular fa-circle st-todo"></i>',
+        in_progress: '<i class="fa-solid fa-circle-half-stroke st-in_progress animate-pulse"></i>',
+        review: '<i class="fa-solid fa-circle-exclamation st-review"></i>',
+        done: '<i class="fa-solid fa-circle-check st-done"></i>'
+      }[task.status] || '<i class="fa-regular fa-circle st-todo"></i>';
+
+      const checkTotal = (task.checklist || []).length;
+      const checkDone = (task.checklist || []).filter(c => c.done).length;
+
+      return `
+        <div id="node-${task.id}"
+             style="left: ${x}px; top: ${y}px;"
+             onmousedown="handleNodeMouseDown(event, '${task.id}')"
+             onclick="handleNodeClick(event, '${task.id}')"
+             ondblclick="openTaskDetailModal('${task.id}')"
+             class="map-node surface-card rounded-xl p-3 shadow-xl ${isSource ? 'connect-source' : ''} ${task.status === 'done' ? 'border-emerald-500/40' : ''}">
+          
+          <!-- Top Meta Row -->
+          <div class="flex items-center justify-between gap-1 mb-2">
+            <div class="flex items-center gap-1.5">
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-semibold pri-${task.priority || 'medium'}">${priMap[task.priority || 'medium']}</span>
+              <span class="px-1.5 py-0.5 rounded text-[9px] bg-zinc-800 text-zinc-400 border border-zinc-700/80">${escapeHTML(task.label || '일반')}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              ${isBlocked && task.status !== 'done' ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20" title="선행 업무 미완료"><i class="fa-solid fa-lock text-[8px]"></i> 대기</span>` : ''}
+              <button onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" title="이 업무에서 화살표 연결하기" class="w-5 h-5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-indigo-400 flex items-center justify-center text-[10px]">
+                <i class="fa-solid fa-share-nodes"></i>
+              </button>
+              <button onclick="event.stopPropagation(); openTaskDetailModal('${task.id}')" title="상세 열기" class="w-5 h-5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center text-[10px]">
+                <i class="fa-solid fa-expand"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Title -->
+          <div class="flex items-start gap-2 mb-2.5">
+            <span class="text-xs mt-0.5">${stIcon}</span>
+            <h4 class="text-xs font-semibold text-zinc-100 leading-snug line-clamp-2 ${task.status === 'done' ? 'line-through text-zinc-500' : ''}">${escapeHTML(task.title)}</h4>
+          </div>
+
+          <!-- Footer Info -->
+          <div class="flex items-center justify-between pt-2 border-t border-zinc-800/80 text-[10px] text-zinc-400">
+            <span class="truncate max-w-[110px]"><i class="fa-regular fa-user mr-1 text-zinc-500"></i>${escapeHTML(task.assignee_name || '미정')}</span>
+            <div class="flex items-center gap-2 text-zinc-500">
+              ${checkTotal > 0 ? `<span class="${checkDone === checkTotal ? 'text-emerald-400' : ''}"><i class="fa-solid fa-check-square mr-0.5"></i>${checkDone}/${checkTotal}</span>` : ''}
+              ${(task.files?.length || 0) > 0 ? `<span><i class="fa-solid fa-paperclip mr-0.5"></i>${task.files.length}</span>` : ''}
+              ${(task.comments?.length || 0) > 0 ? `<span><i class="fa-regular fa-comment mr-0.5"></i>${task.comments.length}</span>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMapSvgEdges(mapTasks) {
+      let paths = '';
+      const nodeW = 240;
+      const nodeH = 104;
+
+      mapTasks.forEach(target => {
+        const deps = Array.isArray(target.dependencies) ? target.dependencies : [];
+        deps.forEach(sourceId => {
+          const source = mapTasks.find(t => String(t.id) === String(sourceId));
+          if (!source) return;
+
+          const x1 = (source.pos_x || 140) + nodeW;
+          const y1 = (source.pos_y || 140) + (nodeH / 2);
+          const x2 = (target.pos_x || 140);
+          const y2 = (target.pos_y || 140) + (nodeH / 2);
+
+          const dx = Math.max(Math.abs(x2 - x1) * 0.5, 50);
+          const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+          const isDone = source.status === 'done';
+
+          paths += `
+            <path d="${d}" 
+                  class="edge-path"
+                  stroke="${isDone ? '#10b981' : '#6366f1'}" 
+                  stroke-dasharray="${isDone ? '0' : '5,5'}"
+                  marker-end="url(#${isDone ? 'arrow-done' : 'arrow-wait'})"
+                  onclick="handleRemoveDependency('${target.id}', '${source.id}')">
+              <title>클릭하여 연결 해제 (${escapeHTML(source.title)} → ${escapeHTML(target.title)})</title>
+            </path>
+          `;
+        });
+      });
+      return paths;
+    }
+
+    // Node Dragging & Clicking Logic
+    function handleNodeMouseDown(e, taskId) {
+      if (e.button !== 0 || isConnectMode || e.shiftKey) return;
+      const nodeEl = document.getElementById(`node-${taskId}`);
+      if (!nodeEl) return;
+
+      draggingTaskId = taskId;
+      const rect = nodeEl.getBoundingClientRect();
+      dragOffsetX = e.clientX - rect.left;
+      dragOffsetY = e.clientY - rect.top;
+    }
+
+    function handleCanvasMouseMove(e) {
+      if (!draggingTaskId) return;
+      const surface = document.getElementById('mapCanvasSurface');
+      const nodeEl = document.getElementById(`node-${draggingTaskId}`);
+      if (!surface || !nodeEl) return;
+
+      const surfRect = surface.getBoundingClientRect();
+      const newX = Math.max(16, Math.round(e.clientX - surfRect.left - dragOffsetX));
+      const newY = Math.max(16, Math.round(e.clientY - surfRect.top - dragOffsetY));
+
+      nodeEl.style.left = `${newX}px`;
+      nodeEl.style.top = `${newY}px`;
+
+      const task = currentTasks.find(t => String(t.id) === String(draggingTaskId));
+      if (task) {
+        task.pos_x = newX;
+        task.pos_y = newY;
+        const svg = document.getElementById('mapEdgesSvg');
+        if (svg) {
+          const mapTasks = currentTasks.filter(t => t.in_map);
+          svg.innerHTML = `
+            <defs>
+              <marker id="arrow-done" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981" /></marker>
+              <marker id="arrow-wait" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#6366f1" /></marker>
+            </defs>
+            ${renderMapSvgEdges(mapTasks)}
+          `;
+        }
+      }
+    }
+
+    async function handleCanvasMouseUp() {
+      if (!draggingTaskId) return;
+      const movedId = draggingTaskId;
+      draggingTaskId = null;
+
+      const task = currentTasks.find(t => String(t.id) === String(movedId));
+      if (task && sbClient) {
+        await sbClient.from('tasks').update({ pos_x: task.pos_x, pos_y: task.pos_y }).eq('id', task.id);
+      }
+    }
+
+    function toggleConnectMode() {
+      isConnectMode = !isConnectMode;
+      connectSourceTaskId = null;
+      renderWorkflowMapView();
+    }
+
+    function startConnectFromNode(taskId) {
+      isConnectMode = true;
+      connectSourceTaskId = taskId;
+      renderWorkflowMapView();
+      showToast('연결할 후행 업무 카드를 클릭하세요.');
+    }
+
+    async function handleNodeClick(e, taskId) {
+      if (!isConnectMode && !e.shiftKey) return;
+      e.stopPropagation();
+
+      if (!connectSourceTaskId) {
+        connectSourceTaskId = taskId;
+        renderWorkflowMapView();
+        return;
+      }
+
+      if (String(connectSourceTaskId) === String(taskId)) {
+        connectSourceTaskId = null;
+        renderWorkflowMapView();
+        return;
+      }
+
+      // Link connectSourceTaskId -> taskId
+      const targetTask = currentTasks.find(t => String(t.id) === String(taskId));
+      if (targetTask) {
+        const deps = Array.isArray(targetTask.dependencies) ? [...targetTask.dependencies] : [];
+        if (!deps.some(d => String(d) === String(connectSourceTaskId))) {
+          deps.push(connectSourceTaskId);
+          targetTask.dependencies = deps;
+          await sbClient.from('tasks').update({ dependencies: deps }).eq('id', targetTask.id);
+          showToast('업무 선후 관계가 연결되었습니다.');
+        }
+      }
+
+      connectSourceTaskId = null;
+      isConnectMode = false;
+      renderWorkflowMapView();
+    }
+
+    async function handleRemoveDependency(targetId, sourceId) {
+      const target = currentTasks.find(t => String(t.id) === String(targetId));
+      if (!target) return;
+      const deps = (target.dependencies || []).filter(d => String(d) !== String(sourceId));
+      target.dependencies = deps;
+      renderWorkflowMapView();
+      await sbClient.from('tasks').update({ dependencies: deps }).eq('id', target.id);
+      showToast('연결이 해제되었습니다.');
+    }
+
+    async function placeTaskOnMap(taskId) {
+      const task = currentTasks.find(t => String(t.id) === String(taskId));
+      if (!task) return;
+      const mapCount = currentTasks.filter(t => t.in_map).length;
+      const pos_x = 80 + (mapCount % 3) * 290;
+      const pos_y = 90 + Math.floor(mapCount / 3) * 150;
+
+      task.in_map = true;
+      task.pos_x = pos_x;
+      task.pos_y = pos_y;
+      renderWorkflowMapView();
+      await sbClient.from('tasks').update({ in_map: true, pos_x, pos_y }).eq('id', task.id);
+    }
+
     // ==========================================
-    // 4. 뷰: 프로젝트 맵 (로드맵)
+    // 4. VIEW 2: KANBAN BOARD (LINEAR STYLE)
     // ==========================================
-    function renderProjectMapView() {
-      // 4단계 표준 대학 팀플 워크플로우 맵
-      const stages = [
-        { id: 1, name: '1단계: 사전조사 & 주제설정', desc: '주제 브레인스토밍, 자료 조사, 역할 분담' },
-        { id: 2, name: '2단계: 분석 & 초안 작성', desc: '데이터 수집, 본문 파트별 초안 작성' },
-        { id: 3, name: '3단계: 산출물 제작 & 취합', desc: 'PPT 제작, 보고서 통합, 데모 개발' },
-        { id: 4, name: '4단계: 최종 검토 & 발표', desc: '교정 교열, 발표 대본 작성 및 리허설' }
+    function renderKanbanBoardView() {
+      const app = document.getElementById('appContainer');
+      const cols = [
+        { key: 'todo', title: '대기 (Todo)', dot: 'bg-zinc-500' },
+        { key: 'in_progress', title: '진행 중 (In Progress)', dot: 'bg-blue-500' },
+        { key: 'review', title: '검토 요청 (Review)', dot: 'bg-amber-500' },
+        { key: 'done', title: '완료됨 (Done)', dot: 'bg-emerald-500' }
       ];
 
-      return `
-        <div class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            ${stages.map((stg, idx) => {
-              // 등록 순서대로 단계를 균등 배분하여 맵 뷰 제공
-              const stageTasks = currentTasks.filter((_, tIdx) => (tIdx % 4) === idx);
-              const isStageDone = stageTasks.length > 0 && stageTasks.every(t => t.status === 'done');
-
+      app.innerHTML = `
+        <div class="flex-1 overflow-x-auto p-5 bg-[#09090b]">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 min-w-[900px] h-full">
+            ${cols.map(c => {
+              const list = currentTasks.filter(t => t.status === c.key);
               return `
-                <div class="glass-panel rounded-2xl p-5 relative overflow-hidden flex flex-col">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded ${isStageDone ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'}">
-                      Stage 0${stg.id}
-                    </span>
-                    ${isStageDone ? '<i class="fa-solid fa-check-double text-emerald-400 text-xs"></i>' : ''}
+                <div class="surface-panel rounded-xl flex flex-col h-full overflow-hidden">
+                  <div class="px-3.5 py-2.5 border-b border-zinc-800 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full ${c.dot}"></span>
+                      <span class="text-xs font-semibold text-zinc-200">${c.title}</span>
+                    </div>
+                    <span class="text-[11px] font-mono text-zinc-500">${list.length}</span>
                   </div>
-                  <h3 class="text-sm font-semibold text-white mb-1">${stg.name}</h3>
-                  <p class="text-[11px] text-slate-500 mb-4 leading-snug">${stg.desc}</p>
-
-                  <div class="space-y-2 flex-1 pt-2 border-t border-slate-800/80">
-                    ${stageTasks.length === 0 ? `
-                      <div class="h-16 flex items-center justify-center text-[11px] text-slate-600 border border-dashed border-slate-800/40 rounded-xl">
-                        배정된 업무 없음
-                      </div>
-                    ` : stageTasks.map(task => `
-                      <div onclick="openTaskDetailModal('${task.id}')" class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-indigo-500/40 cursor-pointer transition flex items-center justify-between gap-2">
-                        <div class="truncate">
-                          <div class="text-xs text-slate-200 truncate">${escapeHTML(task.title)}</div>
-                          <div class="text-[10px] text-slate-500 mt-0.5 flex items-center gap-1">
-                            <i class="fa-regular fa-user text-[9px]"></i> ${escapeHTML(task.assignee_name || '미정')}
-                          </div>
-                        </div>
-                        <span class="text-[9px] px-2 py-0.5 rounded font-medium badge-${task.status} whitespace-nowrap">
-                          ${task.status === 'done' ? '완료' : (task.status === 'in_progress' ? '진행' : (task.status === 'review' ? '검토' : '대기'))}
-                        </span>
-                      </div>
-                    `).join('')}
+                  <div class="flex-1 overflow-y-auto p-2.5 space-y-2">
+                    ${list.map(t => renderKanbanCard(t)).join('')}
                   </div>
                 </div>
               `;
@@ -589,18 +991,132 @@
       `;
     }
 
+    function renderKanbanCard(task) {
+      const priMap = { urgent: '긴급', high: '높음', medium: '보통', low: '낮음' };
+      const checkTotal = (task.checklist || []).length;
+      const checkDone = (task.checklist || []).filter(c => c.done).length;
+
+      return `
+        <div onclick="openTaskDetailModal('${task.id}')" class="surface-card rounded-lg p-3 cursor-pointer space-y-2">
+          <div class="flex items-center justify-between gap-1">
+            <div class="flex items-center gap-1.5">
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-semibold pri-${task.priority || 'medium'}">${priMap[task.priority || 'medium']}</span>
+              <span class="px-1.5 py-0.5 rounded text-[9px] bg-zinc-800 text-zinc-400">${escapeHTML(task.label || '일반')}</span>
+            </div>
+            ${task.in_map ? `<span class="text-[9px] text-indigo-400" title="워크플로우 맵에 배치됨"><i class="fa-solid fa-diagram-project"></i></span>` : ''}
+          </div>
+          <h4 class="text-xs font-medium text-zinc-100 leading-snug">${escapeHTML(task.title)}</h4>
+          <div class="flex items-center justify-between pt-2 border-t border-zinc-800/80 text-[10px] text-zinc-400">
+            <span><i class="fa-regular fa-user mr-1 text-zinc-500"></i>${escapeHTML(task.assignee_name || '미정')}</span>
+            <div class="flex items-center gap-2 text-zinc-500">
+              ${task.due_date ? `<span class="font-mono">${task.due_date.slice(5)}</span>` : ''}
+              ${checkTotal > 0 ? `<span><i class="fa-solid fa-check-square mr-0.5"></i>${checkDone}/${checkTotal}</span>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     // ==========================================
-    // 5. 모달 및 업무 조작 핸들러
+    // 5. VIEW 3: TEAM DOCS & WIKI (NOTION STYLE)
+    // ==========================================
+    function renderDocsWikiView() {
+      const app = document.getElementById('appContainer');
+      if (!activeDocId && currentDocs.length > 0) activeDocId = currentDocs[0].id;
+      const activeDoc = currentDocs.find(d => String(d.id) === String(activeDocId)) || null;
+
+      app.innerHTML = `
+        <div class="flex-1 flex overflow-hidden bg-[#09090b] select-text">
+          <!-- Left Docs List -->
+          <div class="w-64 border-r border-zinc-800 bg-[#0c0c0f] flex flex-col shrink-0">
+            <div class="p-3 border-b border-zinc-800 flex items-center justify-between">
+              <span class="text-xs font-semibold text-zinc-200">팀 공유 문서함</span>
+              <button onclick="handleCreateDoc()" class="px-2 py-1 rounded text-[11px] font-medium bg-indigo-600 hover:bg-indigo-500 text-white">+ 새 문서</button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-2 space-y-1">
+              ${currentDocs.map(d => `
+                <div onclick="selectDoc('${d.id}')" class="px-3 py-2 rounded-lg cursor-pointer transition flex items-center justify-between ${String(d.id) === String(activeDocId) ? 'bg-zinc-800/90 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'}">
+                  <div class="truncate">
+                    <div class="text-xs font-medium truncate">${escapeHTML(d.title)}</div>
+                    <div class="text-[10px] text-zinc-500">${escapeHTML(d.category || '문서')} · ${escapeHTML(d.updated_by || '')}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Right Doc Editor -->
+          <div class="flex-1 flex flex-col overflow-y-auto p-6 sm:p-10 max-w-4xl mx-auto w-full">
+            ${!activeDoc ? `
+              <div class="flex-1 flex items-center justify-center text-xs text-zinc-500">좌측에서 문서를 선택하거나 새 문서를 작성하세요.</div>
+            ` : `
+              <div class="flex items-center justify-between gap-2 pb-4 mb-4 border-b border-zinc-800">
+                <input type="text" id="docCategoryInput" value="${escapeHTML(activeDoc.category || '회의록')}" class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-xs text-indigo-400 w-28 font-medium">
+                <div class="flex items-center gap-2">
+                  <button onclick="handleSaveDoc('${activeDoc.id}')" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white">저장하기</button>
+                  <button onclick="handleDeleteDoc('${activeDoc.id}')" class="px-2.5 py-1.5 rounded-md text-xs text-zinc-500 hover:text-rose-400"><i class="fa-regular fa-trash-can"></i></button>
+                </div>
+              </div>
+              <input type="text" id="docTitleInput" value="${escapeHTML(activeDoc.title)}" placeholder="문서 제목" class="text-2xl font-bold text-white bg-transparent focus:outline-none mb-4">
+              <textarea id="docContentInput" placeholder="여기에 회의록, 기획안, 공용 링크나 규칙을 자유롭게 작성하세요..." class="flex-1 w-full bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-4 text-sm text-zinc-200 leading-relaxed focus:outline-none focus:border-zinc-700 resize-none min-h-[380px]">${escapeHTML(activeDoc.content || '')}</textarea>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectDoc(id) {
+      activeDocId = id;
+      renderDocsWikiView();
+    }
+
+    async function handleCreateDoc() {
+      const { data, error } = await sbClient.from('docs').insert([{
+        project_id: currentProjectId,
+        title: '새 회의록 / 문서',
+        category: '회의록',
+        content: '',
+        updated_by: currentUserName
+      }]).select().single();
+
+      if (!error && data) {
+        currentDocs.unshift(data);
+        activeDocId = data.id;
+        renderDocsWikiView();
+      }
+    }
+
+    async function handleSaveDoc(docId) {
+      const title = document.getElementById('docTitleInput').value.trim() || '제목 없음';
+      const category = document.getElementById('docCategoryInput').value.trim() || '문서';
+      const content = document.getElementById('docContentInput').value;
+
+      await sbClient.from('docs').update({
+        title, category, content, updated_by: currentUserName, updated_at: new Date().toISOString()
+      }).eq('id', docId);
+      showToast('문서가 저장되었습니다.');
+    }
+
+    async function handleDeleteDoc(docId) {
+      if (!confirm('이 문서를 삭제하시겠습니까?')) return;
+      await sbClient.from('docs').delete().eq('id', docId);
+      activeDocId = null;
+      const { data } = await sbClient.from('docs').select('*').eq('project_id', currentProjectId).order('updated_at', { ascending: false });
+      currentDocs = data || [];
+      renderDocsWikiView();
+    }
+
+    // ==========================================
+    // 6. TASK CRUD & DETAIL MODAL
     // ==========================================
     function openCreateTaskModal() {
-      const select = document.getElementById('taskAssigneeSelect');
-      select.innerHTML = '<option value="">미정 (나중에 지정)</option>' + 
-        currentMembers.map(m => `<option value="${escapeHTML(m.name)}">${escapeHTML(m.name)}</option>`).join('');
-      
+      const sel = document.getElementById('taskAssigneeSelect');
+      sel.innerHTML = '<option value="">미정</option>' + currentMembers.map(m => `<option value="${escapeHTML(m.name)}">${escapeHTML(m.name)}</option>`).join('');
       document.getElementById('taskTitleInput').value = '';
       document.getElementById('taskDescInput').value = '';
       document.getElementById('taskDueDateInput').value = '';
-      
+      document.getElementById('taskPutInMapCheck').checked = (currentView === 'map');
+
       const modal = document.getElementById('createTaskModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -609,45 +1125,32 @@
     async function handleCreateTask(e) {
       e.preventDefault();
       const title = document.getElementById('taskTitleInput').value.trim();
-      const desc = document.getElementById('taskDescInput').value.trim();
-      const assignee = document.getElementById('taskAssigneeSelect').value;
-      const dueDate = document.getElementById('taskDueDateInput').value || null;
+      const description = document.getElementById('taskDescInput').value.trim();
+      const assignee_name = document.getElementById('taskAssigneeSelect').value || null;
+      const priority = document.getElementById('taskPrioritySelect').value;
+      const label = document.getElementById('taskLabelInput').value.trim() || '일반';
+      const due_date = document.getElementById('taskDueDateInput').value || null;
+      const in_map = document.getElementById('taskPutInMapCheck').checked;
 
-      const btn = document.getElementById('createTaskSubmitBtn');
-      btn.disabled = true;
+      const mapCount = currentTasks.filter(t => t.in_map).length;
+      const pos_x = 100 + (mapCount % 3) * 280;
+      const pos_y = 100 + Math.floor(mapCount / 3) * 150;
 
-      try {
-        if (!sbClient) throw new Error('Supabase 클라이언트가 초기화되지 않았습니다.');
-        const { error } = await sbClient.from('tasks').insert([{
-          project_id: currentProjectId,
-          title: title,
-          description: desc,
-          assignee_name: assignee || null,
-          due_date: dueDate,
-          status: 'todo',
-          files: [],
-          links: [],
-          created_at: new Date().toISOString()
-        }]);
+      const { error } = await sbClient.from('tasks').insert([{
+        project_id: currentProjectId,
+        title, description, assignee_name, priority, label, due_date,
+        status: 'todo', in_map, pos_x, pos_y,
+        dependencies: [], checklist: [], comments: [], files: [], links: []
+      }]);
 
-        if (error) throw error;
-        closeModal('createTaskModal');
-        await refreshTasksOnly();
-        showToast('새 업무가 등록되었습니다.', 'success');
-      } catch (err) {
-        showToast('업무 등록 오류: ' + err.message, 'error');
-      } finally {
-        btn.disabled = false;
-      }
+      if (error) return showToast('생성 실패: ' + error.message, 'error');
+      closeModal('createTaskModal');
+      showToast(in_map ? '새 업무가 워크플로우 맵에 배치되었습니다.' : '새 업무가 트레이에 등록되었습니다.');
     }
 
     function openTaskDetailModal(taskId) {
       activeTask = currentTasks.find(t => String(t.id) === String(taskId));
-      if (!activeTask) {
-        showToast('업무 데이터를 찾을 수 없습니다.', 'error');
-        return;
-      }
-
+      if (!activeTask) return;
       renderTaskDetailModalContent();
       const modal = document.getElementById('taskDetailModal');
       modal.classList.remove('hidden');
@@ -655,202 +1158,277 @@
     }
 
     function renderTaskDetailModalContent() {
+      if (!activeTask) return;
+      const priMap = { urgent: '긴급', high: '높음', medium: '보통', low: '낮음' };
       document.getElementById('modalTaskTitle').textContent = activeTask.title;
-      document.getElementById('modalTaskDesc').textContent = activeTask.description || '(상세 설명이 없습니다)';
-      document.getElementById('modalTaskDueDate').textContent = activeTask.due_date || '미설정';
+      document.getElementById('modalTaskDesc').textContent = activeTask.description || '상세 설명이 없습니다.';
+      document.getElementById('modalTaskLabelBadge').textContent = activeTask.label || '일반';
 
-      const statusMap = { todo: '대기', in_progress: '진행 중', review: '검토 요청', done: '완료됨' };
-      const statusBadge = document.getElementById('modalTaskStatusBadge');
-      statusBadge.textContent = statusMap[activeTask.status] || '대기';
-      statusBadge.className = `text-xs px-2.5 py-1 rounded-full font-medium badge-${activeTask.status}`;
+      const priBadge = document.getElementById('modalTaskPriorityBadge');
+      priBadge.textContent = priMap[activeTask.priority || 'medium'];
+      priBadge.className = `px-2 py-0.5 rounded text-[10px] font-medium pri-${activeTask.priority || 'medium'}`;
 
-      document.getElementById('modalStatusSelect').value = activeTask.status;
+      document.getElementById('modalStatusSelect').value = activeTask.status || 'todo';
+      document.getElementById('modalPrioritySelect').value = activeTask.priority || 'medium';
 
-      const assigneeSelect = document.getElementById('modalAssigneeSelect');
-      assigneeSelect.innerHTML = '<option value="">미정</option>' + 
-        currentMembers.map(m => `<option value="${escapeHTML(m.name)}" ${m.name === activeTask.assignee_name ? 'selected' : ''}>${escapeHTML(m.name)}</option>`).join('');
+      const assSel = document.getElementById('modalAssigneeSelect');
+      assSel.innerHTML = '<option value="">미정</option>' + currentMembers.map(m => `<option value="${escapeHTML(m.name)}" ${m.name === activeTask.assignee_name ? 'selected' : ''}>${escapeHTML(m.name)}</option>`).join('');
 
-      const isAuthorized = !activeTask.assignee_name || activeTask.assignee_name === currentUserName;
-      const uploadSec = document.getElementById('uploadSection');
-      const authNotice = document.getElementById('assigneeOnlyNotice');
-
-      if (isAuthorized) {
-        uploadSec.classList.remove('opacity-40', 'pointer-events-none');
-        authNotice.classList.add('hidden');
+      const mapBtn = document.getElementById('modalMapToggleBtn');
+      if (activeTask.in_map) {
+        mapBtn.textContent = '맵에 배치됨 (트레이로 빼기)';
+        mapBtn.className = 'w-full px-2 py-1 rounded text-xs font-medium bg-indigo-500/15 text-indigo-300 border border-indigo-500/30';
       } else {
-        uploadSec.classList.add('opacity-40', 'pointer-events-none');
-        authNotice.classList.remove('hidden');
+        mapBtn.textContent = '트레이 보관중 (맵에 올리기)';
+        mapBtn.className = 'w-full px-2 py-1 rounded text-xs font-medium bg-zinc-900 text-zinc-400 border border-zinc-800';
       }
 
-      const filesContainer = document.getElementById('modalFilesList');
+      // Checklist
+      const checklist = Array.isArray(activeTask.checklist) ? activeTask.checklist : [];
+      document.getElementById('modalChecklistContainer').innerHTML = checklist.length === 0
+        ? `<div class="text-[11px] text-zinc-600">등록된 체크리스트가 없습니다.</div>`
+        : checklist.map((item, idx) => `
+          <div class="flex items-center justify-between px-2.5 py-1.5 rounded bg-zinc-900/60 border border-zinc-800/80 text-xs">
+            <label class="flex items-center gap-2 cursor-pointer flex-1">
+              <input type="checkbox" ${item.done ? 'checked' : ''} onchange="handleToggleCheckItem(${idx})" class="rounded bg-zinc-950 border-zinc-700 text-indigo-600">
+              <span class="${item.done ? 'line-through text-zinc-500' : 'text-zinc-200'}">${escapeHTML(item.text)}</span>
+            </label>
+            <button onclick="handleRemoveCheckItem(${idx})" class="text-zinc-600 hover:text-rose-400 text-[10px]"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        `).join('');
+
+      // Files & Links
       const files = activeTask.files || [];
-      filesContainer.innerHTML = files.length === 0 ? '<div class="text-xs text-slate-500 py-1">첨부된 파일이 없습니다.</div>' : files.map((f, i) => `
-        <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-xs">
-          <a href="${f.url}" target="_blank" class="text-indigo-400 hover:underline flex items-center gap-1.5 truncate max-w-[80%]">
-            <i class="fa-regular fa-file"></i> <span class="truncate">${escapeHTML(f.name)}</span>
-          </a>
-          ${isAuthorized ? `<button onclick="handleDeleteFile(${i})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-xmark"></i></button>` : ''}
+      document.getElementById('modalFilesList').innerHTML = files.map((f, i) => `
+        <div class="flex items-center justify-between px-2.5 py-1.5 rounded bg-zinc-900 border border-zinc-800 text-xs">
+          <a href="${f.url}" target="_blank" class="text-indigo-400 hover:underline truncate flex items-center gap-1.5"><i class="fa-regular fa-file"></i><span class="truncate">${escapeHTML(f.name)}</span></a>
+          <button onclick="handleDeleteFile(${i})" class="text-zinc-500 hover:text-rose-400"><i class="fa-solid fa-xmark"></i></button>
         </div>
       `).join('');
 
-      const linksContainer = document.getElementById('modalLinksList');
       const links = activeTask.links || [];
-      linksContainer.innerHTML = links.length === 0 ? '<div class="text-xs text-slate-500 py-1">첨부된 링크가 없습니다.</div>' : links.map((l, i) => `
-        <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-xs">
-          <a href="${l.url}" target="_blank" class="text-cyan-400 hover:underline flex items-center gap-1.5 truncate max-w-[80%]">
-            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> <span class="truncate">${escapeHTML(l.title || l.url)}</span>
-          </a>
-          ${isAuthorized ? `<button onclick="handleDeleteLink(${i})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-xmark"></i></button>` : ''}
+      document.getElementById('modalLinksList').innerHTML = links.map((l, i) => `
+        <div class="flex items-center justify-between px-2.5 py-1.5 rounded bg-zinc-900 border border-zinc-800 text-xs">
+          <a href="${l.url}" target="_blank" class="text-cyan-400 hover:underline truncate flex items-center gap-1.5"><i class="fa-solid fa-link text-[10px]"></i><span class="truncate">${escapeHTML(l.title || l.url)}</span></a>
+          <button onclick="handleDeleteLink(${i})" class="text-zinc-500 hover:text-rose-400"><i class="fa-solid fa-xmark"></i></button>
         </div>
       `).join('');
+
+      // Comments
+      const comments = Array.isArray(activeTask.comments) ? activeTask.comments : [];
+      document.getElementById('modalCommentsList').innerHTML = comments.length === 0
+        ? `<div class="text-[11px] text-zinc-600">아직 작성된 코멘트가 없습니다.</div>`
+        : comments.map(c => `
+          <div class="p-2.5 rounded-lg bg-zinc-900/70 border border-zinc-800/80 text-xs space-y-1">
+            <div class="flex items-center justify-between text-[10px] text-zinc-500">
+              <span class="font-semibold text-zinc-300">${escapeHTML(c.author)}</span>
+              <span>${c.time || ''}</span>
+            </div>
+            <div class="text-zinc-200">${escapeHTML(c.text)}</div>
+          </div>
+        `).join('');
     }
 
-    async function handleAssigneeChange(e) {
-      const newAssignee = e.target.value || null;
-      try {
-        if (!sbClient) return;
-        await sbClient.from('tasks').update({ assignee_name: newAssignee }).eq('id', activeTask.id);
-        activeTask.assignee_name = newAssignee;
-        await refreshTasksOnly();
-        showToast('담당자가 변경되었습니다.', 'success');
-      } catch (err) {
-        showToast('담당자 변경 실패: ' + err.message, 'error');
-      }
+    async function handleTaskFieldUpdate(field, value) {
+      if (!activeTask) return;
+      activeTask[field] = value;
+      renderTaskDetailModalContent();
+      renderActiveViewport();
+      await sbClient.from('tasks').update({ [field]: value }).eq('id', activeTask.id);
     }
 
-    async function handleStatusChange(e) {
-      const newStatus = e.target.value;
-      try {
-        if (!sbClient) return;
-        await sbClient.from('tasks').update({ status: newStatus }).eq('id', activeTask.id);
-        activeTask.status = newStatus;
-        await refreshTasksOnly();
-        showToast('상태가 업데이트되었습니다.', 'success');
-      } catch (err) {
-        showToast('상태 변경 실패: ' + err.message, 'error');
-      }
+    async function toggleActiveTaskInMap() {
+      if (!activeTask) return;
+      const next = !activeTask.in_map;
+      await handleTaskFieldUpdate('in_map', next);
+      showToast(next ? '워크플로우 맵에 배치되었습니다.' : '보관 트레이로 이동되었습니다.');
+    }
+
+    function toggleChecklistInput() {
+      const form = document.getElementById('checklistAddForm');
+      form.classList.toggle('hidden');
+      form.classList.toggle('flex');
+      if (!form.classList.contains('hidden')) document.getElementById('checklistInput').focus();
+    }
+
+    async function handleAddChecklistItem(e) {
+      e.preventDefault();
+      const input = document.getElementById('checklistInput');
+      const text = input.value.trim();
+      if (!text || !activeTask) return;
+      const list = [...(activeTask.checklist || []), { text, done: false }];
+      input.value = '';
+      await handleTaskFieldUpdate('checklist', list);
+    }
+
+    async function handleToggleCheckItem(idx) {
+      const list = [...(activeTask.checklist || [])];
+      if (!list[idx]) return;
+      list[idx].done = !list[idx].done;
+      await handleTaskFieldUpdate('checklist', list);
+    }
+
+    async function handleRemoveCheckItem(idx) {
+      const list = [...(activeTask.checklist || [])];
+      list.splice(idx, 1);
+      await handleTaskFieldUpdate('checklist', list);
+    }
+
+    async function handleAddComment(e) {
+      e.preventDefault();
+      const input = document.getElementById('commentInput');
+      const text = input.value.trim();
+      if (!text || !activeTask) return;
+      const now = new Date();
+      const time = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const comments = [...(activeTask.comments || []), { author: currentUserName, text, time }];
+      input.value = '';
+      await handleTaskFieldUpdate('comments', comments);
     }
 
     async function handleBatchFileUpload() {
       const input = document.getElementById('fileInputBatch');
       const files = Array.from(input.files);
-      if (files.length === 0) return showToast('업로드할 파일을 선택하세요.', 'error');
+      if (files.length === 0) return showToast('파일을 선택해 주세요.', 'error');
 
       const btn = document.getElementById('fileUploadBtn');
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 업로드 중...`;
+      btn.textContent = '업로드 중...';
 
       try {
-        if (!sbClient) throw new Error('Supabase 클라이언트가 초기화되지 않았습니다.');
-        const uploadedList = [...(activeTask.files || [])];
-
+        const uploaded = [...(activeTask.files || [])];
         for (const file of files) {
           const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-          const filePath = `${currentProjectId}/${activeTask.id}/${Date.now()}_${safeName}`;
-          const { error: upErr } = await sbClient.storage.from('attachments').upload(filePath, file);
-
-          if (upErr) throw new Error(`스토리지 권한 오류: ${upErr.message}`);
-
-          const { data: pubData } = sbClient.storage.from('attachments').getPublicUrl(filePath);
-          uploadedList.push({ name: file.name, url: pubData.publicUrl });
+          const path = `${currentProjectId}/${activeTask.id}/${Date.now()}_${safeName}`;
+          const { error } = await sbClient.storage.from('attachments').upload(path, file);
+          if (error) throw error;
+          const { data } = sbClient.storage.from('attachments').getPublicUrl(path);
+          uploaded.push({ name: file.name, url: data.publicUrl });
         }
-
-        await sbClient.from('tasks').update({ files: uploadedList }).eq('id', activeTask.id);
         input.value = '';
-        await refreshTasksOnly();
-        showToast('파일 업로드가 완료되었습니다.', 'success');
+        await handleTaskFieldUpdate('files', uploaded);
+        showToast('파일이 업로드되었습니다.');
       } catch (err) {
-        showToast(err.message, 'error');
+        showToast('업로드 실패: ' + err.message, 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> 파일 일괄 업로드`;
+        btn.textContent = '파일 업로드';
       }
     }
 
     async function handleAddLink() {
-      const titleInput = document.getElementById('linkTitleInput');
-      const urlInput = document.getElementById('linkUrlInput');
-      const url = urlInput.value.trim();
-      const title = titleInput.value.trim() || url;
-
-      if (!url) return showToast('링크 URL을 입력해 주세요.', 'error');
-
-      try {
-        if (!sbClient) return;
-        const links = [...(activeTask.links || []), { title, url }];
-        await sbClient.from('tasks').update({ links }).eq('id', activeTask.id);
-        titleInput.value = '';
-        urlInput.value = '';
-        await refreshTasksOnly();
-        showToast('링크가 추가되었습니다.', 'success');
-      } catch (err) {
-        showToast('링크 추가 실패: ' + err.message, 'error');
-      }
+      const tIn = document.getElementById('linkTitleInput');
+      const uIn = document.getElementById('linkUrlInput');
+      const url = uIn.value.trim();
+      const title = tIn.value.trim() || url;
+      if (!url) return;
+      const links = [...(activeTask.links || []), { title, url }];
+      tIn.value = ''; uIn.value = '';
+      await handleTaskFieldUpdate('links', links);
     }
 
-    async function handleDeleteFile(index) {
-      if (!sbClient) return;
-      const files = [...activeTask.files];
-      files.splice(index, 1);
-      await sbClient.from('tasks').update({ files }).eq('id', activeTask.id);
-      await refreshTasksOnly();
+    async function handleDeleteFile(idx) {
+      const files = [...(activeTask.files || [])];
+      files.splice(idx, 1);
+      await handleTaskFieldUpdate('files', files);
     }
 
-    async function handleDeleteLink(index) {
-      if (!sbClient) return;
-      const links = [...activeTask.links];
-      links.splice(index, 1);
-      await sbClient.from('tasks').update({ links }).eq('id', activeTask.id);
-      await refreshTasksOnly();
+    async function handleDeleteLink(idx) {
+      const links = [...(activeTask.links || [])];
+      links.splice(idx, 1);
+      await handleTaskFieldUpdate('links', links);
     }
 
     async function handleDeleteTask() {
-      if (!confirm('이 업무를 완전히 삭제하시겠습니까?')) return;
-      try {
-        if (!sbClient) return;
-        await sbClient.from('tasks').delete().eq('id', activeTask.id);
-        closeModal('taskDetailModal');
-        await refreshTasksOnly();
-        showToast('업무가 삭제되었습니다.', 'success');
-      } catch (err) {
-        showToast('업무 삭제 실패: ' + err.message, 'error');
-      }
+      if (!activeTask || !confirm('이 업무를 삭제하시겠습니까?')) return;
+      await sbClient.from('tasks').delete().eq('id', activeTask.id);
+      closeModal('taskDetailModal');
+      showToast('업무가 삭제되었습니다.');
     }
 
     // ==========================================
-    // 6. 실시간 동기화 & 유틸리티
+    // 7. REALTIME CHAT DRAWER
     // ==========================================
-    function initRealtimeSubscription() {
-      if (!sbClient || !currentProjectId) return;
-
-      sbClient
-        .channel(`project-sync-${currentProjectId}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks', filter: `project_id=eq.${currentProjectId}` }, async () => {
-          await refreshTasksOnly();
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'members', filter: `project_id=eq.${currentProjectId}` }, async () => {
-          const { data: mems } = await sbClient.from('members').select('*').eq('project_id', currentProjectId);
-          currentMembers = mems || [];
-          renderWorkspaceView();
-        })
-        .subscribe();
-    }
-
-    async function refreshTasksOnly() {
-      if (!sbClient) return;
-      const { data: ts } = await sbClient.from('tasks').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true });
-      currentTasks = ts || [];
-      renderWorkspaceView();
-
-      if (activeTask) {
-        const updated = currentTasks.find(t => String(t.id) === String(activeTask.id));
-        if (updated) {
-          activeTask = updated;
-          renderTaskDetailModalContent();
-        }
+    function toggleChatDrawer() {
+      isChatOpen = !isChatOpen;
+      const drawer = document.getElementById('chatDrawer');
+      if (isChatOpen) {
+        drawer.classList.remove('hidden');
+        drawer.classList.add('flex');
+        document.getElementById('chatUnreadDot').classList.add('hidden');
+        renderChatMessages();
+        document.getElementById('chatInput').focus();
+      } else {
+        drawer.classList.add('hidden');
+        drawer.classList.remove('flex');
       }
     }
 
+    function shareActiveTaskToChat() {
+      if (!activeTask) return;
+      chatTaskRef = { id: activeTask.id, title: activeTask.title };
+      closeModal('taskDetailModal');
+      if (!isChatOpen) toggleChatDrawer();
+      const banner = document.getElementById('chatTaskRefBanner');
+      banner.classList.remove('hidden');
+      banner.classList.add('flex');
+      document.getElementById('chatTaskRefText').textContent = `🔗 언급된 업무: ${activeTask.title}`;
+      document.getElementById('chatInput').focus();
+    }
+
+    function clearChatTaskRef() {
+      chatTaskRef = null;
+      const banner = document.getElementById('chatTaskRefBanner');
+      banner.classList.add('hidden');
+      banner.classList.remove('flex');
+    }
+
+    function renderChatMessages() {
+      const box = document.getElementById('chatMessagesList');
+      if (!box) return;
+      box.innerHTML = currentMessages.length === 0
+        ? `<div class="text-center text-[11px] text-zinc-600 py-10">팀원들과 첫 대화를 시작해 보세요!</div>`
+        : currentMessages.map(m => {
+          const isMe = m.sender_name === currentUserName;
+          return `
+            <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+              <span class="text-[10px] text-zinc-500 mb-0.5 px-1">${escapeHTML(m.sender_name)}</span>
+              <div class="max-w-[85%] rounded-xl px-3 py-2 text-xs ${isMe ? 'bg-indigo-600 text-white' : 'bg-zinc-900 border border-zinc-800 text-zinc-200'}">
+                ${m.task_ref_id ? `
+                  <div onclick="openTaskDetailModal('${m.task_ref_id}')" class="mb-1.5 px-2 py-1 rounded bg-black/30 text-[10px] text-indigo-200 cursor-pointer hover:underline flex items-center gap-1">
+                    <i class="fa-solid fa-link text-[9px]"></i> ${escapeHTML(m.task_ref_title || '업무 보기')}
+                  </div>
+                ` : ''}
+                <div>${escapeHTML(m.content)}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function handleSendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const content = input.value.trim();
+      if (!content) return;
+
+      const payload = {
+        project_id: currentProjectId,
+        sender_name: currentUserName,
+        content,
+        task_ref_id: chatTaskRef ? chatTaskRef.id : null,
+        task_ref_title: chatTaskRef ? chatTaskRef.title : null
+      };
+
+      input.value = '';
+      clearChatTaskRef();
+      await sbClient.from('messages').insert([payload]);
+    }
+
+    // ==========================================
+    // 8. UTILITIES
+    // ==========================================
     function openInviteModal() {
       const url = window.location.origin + window.location.pathname + `?p=${currentProjectId}`;
       document.getElementById('inviteUrlField').value = url;
@@ -862,36 +1440,27 @@
 
     function copyInviteUrl() {
       const input = document.getElementById('inviteUrlField');
-      input.select();
-      navigator.clipboard.writeText(input.value).then(() => {
-        showToast('초대 링크가 클립보드에 복사되었습니다.', 'success');
-      }).catch(() => {
-        document.execCommand('copy');
-        showToast('초대 링크 복사 완료', 'success');
-      });
+      navigator.clipboard.writeText(input.value);
+      showToast('초대 링크가 복사되었습니다.');
     }
 
     function closeModal(id) {
-      const modal = document.getElementById(id);
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+      const m = document.getElementById(id);
+      m.classList.add('hidden');
+      m.classList.remove('flex');
     }
 
     function showToast(msg, type = 'info') {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.className = `fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs font-medium flex items-center gap-2 transition-all duration-300 transform translate-y-0 opacity-100 ${
-        type === 'error' ? 'bg-rose-500 text-white' : 'bg-slate-800 text-indigo-300 border border-slate-700'
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-3.5 py-2 rounded-lg shadow-xl text-xs font-medium transition-all duration-200 opacity-100 ${
+        type === 'error' ? 'bg-rose-600 text-white' : 'bg-zinc-800 text-zinc-100 border border-zinc-700'
       }`;
-      setTimeout(() => {
-        toast.className = toast.className.replace('opacity-100', 'opacity-0 translate-y-2 pointer-events-none');
-      }, 2500);
+      setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); }, 2400);
     }
 
     function escapeHTML(str) {
-      return String(str || '').replace(/[&<>'"]/g, tag => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[tag] || tag));
+      return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
     }
   </script>
 </body>
