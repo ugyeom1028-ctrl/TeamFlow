@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TeamFlow — Monochrome Workspace</title>
+  <title>TeamFlow — Workspace</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000000' stroke='%23ffffff' stroke-width='4'/%3E%3Cpath d='M32 14L14 23l18 9 18-9-18-9zM14 33l18 9 18-9M14 43l18 9 18-9' fill='none' stroke='%23ffffff' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -13,135 +13,131 @@
     :root {
       --bg-pure: #000000;
       --bg-panel: #0a0a0a;
-      --bg-card: #111111;
-      --bg-hover: #171717;
-      --border-base: #242424;
-      --border-strong: #404040;
-      --text-main: #ffffff;
-      --text-sub: #a3a3a3;
-      --text-muted: #525252;
+      --bg-card: #121212;
+      --border-base: #262626;
+      --border-strong: #454545;
     }
     * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; box-sizing: border-box; }
-    body { background-color: var(--bg-pure); color: var(--text-main); overflow: hidden; height: 100vh; font-size: 14px; letter-spacing: -0.015em; }
+    body { background-color: var(--bg-pure); color: #ffffff; overflow: hidden; height: 100vh; font-size: 15px; letter-spacing: -0.015em; }
 
-    /* Stark Monochrome Surfaces */
+    /* Monochrome Surfaces */
     .mono-panel { background-color: var(--bg-panel); border: 1px solid var(--border-base); }
     .mono-card {
       background-color: var(--bg-card);
       border: 1px solid var(--border-base);
-      transition: border-color 0.12s ease, background-color 0.12s ease, transform 0.12s ease;
+      transition: border-color 0.14s ease, background-color 0.14s ease, transform 0.14s ease, box-shadow 0.14s ease;
     }
-    .mono-card:hover { border-color: var(--border-strong); background-color: #141414; }
+    .mono-card:hover { border-color: var(--border-strong); background-color: #171717; }
 
-    /* Monochrome Buttons */
+    /* Buttons */
     .btn-white { background-color: #ffffff; color: #000000; font-weight: 600; transition: background-color 0.12s ease, opacity 0.12s ease; }
     .btn-white:hover { background-color: #e5e5e5; }
     .btn-white:disabled { opacity: 0.35; cursor: not-allowed; }
-    .btn-outline { background-color: #0d0d0d; color: #e5e5e5; border: 1px solid #262626; transition: border-color 0.12s ease, background-color 0.12s ease; }
-    .btn-outline:hover { background-color: #171717; border-color: #404040; color: #ffffff; }
+    .btn-outline { background-color: #0d0d0d; color: #e5e5e5; border: 1px solid #2a2a2a; transition: border-color 0.12s ease, background-color 0.12s ease; }
+    .btn-outline:hover { background-color: #1a1a1a; border-color: #454545; color: #ffffff; }
 
-    /* Minimalist Dot Grid */
+    /* Dot Grid */
     .canvas-grid {
       background-color: #000000;
-      background-image: radial-gradient(#262626 1px, transparent 1px);
-      background-size: 24px 24px;
+      background-image: radial-gradient(#262626 1.25px, transparent 1.25px);
+      background-size: 26px 26px;
     }
 
     /* Inline Hover-to-Edit Fields */
     .inline-editable {
       border: 1px solid transparent;
-      border-radius: 6px;
-      padding: 4px 8px;
-      margin: -4px -8px;
+      border-radius: 8px;
+      padding: 6px 10px;
+      margin: -6px -10px;
       transition: border-color 0.15s ease, background-color 0.15s ease;
       cursor: text;
     }
-    .inline-editable:hover { border-color: #333333; background-color: #0f0f0f; }
-    .inline-editable:focus { border-color: #ffffff; background-color: #000000; outline: none; }
+    .inline-editable:hover { border-color: #383838; background-color: #111111; }
+    .inline-editable:focus { border-color: #ffffff; background-color: #050505; outline: none; }
 
-    /* Hide Canvas Scrollbars */
+    /* Scrollbars */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #262626; }
+    ::-webkit-scrollbar-thumb { background: #2e2e2e; border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #525252; }
 
-    /* Monochrome Priority Chips */
+    /* Priority Chips */
     .chip-urgent { background: #ffffff; color: #000000; font-weight: 700; }
-    .chip-high { background: #262626; color: #ffffff; border: 1px solid #525252; }
-    .chip-medium { background: #141414; color: #a3a3a3; border: 1px solid #262626; }
-    .chip-low { background: #0a0a0a; color: #737373; border: 1px solid #1f1f1f; }
+    .chip-high { background: #262626; color: #ffffff; border: 1px solid #525252; font-weight: 600; }
+    .chip-medium { background: #161616; color: #d4d4d4; border: 1px solid #2e2e2e; }
+    .chip-low { background: #0d0d0d; color: #8a8a8a; border: 1px solid #222222; }
 
     /* Node Canvas Styles */
     .map-node {
       position: absolute;
-      width: 280px;
+      width: 310px;
       user-select: none;
       cursor: grab;
       z-index: 10;
     }
     .map-node:active { cursor: grabbing; z-index: 30; }
-    .map-node.connect-source { border: 1.5px solid #ffffff !important; box-shadow: 0 0 0 4px rgba(255,255,255,0.12); }
+    .map-node.connect-source { border: 2px solid #ffffff !important; box-shadow: 0 0 0 5px rgba(255,255,255,0.14); }
 
     .node-port {
       position: absolute;
-      width: 9px;
-      height: 9px;
+      width: 11px;
+      height: 11px;
       border-radius: 9999px;
       background: #000000;
       border: 2px solid #ffffff;
       opacity: 0;
       transition: opacity 0.12s ease, transform 0.12s ease;
-      z-index: 20;
+      z-index: 25;
       cursor: crosshair;
     }
     .map-node:hover .node-port, .map-node.connect-source .node-port { opacity: 1; }
-    .node-port:hover { transform: scale(1.4); background: #ffffff; }
-    .port-top { top: -5px; left: calc(50% - 4.5px); }
-    .port-bottom { bottom: -5px; left: calc(50% - 4.5px); }
-    .port-left { left: -5px; top: calc(50% - 4.5px); }
-    .port-right { right: -5px; top: calc(50% - 4.5px); }
+    .node-port:hover { transform: scale(1.45); background: #ffffff; }
+    .port-top { top: -6px; left: calc(50% - 5.5px); }
+    .port-bottom { bottom: -6px; left: calc(50% - 5.5px); }
+    .port-left { left: -6px; top: calc(50% - 5.5px); }
+    .port-right { right: -6px; top: calc(50% - 5.5px); }
 
     @keyframes flowDash { to { stroke-dashoffset: -20; } }
     .edge-group { pointer-events: stroke; cursor: pointer; }
-    .edge-bg { fill: none; stroke: transparent; stroke-width: 16; }
-    .edge-line { fill: none; stroke-width: 1.75; transition: stroke-width 0.15s, stroke 0.15s; }
-    .edge-animated { stroke-dasharray: 5 5; animation: flowDash 0.8s linear infinite; }
-    .edge-group:hover .edge-line { stroke: #ffffff !important; stroke-width: 3.2; }
+    .edge-bg { fill: none; stroke: transparent; stroke-width: 18; }
+    .edge-line { fill: none; stroke-width: 2; transition: stroke-width 0.15s, stroke 0.15s; }
+    .edge-animated { stroke-dasharray: 6 5; animation: flowDash 0.8s linear infinite; }
+    .edge-group:hover .edge-line { stroke: #ffffff !important; stroke-width: 3.5; }
 
-    .dropzone-active { border-color: #ffffff !important; background-color: #141414 !important; }
+    .dropzone-active { border-color: #ffffff !important; background-color: #161616 !important; }
   </style>
 </head>
 <body class="flex flex-col select-none">
 
-  <!-- Top Navigation Header (Monochrome) -->
-  <header class="h-14 border-b border-[#222222] bg-black px-5 flex items-center justify-between shrink-0 z-30">
+  <!-- Top Navigation Header -->
+  <header class="h-16 border-b border-[#242424] bg-black px-6 flex items-center justify-between shrink-0 z-30">
     <div class="flex items-center gap-4">
-      <div onclick="goToWorkspaceHub()" class="flex items-center gap-2.5 cursor-pointer group" title="워크스페이스 허브로 이동">
-        <div class="w-7 h-7 rounded-md bg-white text-black flex items-center justify-center text-xs font-black tracking-tighter group-hover:bg-neutral-200 transition">
+      <div onclick="goToWorkspaceHub()" class="flex items-center gap-3 cursor-pointer group" title="워크스페이스 허브로 이동">
+        <div class="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center text-sm font-black tracking-tighter group-hover:bg-neutral-200 transition">
           TF
         </div>
-        <span class="font-bold text-base tracking-tight text-white">TeamFlow</span>
+        <span class="font-bold text-lg tracking-tight text-white">TeamFlow</span>
       </div>
 
-      <span id="headerDivider" class="text-neutral-700 text-sm hidden">/</span>
+      <span id="headerDivider" class="text-neutral-700 text-base hidden">/</span>
 
       <!-- Project Switcher & Main View Tabs -->
       <div id="headerProjectArea" class="items-center gap-4 hidden">
-        <button onclick="goToWorkspaceHub()" class="flex items-center gap-2 text-xs font-semibold text-neutral-200 px-3 py-1.5 rounded-md btn-outline">
+        <button onclick="goToWorkspaceHub()" class="flex items-center gap-2 text-sm font-semibold text-neutral-100 px-3.5 py-2 rounded-lg btn-outline">
           <span id="headerProjectTitle">PROJECT</span>
-          <i class="fa-solid fa-chevron-down text-[9px] text-neutral-500"></i>
+          <i class="fa-solid fa-chevron-down text-[10px] text-neutral-400"></i>
         </button>
 
-        <nav class="flex items-center bg-[#0a0a0a] p-1 rounded-lg border border-[#222222]">
-          <button onclick="switchView('map')" id="tabBtn-map" class="px-3 py-1 rounded-md text-xs font-semibold transition flex items-center gap-1.5">
+        <nav class="flex items-center bg-[#0c0c0c] p-1 rounded-xl border border-[#242424]">
+          <button onclick="switchView('map')" id="tabBtn-map" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition flex items-center gap-2">
             워크플로우 맵
           </button>
-          <button onclick="switchView('kanban')" id="tabBtn-kanban" class="px-3 py-1 rounded-md text-xs font-semibold transition flex items-center gap-1.5">
-            칸반 보드
+          <button onclick="switchView('kanban')" id="tabBtn-kanban" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+            업무 보드
           </button>
-          <button onclick="switchView('docs')" id="tabBtn-docs" class="px-3 py-1 rounded-md text-xs font-semibold transition flex items-center gap-1.5">
+          <button onclick="switchView('docs')" id="tabBtn-docs" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition flex items-center gap-2">
             팀 문서 & 공지
           </button>
         </nav>
@@ -149,51 +145,49 @@
     </div>
 
     <!-- Right Controls -->
-    <div id="headerActions" class="items-center gap-2 hidden">
-      <!-- Progress -->
-      <div class="hidden xl:flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-[#0a0a0a] border border-[#222222] text-xs">
-        <span class="text-neutral-500">PROGRESS</span>
+    <div id="headerActions" class="items-center gap-2.5 hidden">
+      <div class="hidden xl:flex items-center gap-3 px-3.5 py-2 rounded-lg bg-[#0c0c0c] border border-[#242424] text-sm">
+        <span class="text-neutral-400">달성률</span>
         <span id="headerProgressText" class="font-mono font-bold text-white">0%</span>
-        <div class="w-14 h-1 bg-neutral-800 overflow-hidden">
+        <div class="w-16 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
           <div id="headerProgressBar" class="h-full bg-white transition-all duration-300" style="width: 0%"></div>
         </div>
       </div>
 
-      <!-- #1: Assignee Personal Notification Bell -->
+      <!-- Assignee Personal Notification Bell -->
       <div class="relative">
-        <button onclick="toggleNotificationPopover()" class="px-3 py-1.5 rounded-md text-xs font-medium btn-outline flex items-center gap-1.5 relative" title="내가 설정한 업무 알림">
+        <button onclick="toggleNotificationPopover()" class="px-3.5 py-2 rounded-lg text-sm font-medium btn-outline flex items-center gap-2 relative" title="내가 설정한 업무 알림">
           <i class="fa-regular fa-bell"></i>
           <span>알림</span>
-          <span id="notifCountBadge" class="px-1.5 py-0.2 rounded-full bg-white text-black font-mono text-[10px] font-bold hidden">0</span>
+          <span id="notifCountBadge" class="px-1.5 py-0.2 rounded-full bg-white text-black font-mono text-xs font-bold hidden">0</span>
         </button>
-        <!-- Notification Popover -->
-        <div id="notifPopover" class="absolute right-0 mt-2 w-80 mono-panel rounded-lg shadow-2xl p-3 hidden z-50">
-          <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#222222] text-xs">
+        <div id="notifPopover" class="absolute right-0 mt-2 w-88 mono-panel rounded-xl shadow-2xl p-4 hidden z-50" style="width: 340px;">
+          <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-[#242424] text-sm">
             <span class="font-bold text-white">내 맞춤 알림 목록</span>
-            <span class="text-neutral-500 text-[11px]">담당자 직접 설정</span>
+            <span class="text-neutral-400 text-xs">담당자 직접 설정</span>
           </div>
-          <div id="notifPopoverList" class="space-y-1.5 max-h-64 overflow-y-auto"></div>
+          <div id="notifPopoverList" class="space-y-2 max-h-72 overflow-y-auto"></div>
         </div>
       </div>
 
-      <button onclick="openCreateTaskModal()" class="px-3.5 py-1.5 rounded-md text-xs btn-white flex items-center gap-1.5">
-        <i class="fa-solid fa-plus text-[10px]"></i> 새 업무
+      <button onclick="openCreateTaskModal('todo')" class="px-4 py-2 rounded-lg text-sm btn-white flex items-center gap-2">
+        <i class="fa-solid fa-plus text-xs"></i> 새 업무
       </button>
 
-      <button onclick="openInviteModal()" class="px-3 py-1.5 rounded-md text-xs font-medium btn-outline flex items-center gap-1.5">
+      <button onclick="openInviteModal()" class="px-3.5 py-2 rounded-lg text-sm font-medium btn-outline">
         초대
       </button>
 
-      <button onclick="toggleChatDrawer()" id="chatToggleBtn" class="px-3 py-1.5 rounded-md text-xs font-medium btn-outline flex items-center gap-1.5 relative">
-        채팅
-        <span id="chatUnreadDot" class="w-2 h-2 rounded-full bg-white absolute -top-0.5 -right-0.5 hidden"></span>
+      <button onclick="toggleChatDrawer()" id="chatToggleBtn" class="px-3.5 py-2 rounded-lg text-sm font-medium btn-outline flex items-center gap-2 relative">
+        <i class="fa-regular fa-comment-dots"></i> 채팅
+        <span id="chatUnreadDot" class="w-2.5 h-2.5 rounded-full bg-white absolute -top-1 -right-1 hidden"></span>
       </button>
 
-      <div class="h-4 w-[1px] bg-[#222222] mx-1"></div>
+      <div class="h-5 w-[1px] bg-[#242424] mx-1"></div>
 
-      <div class="flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#0a0a0a] border border-[#222222] text-xs">
-        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
-        <span id="currentUserName" class="font-medium text-neutral-200">USER</span>
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0c0c0c] border border-[#242424] text-sm">
+        <span class="w-2 h-2 rounded-full bg-white"></span>
+        <span id="currentUserName" class="font-semibold text-neutral-100">USER</span>
       </div>
     </div>
   </header>
@@ -202,37 +196,37 @@
   <div class="flex-1 flex overflow-hidden relative">
     <main id="appContainer" class="flex-1 flex flex-col overflow-hidden relative"></main>
 
-    <!-- Right Collapsible Chat Drawer -->
-    <aside id="chatDrawer" class="w-[420px] border-l border-[#222222] bg-[#050505] flex-row shrink-0 hidden z-30">
-      <div class="w-36 border-r border-[#1f1f1f] bg-black flex flex-col shrink-0">
-        <div class="p-3 border-b border-[#1f1f1f] flex items-center justify-between">
-          <span class="text-[11px] font-mono font-bold text-neutral-500 uppercase">CHANNELS</span>
-          <button onclick="handleCreateChannel()" class="text-neutral-400 hover:text-white text-xs" title="채널 추가"><i class="fa-solid fa-plus"></i></button>
+    <!-- Right Collapsible Chat Drawer (#2 Kakao/Insta Grouped Chat) -->
+    <aside id="chatDrawer" class="w-[480px] border-l border-[#242424] bg-[#060606] flex-row shrink-0 hidden z-30 shadow-2xl">
+      <div class="w-44 border-r border-[#1f1f1f] bg-black flex flex-col shrink-0">
+        <div class="p-3.5 border-b border-[#1f1f1f] flex items-center justify-between">
+          <span class="text-xs font-mono font-bold text-neutral-400 uppercase">토픽 채널</span>
+          <button onclick="handleCreateChannel()" class="w-6 h-6 rounded hover:bg-[#1a1a1a] text-neutral-300 hover:text-white text-xs flex items-center justify-center" title="채널 추가"><i class="fa-solid fa-plus"></i></button>
         </div>
-        <div id="chatChannelsList" class="p-2 space-y-0.5 overflow-y-auto max-h-52"></div>
+        <div id="chatChannelsList" class="p-2 space-y-1 overflow-y-auto max-h-56"></div>
 
-        <div class="p-3 border-t border-b border-[#1f1f1f] flex items-center justify-between mt-2">
-          <span class="text-[11px] font-mono font-bold text-neutral-500 uppercase">DIRECT MSG</span>
+        <div class="p-3.5 border-t border-b border-[#1f1f1f] flex items-center justify-between mt-2">
+          <span class="text-xs font-mono font-bold text-neutral-400 uppercase">팀원 1:1 DM</span>
         </div>
-        <div id="chatDmMembersList" class="p-2 space-y-0.5 flex-1 overflow-y-auto"></div>
+        <div id="chatDmMembersList" class="p-2 space-y-1 flex-1 overflow-y-auto"></div>
       </div>
 
       <div class="flex-1 flex flex-col overflow-hidden">
-        <div class="h-11 px-4 border-b border-[#1f1f1f] flex items-center justify-between shrink-0">
-          <span id="activeChatRoomTitle" class="text-xs font-mono font-bold text-white truncate"># 일반</span>
-          <button onclick="toggleChatDrawer()" class="text-neutral-500 hover:text-white text-xs"><i class="fa-solid fa-xmark"></i></button>
+        <div class="h-13 px-4 py-3 border-b border-[#1f1f1f] flex items-center justify-between shrink-0">
+          <span id="activeChatRoomTitle" class="text-base font-bold text-white truncate"># 일반</span>
+          <button onclick="toggleChatDrawer()" class="text-neutral-400 hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
-        <div id="chatMessagesList" class="flex-1 overflow-y-auto p-4 space-y-3 select-text"></div>
+        <div id="chatMessagesList" class="flex-1 overflow-y-auto p-4 select-text"></div>
 
-        <div id="chatTaskRefBanner" class="px-3.5 py-2 bg-[#141414] border-t border-[#262626] hidden items-center justify-between text-xs text-neutral-300">
-          <span id="chatTaskRefText" class="truncate"></span>
+        <div id="chatTaskRefBanner" class="px-4 py-2.5 bg-[#141414] border-t border-[#262626] hidden items-center justify-between text-xs text-neutral-200">
+          <span id="chatTaskRefText" class="truncate font-medium"></span>
           <button onclick="clearChatTaskRef()" class="text-neutral-400 hover:text-white ml-2"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
-        <form onsubmit="handleSendMessage(event)" class="p-3 border-t border-[#1f1f1f] bg-black flex gap-2">
-          <input type="text" id="chatInput" placeholder="메시지 입력..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-xs text-white placeholder-neutral-600 focus:outline-none focus:border-white">
-          <button type="submit" class="px-3.5 py-2 rounded-md btn-white text-xs">전송</button>
+        <form onsubmit="handleSendMessage(event)" class="p-3.5 border-t border-[#1f1f1f] bg-black flex gap-2">
+          <input type="text" id="chatInput" placeholder="메시지를 입력하세요..." class="flex-1 bg-[#0e0e0e] border border-[#2a2a2a] rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-white">
+          <button type="submit" class="px-4 py-2.5 rounded-lg btn-white text-sm">전송</button>
         </form>
       </div>
     </aside>
@@ -244,33 +238,34 @@
 
   <!-- 1. Create Task Modal -->
   <div id="createTaskModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="mono-panel w-full max-w-xl rounded-xl overflow-hidden max-h-[92vh] flex flex-col shadow-2xl">
-      <div class="px-6 py-4 border-b border-[#222222] flex items-center justify-between">
-        <h3 class="text-sm font-bold text-white uppercase tracking-wider">새 업무 생성</h3>
-        <button onclick="closeModal('createTaskModal')" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    <div class="mono-panel w-full max-w-xl rounded-2xl overflow-hidden max-h-[92vh] flex flex-col shadow-2xl">
+      <div class="px-6 py-4 border-b border-[#242424] flex items-center justify-between">
+        <h3 class="text-base font-bold text-white">새 업무 생성</h3>
+        <button onclick="closeModal('createTaskModal')" class="text-neutral-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <form onsubmit="handleCreateTask(event)" class="p-6 space-y-4 overflow-y-auto flex-1">
+        <input type="hidden" id="taskInitialStatusInput" value="todo">
         <div>
-          <label class="block text-xs font-medium text-neutral-400 mb-1.5">업무 제목 *</label>
-          <input type="text" id="taskTitleInput" required placeholder="업무 핵심 내용을 입력하세요" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3.5 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-white">
+          <label class="block text-sm font-semibold text-neutral-300 mb-1.5">업무 제목 *</label>
+          <input type="text" id="taskTitleInput" required placeholder="무엇을 해야 하나요?" class="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-base text-white placeholder-neutral-500 focus:outline-none focus:border-white">
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-neutral-400 mb-1.5">상세 설명 & 메모</label>
-          <textarea id="taskDescInput" rows="3" placeholder="요구사항이나 참고 내용을 기록하세요" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3.5 py-2.5 text-sm text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-white"></textarea>
+          <label class="block text-sm font-semibold text-neutral-300 mb-1.5">상세 설명 & 메모</label>
+          <textarea id="taskDescInput" rows="3" placeholder="세부 요구사항이나 배경 맥락을 기록하세요" class="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-white"></textarea>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div>
-            <label class="block text-[11px] text-neutral-400 mb-1">담당자</label>
-            <select id="taskAssigneeSelect" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-2 text-xs text-white focus:outline-none focus:border-white">
+            <label class="block text-xs font-medium text-neutral-400 mb-1">담당자</label>
+            <select id="taskAssigneeSelect" class="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
               <option value="">미정</option>
             </select>
           </div>
           <div>
-            <label class="block text-[11px] text-neutral-400 mb-1">우선순위</label>
-            <select id="taskPrioritySelect" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-2 text-xs text-white focus:outline-none focus:border-white">
+            <label class="block text-xs font-medium text-neutral-400 mb-1">우선순위</label>
+            <select id="taskPrioritySelect" class="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
               <option value="medium">보통</option>
               <option value="urgent">긴급</option>
               <option value="high">높음</option>
@@ -278,91 +273,86 @@
             </select>
           </div>
           <div>
-            <label class="block text-[11px] text-neutral-400 mb-1">라벨</label>
-            <input type="text" id="taskLabelInput" value="일반" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-2 text-xs text-white focus:outline-none focus:border-white">
+            <label class="block text-xs font-medium text-neutral-400 mb-1">라벨 (태그)</label>
+            <input type="text" id="taskLabelInput" value="일반" class="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
           </div>
           <div>
-            <label class="block text-[11px] text-neutral-400 mb-1">마감 기한</label>
-            <input type="date" id="taskDueDateInput" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-2 text-xs text-white focus:outline-none focus:border-white">
+            <label class="block text-xs font-medium text-neutral-400 mb-1">마감 기한</label>
+            <input type="date" id="taskDueDateInput" class="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
           </div>
         </div>
 
-        <!-- Staged Attachments -->
-        <div class="p-4 rounded-lg bg-[#070707] border border-[#222222] space-y-3">
-          <div class="text-xs font-semibold text-neutral-300 flex items-center justify-between">
+        <div class="p-4 rounded-xl bg-[#070707] border border-[#242424] space-y-3">
+          <div class="text-sm font-semibold text-neutral-200 flex items-center justify-between">
             <span>첨부 파일 & 링크 대기열</span>
-            <span class="text-[11px] text-neutral-500">여러 폴더의 파일을 모아 한 번에 등록</span>
+            <span class="text-xs text-neutral-400">여러 폴더의 파일을 하나씩 모아 등록</span>
           </div>
 
           <div>
-            <label class="inline-block px-3 py-1.5 rounded-md btn-outline text-xs cursor-pointer">
+            <label class="inline-block px-3.5 py-2 rounded-lg btn-outline text-xs font-semibold cursor-pointer">
               + 파일 선택 (대기열 추가)
               <input type="file" multiple onchange="handleStageCreationFiles(event)" class="hidden">
             </label>
           </div>
-          <div id="createStagedFilesList" class="space-y-1"></div>
+          <div id="createStagedFilesList" class="space-y-1.5"></div>
 
           <div class="flex gap-2 pt-1">
-            <input type="text" id="createLinkTitleInput" placeholder="링크 제목" class="w-1/3 bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white">
-            <input type="url" id="createLinkUrlInput" placeholder="https://..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white">
-            <button type="button" onclick="handleStageCreationLink()" class="px-3 py-1.5 rounded-md btn-outline text-xs whitespace-nowrap">+ 링크</button>
+            <input type="text" id="createLinkTitleInput" placeholder="링크 제목" class="w-1/3 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white">
+            <input type="url" id="createLinkUrlInput" placeholder="https://..." class="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white">
+            <button type="button" onclick="handleStageCreationLink()" class="px-3.5 py-2 rounded-lg btn-outline text-xs font-semibold whitespace-nowrap">+ 링크</button>
           </div>
-          <div id="createStagedLinksList" class="space-y-1"></div>
+          <div id="createStagedLinksList" class="space-y-1.5"></div>
         </div>
 
-        <div class="pt-3 flex items-center justify-between border-t border-[#222222]">
-          <label class="flex items-center gap-2 text-xs text-neutral-300 cursor-pointer">
+        <div class="pt-3 flex items-center justify-between border-t border-[#242424]">
+          <label class="flex items-center gap-2.5 text-sm text-neutral-200 cursor-pointer">
             <input type="checkbox" id="taskPutInMapCheck" class="w-4 h-4 accent-white">
             <span>생성 즉시 워크플로우 맵에 배치</span>
           </label>
           <div class="flex gap-2">
-            <button type="button" onclick="closeModal('createTaskModal')" class="px-4 py-2 rounded-md text-xs btn-outline">취소</button>
-            <button type="submit" id="createTaskSubmitBtn" class="px-5 py-2 rounded-md text-xs btn-white">생성하기</button>
+            <button type="button" onclick="closeModal('createTaskModal')" class="px-4 py-2 rounded-lg text-sm btn-outline">취소</button>
+            <button type="submit" id="createTaskSubmitBtn" class="px-5 py-2 rounded-lg text-sm btn-white">생성하기</button>
           </div>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- 2. Task Detail Modal (#1 Self-Reminder + #2 Click-to-Edit & Explicit '수정' Button) -->
+  <!-- 2. Task Detail Modal -->
   <div id="taskDetailModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="mono-panel w-full max-w-3xl rounded-xl max-h-[92vh] flex flex-col overflow-hidden select-text shadow-2xl">
-      <!-- Top Action Header -->
-      <div class="px-6 py-3.5 border-b border-[#222222] flex items-center justify-between bg-[#050505]">
-        <div class="flex items-center gap-2">
-          <span class="text-[11px] font-mono text-neutral-500">TASK DETAIL</span>
-          <span id="dirtyIndicatorBadge" class="px-2 py-0.5 rounded bg-white/10 text-white text-[11px] font-medium hidden">● 수정 중 (미저장)</span>
+    <div class="mono-panel w-full max-w-3xl rounded-2xl max-h-[92vh] flex flex-col overflow-hidden select-text shadow-2xl">
+      <div class="px-6 py-4 border-b border-[#242424] flex items-center justify-between bg-[#060606]">
+        <div class="flex items-center gap-3">
+          <span id="modalTaskIdLabel" class="text-xs font-mono text-neutral-400 px-2 py-0.5 rounded bg-[#141414] border border-[#262626]">TASK</span>
+          <span id="dirtyIndicatorBadge" class="px-2.5 py-0.5 rounded bg-white text-black text-xs font-bold hidden">● 수정됨 (미저장)</span>
         </div>
         <div class="flex items-center gap-2">
-          <!-- #2: Explicit Save ('수정') Button -->
-          <button id="saveTaskEditsBtn" onclick="handleCommitTaskEdits()" class="px-4 py-1.5 rounded-md text-xs btn-white flex items-center gap-1.5">
-            <i class="fa-solid fa-check text-[10px]"></i> 수정 적용
+          <button id="saveTaskEditsBtn" onclick="handleCommitTaskEdits()" class="px-4 py-2 rounded-lg text-sm btn-white flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-xs"></i> 수정 적용
           </button>
-          <button onclick="shareActiveTaskToChat()" class="px-3 py-1.5 rounded-md text-xs btn-outline">
+          <button onclick="shareActiveTaskToChat()" class="px-3.5 py-2 rounded-lg text-sm btn-outline">
             채팅 공유
           </button>
-          <button onclick="handleDeleteTask()" class="px-2.5 py-1.5 rounded-md text-xs btn-outline text-neutral-400 hover:text-rose-400">
+          <button onclick="handleDeleteTask()" class="px-3 py-2 rounded-lg text-sm btn-outline text-neutral-400 hover:text-rose-400">
             삭제
           </button>
-          <button onclick="closeModal('taskDetailModal')" class="text-neutral-500 hover:text-white pl-2"><i class="fa-solid fa-xmark text-lg"></i></button>
+          <button onclick="closeModal('taskDetailModal')" class="text-neutral-400 hover:text-white pl-2 text-xl"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
 
       <div class="flex-1 overflow-y-auto p-6 space-y-6">
-        <!-- #2: Hover & Click Inline Editable Title & Description -->
         <div class="space-y-3">
-          <div class="flex items-center justify-between text-[11px] text-neutral-500">
-            <span>💡 제목이나 내용을 클릭하여 수정한 뒤 상단의 [수정 적용] 버튼을 누르세요.</span>
+          <div class="text-xs text-neutral-400">
+            💡 제목, 설명, 속성을 클릭해 수정한 뒤 우측 상단 <b>[수정 적용]</b>을 누르면 반영됩니다.
           </div>
-          <input type="text" id="editTaskTitle" oninput="markTaskDetailDirty()" class="w-full text-xl font-bold text-white bg-transparent inline-editable" placeholder="업무 제목">
-          <textarea id="editTaskDesc" rows="3" oninput="markTaskDetailDirty()" class="w-full text-sm text-neutral-300 bg-transparent inline-editable leading-relaxed resize-y" placeholder="클릭하여 상세 설명을 입력하거나 수정하세요..."></textarea>
+          <input type="text" id="editTaskTitle" oninput="markTaskDetailDirty()" class="w-full text-2xl font-bold text-white bg-transparent inline-editable" placeholder="업무 제목">
+          <textarea id="editTaskDesc" rows="3" oninput="markTaskDetailDirty()" class="w-full text-base text-neutral-200 bg-transparent inline-editable leading-relaxed resize-y" placeholder="클릭하여 상세 설명을 입력하거나 수정하세요..."></textarea>
         </div>
 
-        <!-- Properties Grid (All Staged until '수정 적용' is clicked) -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-lg bg-[#050505] border border-[#222222] text-xs">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5 p-4 rounded-xl bg-[#060606] border border-[#242424]">
           <div>
-            <span class="text-[11px] text-neutral-500 block mb-1">진행 상태</span>
-            <select id="editTaskStatus" onchange="markTaskDetailDirty()" class="w-full bg-[#111111] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
+            <span class="text-xs text-neutral-400 block mb-1.5">진행 상태</span>
+            <select id="editTaskStatus" onchange="markTaskDetailDirty()" class="w-full bg-[#121212] border border-[#2c2c2c] rounded-lg px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
               <option value="todo">대기 (Todo)</option>
               <option value="in_progress">진행 중 (In Progress)</option>
               <option value="review">검토 요청 (Review)</option>
@@ -370,14 +360,14 @@
             </select>
           </div>
           <div>
-            <span class="text-[11px] text-neutral-500 block mb-1">담당자</span>
-            <select id="editTaskAssignee" onchange="markTaskDetailDirty()" class="w-full bg-[#111111] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
+            <span class="text-xs text-neutral-400 block mb-1.5">담당자</span>
+            <select id="editTaskAssignee" onchange="markTaskDetailDirty()" class="w-full bg-[#121212] border border-[#2c2c2c] rounded-lg px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
               <option value="">미정</option>
             </select>
           </div>
           <div>
-            <span class="text-[11px] text-neutral-500 block mb-1">우선순위</span>
-            <select id="editTaskPriority" onchange="markTaskDetailDirty()" class="w-full bg-[#111111] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
+            <span class="text-xs text-neutral-400 block mb-1.5">우선순위</span>
+            <select id="editTaskPriority" onchange="markTaskDetailDirty()" class="w-full bg-[#121212] border border-[#2c2c2c] rounded-lg px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
               <option value="urgent">긴급 (Urgent)</option>
               <option value="high">높음 (High)</option>
               <option value="medium">보통 (Medium)</option>
@@ -385,87 +375,85 @@
             </select>
           </div>
           <div>
-            <span class="text-[11px] text-neutral-500 block mb-1">라벨 (태그)</span>
-            <input type="text" id="editTaskLabel" oninput="markTaskDetailDirty()" class="w-full bg-[#111111] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
+            <span class="text-xs text-neutral-400 block mb-1.5">라벨 (태그)</span>
+            <input type="text" id="editTaskLabel" oninput="markTaskDetailDirty()" class="w-full bg-[#121212] border border-[#2c2c2c] rounded-lg px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
           </div>
           <div>
-            <span class="text-[11px] text-neutral-500 block mb-1">마감 기한</span>
-            <input type="date" id="editTaskDueDate" onchange="markTaskDetailDirty()" class="w-full bg-[#111111] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
+            <span class="text-xs text-neutral-400 block mb-1.5">마감 기한</span>
+            <input type="date" id="editTaskDueDate" onchange="markTaskDetailDirty()" class="w-full bg-[#121212] border border-[#2c2c2c] rounded-lg px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
           </div>
-          <!-- #1: Assignee Self-Notification Setting -->
           <div>
-            <span class="text-[11px] text-white font-semibold block mb-1"><i class="fa-regular fa-bell mr-1"></i>담당자 개인 알림 설정</span>
-            <select id="editTaskReminder" onchange="markTaskDetailDirty()" class="w-full bg-[#111111] border border-white/40 rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
-              <option value="none">알림 받기 해제</option>
-              <option value="always">상시 고정 알림 켜두기</option>
-              <option value="d_day">마감 당일 (D-Day) 알림</option>
-              <option value="d_1">마감 하루 전 (D-1) 알림</option>
-              <option value="d_3">마감 3일 전 (D-3) 알림</option>
+            <span class="text-xs text-white font-semibold block mb-1.5"><i class="fa-regular fa-bell mr-1"></i>담당자 개인 알림</span>
+            <select id="editTaskReminder" onchange="markTaskDetailDirty()" class="w-full bg-[#121212] border border-white/40 rounded-lg px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
+              <option value="none">알림 해제</option>
+              <option value="always">상시 고정 알림</option>
+              <option value="d_day">마감 당일 (D-Day)</option>
+              <option value="d_1">마감 하루 전 (D-1)</option>
+              <option value="d_3">마감 3일 전 (D-3)</option>
             </select>
           </div>
         </div>
 
-        <!-- Map Placement Toggle -->
-        <div class="flex items-center justify-between px-4 py-2.5 rounded-lg bg-[#080808] border border-[#222222] text-xs">
-          <span class="text-neutral-400">워크플로우 맵 배치 상태</span>
-          <button id="modalMapToggleBtn" onclick="toggleActiveTaskInMap()" class="px-3 py-1 rounded-md text-xs font-semibold btn-outline"></button>
+        <div class="flex items-center justify-between px-4 py-3 rounded-xl bg-[#080808] border border-[#242424] text-sm">
+          <span class="text-neutral-300">워크플로우 맵 배치 상태</span>
+          <button id="modalMapToggleBtn" onclick="toggleActiveTaskInMap()" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold btn-outline"></button>
         </div>
 
-        <!-- Sub-Checklist -->
-        <div class="space-y-2.5">
+        <!-- Checklist -->
+        <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold text-white uppercase tracking-wider">세부 체크리스트</h4>
+            <h4 class="text-sm font-bold text-white">세부 체크리스트</h4>
             <button onclick="toggleChecklistInput()" class="text-xs font-semibold text-neutral-300 hover:text-white">+ 항목 추가</button>
           </div>
 
           <form id="checklistAddForm" onsubmit="handleAddChecklistItem(event)" class="hidden gap-2">
-            <input type="text" id="checklistInput" placeholder="세부 할 일 입력 후 엔터..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-1.5 text-xs text-white focus:outline-none focus:border-white">
-            <button type="submit" class="px-3.5 py-1.5 rounded-md btn-white text-xs">추가</button>
+            <input type="text" id="checklistInput" placeholder="할 일 입력 후 엔터..." class="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-white">
+            <button type="submit" class="px-4 py-2 rounded-lg btn-white text-xs">추가</button>
           </form>
 
-          <div id="modalChecklistContainer" class="space-y-1.5"></div>
+          <div id="modalChecklistContainer" class="space-y-2"></div>
         </div>
 
-        <!-- Staged File Upload & Links -->
-        <div class="space-y-3 pt-4 border-t border-[#222222]">
+        <!-- Files & Links -->
+        <div class="space-y-3 pt-4 border-t border-[#242424]">
           <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold text-white uppercase tracking-wider">산출물 파일 & 링크</h4>
-            <span class="text-[11px] text-neutral-500">대기열에 파일을 모아서 일괄 업로드</span>
+            <h4 class="text-sm font-bold text-white">산출물 파일 & 링크</h4>
+            <span class="text-xs text-neutral-400">대기열에 파일을 모아서 일괄 업로드</span>
           </div>
 
-          <div class="p-4 rounded-lg bg-[#070707] border border-[#222222] space-y-3">
+          <div class="p-4 rounded-xl bg-[#070707] border border-[#242424] space-y-3">
             <div class="flex flex-wrap items-center gap-2">
-              <label class="px-3 py-1.5 rounded-md btn-outline text-xs cursor-pointer">
+              <label class="px-3.5 py-2 rounded-lg btn-outline text-xs font-semibold cursor-pointer">
                 + 파일 선택 (대기열 추가)
                 <input type="file" multiple onchange="handleStageDetailFiles(event)" class="hidden">
               </label>
-              <button onclick="handleUploadStagedDetailFiles()" id="detailQueueUploadBtn" class="px-4 py-1.5 rounded-md text-xs btn-white hidden">
+              <button onclick="handleUploadStagedDetailFiles()" id="detailQueueUploadBtn" class="px-4 py-2 rounded-lg text-xs btn-white hidden">
                 대기열 파일 일괄 업로드 (<span id="detailQueueCount">0</span>)
               </button>
             </div>
 
-            <div id="detailStagedFilesList" class="space-y-1"></div>
+            <div id="detailStagedFilesList" class="space-y-1.5"></div>
 
             <div class="flex gap-2 pt-2 border-t border-[#1f1f1f]">
-              <input type="text" id="linkTitleInput" placeholder="링크 제목" class="w-1/3 bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-1.5 text-xs text-white">
-              <input type="url" id="linkUrlInput" placeholder="https://..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-1.5 text-xs text-white">
-              <button onclick="handleAddLink()" class="px-3.5 py-1.5 rounded-md text-xs btn-outline whitespace-nowrap">링크 등록</button>
+              <input type="text" id="linkTitleInput" placeholder="링크 제목" class="w-1/3 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white">
+              <input type="url" id="linkUrlInput" placeholder="https://..." class="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white">
+              <button onclick="handleAddLink()" class="px-4 py-2 rounded-lg text-xs font-semibold btn-outline whitespace-nowrap">링크 등록</button>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div id="modalFilesList" class="space-y-1"></div>
-            <div id="modalLinksList" class="space-y-1"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div id="modalFilesList" class="space-y-1.5"></div>
+            <div id="modalLinksList" class="space-y-1.5"></div>
           </div>
         </div>
 
         <!-- Comments -->
-        <div class="space-y-3 pt-4 border-t border-[#222222]">
-          <h4 class="text-xs font-bold text-white uppercase tracking-wider">코멘트 & 피드백</h4>
-          <div id="modalCommentsList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+        <div class="space-y-3 pt-4 border-t border-[#242424]">
+          <h4 class="text-sm font-bold text-white">코멘트 & 피드백</h4>
+          <div id="modalCommentsList" class="space-y-2.5 max-h-56 overflow-y-auto pr-1"></div>
           <form onsubmit="handleAddComment(event)" class="flex gap-2">
-            <input type="text" id="commentInput" placeholder="피드백을 남겨주세요..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-3.5 py-2 text-xs text-white focus:outline-none focus:border-white">
-            <button type="submit" class="px-4 py-2 rounded-md btn-outline text-xs font-semibold">등록</button>
+            <input type="text" id="commentInput" placeholder="피드백을 남겨주세요..." class="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white">
+            <button type="submit" class="px-4 py-2.5 rounded-lg btn-outline text-sm font-semibold">등록</button>
           </form>
         </div>
       </div>
@@ -474,17 +462,17 @@
 
   <!-- 3. Invite Modal -->
   <div id="inviteModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="mono-panel w-full max-w-md rounded-xl p-6 shadow-2xl">
-      <div class="flex items-center justify-between pb-3 border-b border-[#222222]">
-        <h3 class="text-sm font-bold text-white">워크스페이스 초대</h3>
-        <button onclick="closeModal('inviteModal')" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    <div class="mono-panel w-full max-w-md rounded-2xl p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-3.5 border-b border-[#242424]">
+        <h3 class="text-base font-bold text-white">워크스페이스 초대</h3>
+        <button onclick="closeModal('inviteModal')" class="text-neutral-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="mt-4 space-y-4">
         <div class="flex gap-2">
-          <input type="text" id="inviteUrlField" readonly class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-xs text-neutral-200 font-mono select-all">
-          <button onclick="copyInviteUrl()" class="px-4 py-2 rounded-md text-xs btn-white whitespace-nowrap">복사</button>
+          <input type="text" id="inviteUrlField" readonly class="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3.5 py-2.5 text-sm text-neutral-200 font-mono select-all">
+          <button onclick="copyInviteUrl()" class="px-4 py-2.5 rounded-lg text-sm btn-white whitespace-nowrap">복사</button>
         </div>
-        <div class="text-xs text-neutral-500 flex justify-between pt-2 border-t border-[#1f1f1f]">
+        <div class="text-sm text-neutral-400 flex justify-between pt-2 border-t border-[#1f1f1f]">
           <span>WORKSPACE ID</span>
           <span id="inviteCodeField" class="font-mono font-bold text-white"></span>
         </div>
@@ -493,7 +481,7 @@
   </div>
 
   <!-- Toast -->
-  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-md shadow-2xl text-xs font-semibold transition-all duration-200 opacity-0 pointer-events-none"></div>
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-lg shadow-2xl text-sm font-bold transition-all duration-200 opacity-0 pointer-events-none"></div>
 
   <script>
     // ==========================================
@@ -519,6 +507,7 @@
 
     let currentView = 'map';
     let kanbanOnlyMine = true;
+    let kanbanLayoutMode = 'board'; // 'board' (Open Lane) | 'list' (Linear Horizontal List)
     let isTrayCollapsed = false;
     let isChatOpen = false;
     let activeChatChannel = '일반';
@@ -529,11 +518,14 @@
     let creationStagedLinks = [];
     let detailStagedFiles = [];
 
-    // Map & Zoom State (#3)
+    // Map & Drag State (#1 Fixed Drag vs Click Threshold)
     let canvasZoom = 1.0;
     let isConnectMode = false;
     let connectSourceTaskId = null;
     let draggingTaskId = null;
+    let dragStartClientX = 0;
+    let dragStartClientY = 0;
+    let hasNodeDragged = false;
     let dragOffsetX = 0;
     let dragOffsetY = 0;
     let isPanningCanvas = false;
@@ -545,6 +537,17 @@
     function getInitials(name) {
       if (!name) return '?';
       return name.trim().slice(0, 2).toUpperCase();
+    }
+
+    function formatChatTime(isoString) {
+      if (!isoString) return '';
+      const d = new Date(isoString);
+      if (isNaN(d.getTime())) return '';
+      let h = d.getHours();
+      const m = String(d.getMinutes()).padStart(2, '0');
+      const ampm = h >= 12 ? '오후' : '오전';
+      h = h % 12 || 12;
+      return `${ampm} ${h}:${m}`;
     }
 
     function getSavedWorkspaces() {
@@ -594,44 +597,44 @@
       app.innerHTML = `
         <div class="flex-1 overflow-y-auto p-6 sm:p-12 canvas-grid select-text">
           <div class="max-w-5xl mx-auto space-y-10">
-            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#222222] pb-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#242424] pb-6">
               <div>
-                <span class="text-[11px] font-mono uppercase tracking-widest text-neutral-500">WORKSPACE DIRECTORY</span>
+                <span class="text-xs font-mono uppercase tracking-widest text-neutral-400">WORKSPACE DIRECTORY</span>
                 <h1 class="text-3xl font-bold text-white tracking-tight mt-1">TeamFlow</h1>
               </div>
               ${currentUserName ? `
-                <div class="flex items-center gap-3 mono-panel px-3.5 py-2 rounded-md text-xs">
+                <div class="flex items-center gap-3 mono-panel px-4 py-2 rounded-lg text-sm">
                   <span class="w-2 h-2 rounded-full bg-white"></span>
                   <span class="text-white font-semibold">${escapeHTML(currentUserName)}</span>
-                  <button onclick="handleChangeGlobalUserName()" class="text-neutral-400 hover:text-white underline ml-1">이름 변경</button>
+                  <button onclick="handleChangeGlobalUserName()" class="text-neutral-400 hover:text-white underline ml-1 text-xs">이름 변경</button>
                 </div>
               ` : ''}
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
               <div class="lg:col-span-2 space-y-4">
-                <h2 class="text-xs font-mono uppercase tracking-wider text-neutral-400">내가 참여 중인 워크스페이스 (${savedList.length})</h2>
+                <h2 class="text-sm font-bold text-neutral-300">내가 참여 중인 워크스페이스 (${savedList.length})</h2>
 
                 ${savedList.length === 0 ? `
-                  <div class="mono-panel rounded-lg p-10 text-center space-y-1">
-                    <div class="text-neutral-300 text-sm font-medium">접속 기록이 있는 워크스페이스가 없습니다.</div>
-                    <div class="text-neutral-500 text-xs">우측에서 새 워크스페이스를 생성하거나 코드로 입장하세요.</div>
+                  <div class="mono-panel rounded-xl p-10 text-center space-y-1.5">
+                    <div class="text-neutral-200 text-base font-semibold">접속 기록이 있는 워크스페이스가 없습니다.</div>
+                    <div class="text-neutral-500 text-sm">우측에서 새 워크스페이스를 생성하거나 초대 코드로 합류하세요.</div>
                   </div>
                 ` : `
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     ${savedList.map(w => `
-                      <div onclick="window.location.search = '?p=${w.id}'" class="mono-card rounded-lg p-5 cursor-pointer flex flex-col justify-between gap-5 group">
+                      <div onclick="window.location.search = '?p=${w.id}'" class="mono-card rounded-xl p-5 cursor-pointer flex flex-col justify-between gap-5 group">
                         <div class="flex items-start justify-between gap-2">
                           <div>
-                            <span class="text-[11px] font-mono text-neutral-400">${w.id}</span>
-                            <h3 class="text-base font-bold text-white mt-1 group-hover:underline">${escapeHTML(w.title)}</h3>
+                            <span class="text-xs font-mono text-neutral-400">${w.id}</span>
+                            <h3 class="text-lg font-bold text-white mt-1 group-hover:underline">${escapeHTML(w.title)}</h3>
                           </div>
-                          <button onclick="event.stopPropagation(); removeWorkspaceFromLocal('${w.id}')" class="text-neutral-600 hover:text-white p-1" title="목록에서 제거">
+                          <button onclick="event.stopPropagation(); removeWorkspaceFromLocal('${w.id}')" class="text-neutral-500 hover:text-white p-1" title="목록에서 제거">
                             <i class="fa-solid fa-xmark"></i>
                           </button>
                         </div>
-                        <div class="flex items-center justify-between text-xs text-neutral-500 pt-3 border-t border-[#1f1f1f]">
-                          <span>${w.accessed_at || '-'}</span>
+                        <div class="flex items-center justify-between text-xs text-neutral-400 pt-3 border-t border-[#222222]">
+                          <span>최근 접속: ${w.accessed_at || '-'}</span>
                           <span class="text-white font-semibold">열기 →</span>
                         </div>
                       </div>
@@ -639,34 +642,34 @@
                   </div>
                 `}
 
-                <div class="mono-panel rounded-lg p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="mono-panel rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
-                    <h4 class="text-sm font-bold text-white">코드로 워크스페이스 합류</h4>
-                    <p class="text-xs text-neutral-500">전달받은 프로젝트 코드(tf-xxxxxx) 또는 URL 입력</p>
+                    <h4 class="text-base font-bold text-white">초대 코드로 합류</h4>
+                    <p class="text-sm text-neutral-400">전달받은 프로젝트 코드(tf-xxxxxx) 또는 URL 입력</p>
                   </div>
                   <form onsubmit="handleJoinByCode(event)" class="flex gap-2 w-full sm:w-auto">
-                    <input type="text" id="joinCodeInput" required placeholder="tf-xxxxxx" class="bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-xs text-white focus:outline-none focus:border-white w-full sm:w-44 font-mono">
-                    <button type="submit" class="px-4 py-2 rounded-md text-xs btn-outline whitespace-nowrap">합류</button>
+                    <input type="text" id="joinCodeInput" required placeholder="tf-xxxxxx" class="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-white w-full sm:w-48 font-mono">
+                    <button type="submit" class="px-4 py-2 rounded-lg text-sm btn-outline whitespace-nowrap">합류</button>
                   </form>
                 </div>
               </div>
 
-              <div class="mono-panel rounded-lg p-6 space-y-5">
+              <div class="mono-panel rounded-xl p-6 space-y-5">
                 <div>
-                  <span class="text-[10px] font-mono uppercase tracking-widest text-neutral-500">NEW WORKSPACE</span>
-                  <h3 class="text-base font-bold text-white mt-0.5">새 워크스페이스 개설</h3>
+                  <span class="text-xs font-mono uppercase tracking-widest text-neutral-400">NEW WORKSPACE</span>
+                  <h3 class="text-lg font-bold text-white mt-0.5">새 워크스페이스 개설</h3>
                 </div>
 
                 <form onsubmit="handleCreateProject(event)" class="space-y-4">
                   <div>
-                    <label class="block text-xs text-neutral-400 mb-1.5">워크스페이스 이름 *</label>
-                    <input type="text" id="newProjectTitle" required placeholder="예: 프로덕트 런칭 TF / 캡스톤 2팀" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+                    <label class="block text-sm text-neutral-300 mb-1.5">워크스페이스 이름 *</label>
+                    <input type="text" id="newProjectTitle" required placeholder="예: 프로덕트 런칭 TF / 캡스톤 2팀" class="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white">
                   </div>
                   <div>
-                    <label class="block text-xs text-neutral-400 mb-1.5">본인 이름 (닉네임 / 역할) *</label>
-                    <input type="text" id="newProjectLeader" required value="${escapeHTML(currentUserName || '')}" placeholder="예: 최유겸 (PM)" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+                    <label class="block text-sm text-neutral-300 mb-1.5">본인 이름 (닉네임 / 역할) *</label>
+                    <input type="text" id="newProjectLeader" required value="${escapeHTML(currentUserName || '')}" placeholder="예: 최유겸 (PM)" class="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white">
                   </div>
-                  <button type="submit" id="createProjectBtn" class="w-full py-2.5 rounded-md text-xs btn-white">
+                  <button type="submit" id="createProjectBtn" class="w-full py-3 rounded-lg text-sm btn-white">
                     워크스페이스 생성 →
                   </button>
                 </form>
@@ -739,12 +742,12 @@
       const app = document.getElementById('appContainer');
       app.innerHTML = `
         <div class="flex-1 flex flex-col items-center justify-center p-6 canvas-grid">
-          <div class="w-full max-w-sm mono-panel rounded-xl p-6">
-            <h2 class="text-base font-bold text-white mb-1">워크스페이스 입장</h2>
-            <p class="text-xs text-neutral-400 mb-4">팀원들과 협업할 본인의 이름을 입력하세요.</p>
-            <form onsubmit="handleOnboardUser(event)" class="space-y-3">
-              <input type="text" id="onboardNameInput" required placeholder="이름 (예: 김민수)" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
-              <button type="submit" class="w-full py-2.5 rounded-md text-xs btn-white">입장하기</button>
+          <div class="w-full max-w-md mono-panel rounded-2xl p-7">
+            <h2 class="text-lg font-bold text-white mb-1">워크스페이스 입장</h2>
+            <p class="text-sm text-neutral-400 mb-5">팀원들과 협업할 본인의 이름을 입력하세요.</p>
+            <form onsubmit="handleOnboardUser(event)" class="space-y-4">
+              <input type="text" id="onboardNameInput" required placeholder="이름 (예: 김민수)" class="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-base text-white focus:outline-none focus:border-white">
+              <button type="submit" class="w-full py-3 rounded-lg text-sm btn-white">입장하기</button>
             </form>
           </div>
         </div>
@@ -762,7 +765,7 @@
     }
 
     // ==========================================
-    // 2. LOAD WORKSPACE, REALTIME & NOTIFICATIONS (#1)
+    // 2. LOAD WORKSPACE & REALTIME
     // ==========================================
     async function loadWorkspace() {
       try {
@@ -805,7 +808,6 @@
       }
     }
 
-    // #1: Evaluate Assignee Custom Notifications
     function getMyActiveNotifications() {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -848,14 +850,14 @@
 
       const ruleLabel = { always: '상시 고정', d_day: 'D-Day 도래', d_1: 'D-1 임박', d_3: 'D-3 임박' };
       box.innerHTML = alerts.length === 0
-        ? `<div class="text-xs text-neutral-500 py-6 text-center">현재 활성화된 내 알림이 없습니다.<br><span class="text-[11px]">업무 상세창에서 알림 조건을 직접 설정하세요.</span></div>`
+        ? `<div class="text-sm text-neutral-500 py-6 text-center">현재 활성화된 알림이 없습니다.<br><span class="text-xs">업무 상세창에서 알림을 직접 설정하세요.</span></div>`
         : alerts.map(t => `
-          <div onclick="document.getElementById('notifPopover').classList.add('hidden'); openTaskDetailModal('${t.id}')" class="p-2.5 rounded-md bg-[#111111] hover:bg-[#1a1a1a] border border-[#262626] cursor-pointer space-y-1">
-            <div class="flex items-center justify-between text-[10px]">
-              <span class="px-1.5 py-0.5 rounded bg-white text-black font-bold">${ruleLabel[t.reminder_rule] || '알림'}</span>
+          <div onclick="document.getElementById('notifPopover').classList.add('hidden'); openTaskDetailModal('${t.id}')" class="p-3 rounded-lg bg-[#121212] hover:bg-[#1a1a1a] border border-[#262626] cursor-pointer space-y-1">
+            <div class="flex items-center justify-between text-xs">
+              <span class="px-2 py-0.5 rounded bg-white text-black font-bold">${ruleLabel[t.reminder_rule] || '알림'}</span>
               <span class="font-mono text-neutral-400">${t.due_date || '기한 미정'}</span>
             </div>
-            <div class="text-xs font-semibold text-white truncate">${escapeHTML(t.title)}</div>
+            <div class="text-sm font-semibold text-white truncate">${escapeHTML(t.title)}</div>
           </div>
         `).join('');
     }
@@ -873,9 +875,9 @@
       ['map', 'kanban', 'docs'].forEach(v => {
         const btn = document.getElementById(`tabBtn-${v}`);
         if (v === currentView) {
-          btn.className = 'px-3 py-1 rounded-md text-xs font-bold transition bg-white text-black';
+          btn.className = 'px-4 py-1.5 rounded-lg text-sm font-bold transition bg-white text-black';
         } else {
-          btn.className = 'px-3 py-1 rounded-md text-xs font-medium transition text-neutral-400 hover:text-white';
+          btn.className = 'px-4 py-1.5 rounded-lg text-sm font-medium transition text-neutral-400 hover:text-white';
         }
       });
 
@@ -896,7 +898,7 @@
 
     function initRealtimeSubscription() {
       if (!sbClient || !currentProjectId) return;
-      sbClient.channel(`tf-mono-${currentProjectId}`)
+      sbClient.channel(`tf-v4-${currentProjectId}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks', filter: `project_id=eq.${currentProjectId}` }, async () => {
           const { data } = await sbClient.from('tasks').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true });
           currentTasks = data || [];
@@ -925,11 +927,11 @@
     }
 
     // ==========================================
-    // 3. VIEW 1: MONOCHROME WORKFLOW MAP + ZOOM (#3)
+    // 3. VIEW 1: WORKFLOW MAP (#1 Fixed Node Buttons & Double-Click)
     // ==========================================
-    const NODE_WIDTH = 280;
-    const NODE_HEIGHT = 126;
-    const NODE_GAP = 24;
+    const NODE_WIDTH = 310;
+    const NODE_HEIGHT = 142;
+    const NODE_GAP = 26;
 
     function findNonOverlappingPosition(targetX, targetY, excludeTaskId) {
       let x = Math.max(40, Math.round(targetX / 12) * 12);
@@ -939,14 +941,14 @@
       let guard = 0;
       while (guard < 60) {
         const hit = others.find(o => {
-          const ox = o.pos_x || 340;
-          const oy = o.pos_y || 140;
+          const ox = o.pos_x || 360;
+          const oy = o.pos_y || 160;
           return Math.abs(x - ox) < (NODE_WIDTH + NODE_GAP) && Math.abs(y - oy) < (NODE_HEIGHT + NODE_GAP);
         });
         if (!hit) break;
-        x = (hit.pos_x || 340) + NODE_WIDTH + NODE_GAP;
-        if (x > 1800) {
-          x = 340;
+        x = (hit.pos_x || 360) + NODE_WIDTH + NODE_GAP;
+        if (x > 1900) {
+          x = 360;
           y += NODE_HEIGHT + NODE_GAP;
         }
         guard++;
@@ -959,7 +961,6 @@
       renderWorkflowMapView();
     }
 
-    // #3: Zoom Controls
     function changeCanvasZoom(delta) {
       canvasZoom = Math.min(1.5, Math.max(0.4, Math.round((canvasZoom + delta) * 10) / 10));
       applyCanvasZoomStyle();
@@ -999,28 +1000,28 @@
           <!-- Floating Left Tray -->
           <div class="absolute top-4 left-4 bottom-4 z-20 flex flex-col pointer-events-none">
             ${isTrayCollapsed ? `
-              <button onclick="toggleTrayCollapse()" class="pointer-events-auto mono-panel px-3.5 py-2 rounded-lg flex items-center gap-2 text-xs font-bold text-white hover:border-white transition">
-                <span>트레이 (${trayTasks.length})</span>
-                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+              <button onclick="toggleTrayCollapse()" class="pointer-events-auto mono-panel px-4 py-2.5 rounded-xl flex items-center gap-2.5 text-sm font-bold text-white hover:border-white transition shadow-xl">
+                <span>보관 트레이 (${trayTasks.length})</span>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
               </button>
             ` : `
-              <div class="pointer-events-auto w-68 mono-panel rounded-lg flex flex-col max-h-full overflow-hidden" style="width: 268px;">
-                <div class="p-3 border-b border-[#222222] flex items-center justify-between">
+              <div class="pointer-events-auto w-76 mono-panel rounded-xl flex flex-col max-h-full overflow-hidden shadow-2xl" style="width: 300px;">
+                <div class="p-4 border-b border-[#242424] flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-white uppercase tracking-wider">TRAY</span>
-                    <span class="text-[11px] font-mono px-1.5 py-0.2 rounded bg-[#1a1a1a] text-neutral-300">${trayTasks.length}</span>
+                    <span class="text-sm font-bold text-white">보관 트레이</span>
+                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-[#1c1c1c] text-neutral-300">${trayTasks.length}</span>
                   </div>
-                  <button onclick="toggleTrayCollapse()" class="text-neutral-500 hover:text-white text-xs"><i class="fa-solid fa-chevron-left"></i></button>
+                  <button onclick="toggleTrayCollapse()" class="text-neutral-400 hover:text-white text-sm px-1"><i class="fa-solid fa-chevron-left"></i></button>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2.5 space-y-2">
+                <div class="flex-1 overflow-y-auto p-3 space-y-2.5">
                   ${trayTasks.length === 0 ? `
-                    <div class="py-10 text-center text-xs text-neutral-600">보관된 미배치 업무 없음</div>
+                    <div class="py-12 text-center text-sm text-neutral-500">미배치 업무가 없습니다.</div>
                   ` : trayTasks.map(t => `
-                    <div class="mono-card rounded-md p-3 space-y-2">
-                      <div onclick="openTaskDetailModal('${t.id}')" class="text-xs font-semibold text-white hover:underline cursor-pointer">${escapeHTML(t.title)}</div>
+                    <div class="mono-card rounded-lg p-3.5 space-y-2.5">
+                      <div onclick="openTaskDetailModal('${t.id}')" class="text-base font-bold text-white hover:underline cursor-pointer leading-snug">${escapeHTML(t.title)}</div>
                       <div class="flex items-center justify-between pt-1">
-                        <span class="text-[11px] text-neutral-500">${escapeHTML(t.assignee_name || '미정')}</span>
-                        <button onclick="placeTaskOnMap('${t.id}')" class="px-2 py-0.5 rounded text-[11px] btn-white">배치 →</button>
+                        <span class="text-xs text-neutral-400">${escapeHTML(t.assignee_name || '미정')}</span>
+                        <button onclick="placeTaskOnMap('${t.id}')" class="px-3 py-1 rounded-md text-xs btn-white">맵에 배치 →</button>
                       </div>
                     </div>
                   `).join('')}
@@ -1029,21 +1030,20 @@
             `}
           </div>
 
-          <!-- Top-Center Floating Toolbar (Connect + Zoom #3) -->
-          <div class="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 mono-panel p-1.5 rounded-lg shadow-2xl">
-            <button onclick="toggleConnectMode()" class="px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 ${isConnectMode ? 'bg-white text-black' : 'text-neutral-300 hover:text-white'}">
-              <i class="fa-solid fa-arrow-Right-long text-[10px]"></i>
-              <span>${isConnectMode ? (connectSourceTaskId ? '후행 카드 클릭' : '선행 카드 클릭') : '화살표 연결 (Shift+클릭)'}</span>
+          <!-- Top-Center Floating Toolbar -->
+          <div class="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 mono-panel p-2 rounded-xl shadow-2xl">
+            <button onclick="toggleConnectMode()" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${isConnectMode ? 'bg-white text-black' : 'text-neutral-200 hover:text-white'}">
+              <i class="fa-solid fa-arrow-right-long text-xs"></i>
+              <span>${isConnectMode ? (connectSourceTaskId ? '후행 카드를 클릭하세요' : '선행 카드를 클릭하세요') : '화살표 연결 (Shift+클릭)'}</span>
             </button>
-            <div class="h-4 w-[1px] bg-[#222222]"></div>
-            <!-- Zoom Controls -->
-            <div class="flex items-center gap-0.5">
-              <button onclick="changeCanvasZoom(-0.1)" class="w-7 h-7 rounded hover:bg-[#1a1a1a] text-neutral-300 hover:text-white text-xs flex items-center justify-center" title="축소 (Ctrl+휠)"><i class="fa-solid fa-minus text-[10px]"></i></button>
-              <button onclick="resetCanvasZoom()" id="zoomPercentLabel" class="px-2 py-1 rounded hover:bg-[#1a1a1a] font-mono text-[11px] text-white" title="100% 초기화">${Math.round(canvasZoom * 100)}%</button>
-              <button onclick="changeCanvasZoom(0.1)" class="w-7 h-7 rounded hover:bg-[#1a1a1a] text-neutral-300 hover:text-white text-xs flex items-center justify-center" title="확대 (Ctrl+휠)"><i class="fa-solid fa-plus text-[10px]"></i></button>
+            <div class="h-4 w-[1px] bg-[#262626]"></div>
+            <div class="flex items-center gap-1">
+              <button onclick="changeCanvasZoom(-0.1)" class="w-8 h-8 rounded-lg hover:bg-[#1a1a1a] text-neutral-300 hover:text-white text-xs flex items-center justify-center" title="축소"><i class="fa-solid fa-minus"></i></button>
+              <button onclick="resetCanvasZoom()" id="zoomPercentLabel" class="px-2.5 py-1 rounded-lg hover:bg-[#1a1a1a] font-mono text-xs text-white">${Math.round(canvasZoom * 100)}%</button>
+              <button onclick="changeCanvasZoom(0.1)" class="w-8 h-8 rounded-lg hover:bg-[#1a1a1a] text-neutral-300 hover:text-white text-xs flex items-center justify-center" title="확대"><i class="fa-solid fa-plus"></i></button>
             </div>
-            <div class="h-4 w-[1px] bg-[#222222]"></div>
-            <button onclick="fitCanvasToNodes()" class="px-2.5 py-1.5 rounded-md text-xs text-neutral-400 hover:text-white transition">화면 맞춤</button>
+            <div class="h-4 w-[1px] bg-[#262626]"></div>
+            <button onclick="fitCanvasToNodes()" class="px-3 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-white transition">화면 맞춤</button>
           </div>
 
           <!-- Canvas Viewport -->
@@ -1064,7 +1064,7 @@
                     <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#ffffff" />
                   </marker>
                   <marker id="arrow-wait" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                    <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#737373" />
+                    <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#808080" />
                   </marker>
                 </defs>
                 ${renderMapSvgEdges(mapTasks)}
@@ -1075,14 +1075,14 @@
           </div>
 
           <!-- Bottom-Right Minimap -->
-          <div class="absolute bottom-4 right-4 z-20 mono-panel rounded-lg p-2.5 w-48">
-            <div class="flex items-center justify-between text-[10px] font-mono text-neutral-500 mb-1.5">
+          <div class="absolute bottom-4 right-4 z-20 mono-panel rounded-xl p-3 w-52">
+            <div class="flex items-center justify-between text-xs font-mono text-neutral-400 mb-1.5">
               <span>MINIMAP</span>
               <span>${mapTasks.length} NODES</span>
             </div>
-            <div id="minimapBox" onclick="handleMinimapClick(event)" class="relative w-full bg-black border border-[#222222] rounded overflow-hidden cursor-crosshair" style="height: 108px;">
+            <div id="minimapBox" onclick="handleMinimapClick(event)" class="relative w-full bg-black border border-[#262626] rounded-lg overflow-hidden cursor-crosshair" style="height: 112px;">
               ${renderMinimapNodes(mapTasks)}
-              <div id="minimapViewportRect" class="absolute border border-white/70 bg-white/10 pointer-events-none" style="left:0; top:0; width:40px; height:30px;"></div>
+              <div id="minimapViewportRect" class="absolute border border-white/80 bg-white/10 pointer-events-none" style="left:0; top:0; width:40px; height:30px;"></div>
             </div>
           </div>
         </div>
@@ -1099,8 +1099,8 @@
       const isBlocked = parentTasks.some(p => p.status !== 'done');
       const isSource = String(connectSourceTaskId) === String(task.id);
 
-      const priMap = { urgent: 'URGENT', high: 'HIGH', medium: 'MED', low: 'LOW' };
-      const statusLabel = { todo: 'TODO', in_progress: 'ACTIVE', review: 'REVIEW', done: 'DONE' }[task.status] || 'TODO';
+      const priMap = { urgent: '긴급', high: '높음', medium: '보통', low: '낮음' };
+      const statusLabel = { todo: '대기', in_progress: '진행 중', review: '검토', done: '완료' }[task.status] || '대기';
 
       const checkTotal = (task.checklist || []).length;
       const checkDone = (task.checklist || []).filter(c => c.done).length;
@@ -1112,47 +1112,47 @@
              onmousedown="handleNodeMouseDown(event, '${task.id}')"
              onclick="handleNodeClick(event, '${task.id}')"
              ondblclick="openTaskDetailModal('${task.id}')"
-             class="map-node mono-card rounded-lg p-3.5 group ${isSource ? 'connect-source' : ''} ${task.status === 'done' ? 'opacity-60' : ''}">
+             class="map-node mono-card rounded-xl p-4 group ${isSource ? 'connect-source' : ''} ${task.status === 'done' ? 'opacity-65' : ''}">
           
           <!-- 4-Sided Ports -->
-          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-top"></div>
-          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-right"></div>
-          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-bottom"></div>
-          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-left"></div>
+          <div onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-top" title="화살표 연결"></div>
+          <div onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-right" title="화살표 연결"></div>
+          <div onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-bottom" title="화살표 연결"></div>
+          <div onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-left" title="화살표 연결"></div>
 
-          <!-- Top Meta -->
-          <div class="flex items-center justify-between gap-1 mb-2">
-            <div class="flex items-center gap-1.5">
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono chip-${task.priority || 'medium'}">${priMap[task.priority || 'medium']}</span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] bg-[#1a1a1a] text-neutral-300">${escapeHTML(task.label || '일반')}</span>
-              ${isBlocked && task.status !== 'done' ? `<span class="text-[10px] px-1.5 py-0.5 rounded border border-neutral-600 text-neutral-300 font-mono">LOCKED</span>` : ''}
+          <!-- Top Meta & Action Buttons (#1 Fixed Event Interception) -->
+          <div class="flex items-center justify-between gap-1.5 mb-2.5">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="px-2 py-0.5 rounded text-xs chip-${task.priority || 'medium'}">${priMap[task.priority || 'medium']}</span>
+              <span class="px-2 py-0.5 rounded text-xs bg-[#1c1c1c] text-neutral-300">${escapeHTML(task.label || '일반')}</span>
+              ${isBlocked && task.status !== 'done' ? `<span class="text-xs px-2 py-0.5 rounded border border-neutral-500 text-neutral-200 font-medium">🔒 선행대기</span>` : ''}
             </div>
 
-            <div class="flex items-center gap-0.5 opacity-60 group-hover:opacity-100 transition">
-              <button onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" title="화살표 연결" class="w-5 h-5 rounded hover:bg-[#262626] text-neutral-400 hover:text-white flex items-center justify-center text-[10px]">
+            <div class="flex items-center gap-1 relative z-20" onmousedown="event.stopPropagation()">
+              <button type="button" onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" title="화살표 연결" class="w-7 h-7 rounded-lg bg-[#1a1a1a] hover:bg-white text-neutral-300 hover:text-black flex items-center justify-center text-xs transition">
                 <i class="fa-solid fa-share-nodes"></i>
               </button>
-              <button onclick="event.stopPropagation(); removeTaskFromMapToTray('${task.id}')" title="트레이로 이동" class="w-5 h-5 rounded hover:bg-[#262626] text-neutral-400 hover:text-white flex items-center justify-center text-[10px]">
+              <button type="button" onclick="event.stopPropagation(); removeTaskFromMapToTray('${task.id}')" title="트레이로 이동" class="w-7 h-7 rounded-lg bg-[#1a1a1a] hover:bg-white text-neutral-300 hover:text-black flex items-center justify-center text-xs transition">
                 <i class="fa-solid fa-inbox"></i>
               </button>
-              <button onclick="event.stopPropagation(); openTaskDetailModal('${task.id}')" title="열기" class="w-5 h-5 rounded hover:bg-[#262626] text-neutral-400 hover:text-white flex items-center justify-center text-[10px]">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              <button type="button" onclick="event.stopPropagation(); openTaskDetailModal('${task.id}')" title="상세 열기" class="w-7 h-7 rounded-lg bg-[#1a1a1a] hover:bg-white text-neutral-300 hover:text-black flex items-center justify-center text-xs transition">
+                <i class="fa-solid fa-expand"></i>
               </button>
             </div>
           </div>
 
-          <!-- Title -->
-          <div class="mb-3">
-            <h4 class="text-sm font-bold text-white leading-snug line-clamp-2 ${task.status === 'done' ? 'line-through text-neutral-500' : ''}">${escapeHTML(task.title)}</h4>
+          <!-- Title (Click or Double-click opens modal) -->
+          <div class="mb-3.5">
+            <h4 onclick="if(!isConnectMode && !hasNodeDragged) openTaskDetailModal('${task.id}')" class="text-base font-bold text-white hover:underline cursor-pointer leading-snug line-clamp-2 ${task.status === 'done' ? 'line-through text-neutral-500' : ''}">${escapeHTML(task.title)}</h4>
           </div>
 
           <!-- Footer -->
-          <div class="flex items-center justify-between pt-2 border-t border-[#1f1f1f] text-[11px]">
-            <span class="text-neutral-300 font-medium truncate max-w-[120px]">${escapeHTML(assignee)}</span>
-            <div class="flex items-center gap-2 font-mono text-[10px] text-neutral-500">
+          <div class="flex items-center justify-between pt-2.5 border-t border-[#222222] text-xs">
+            <span class="text-neutral-200 font-medium truncate max-w-[140px]">${escapeHTML(assignee)}</span>
+            <div class="flex items-center gap-2.5 font-mono text-xs text-neutral-400">
               ${task.reminder_rule && task.reminder_rule !== 'none' ? `<i class="fa-solid fa-bell text-white" title="알림 설정됨"></i>` : ''}
-              ${checkTotal > 0 ? `<span class="${checkDone === checkTotal ? 'text-white' : ''}">${checkDone}/${checkTotal}</span>` : ''}
-              <span class="px-1.5 py-0.2 rounded ${task.status === 'done' ? 'bg-white text-black font-bold' : 'bg-[#1a1a1a] text-neutral-300'}">${statusLabel}</span>
+              ${checkTotal > 0 ? `<span class="${checkDone === checkTotal ? 'text-white font-bold' : ''}">${checkDone}/${checkTotal}</span>` : ''}
+              <span class="px-2 py-0.5 rounded ${task.status === 'done' ? 'bg-white text-black font-bold' : 'bg-[#1c1c1c] text-neutral-200'}">${statusLabel}</span>
             </div>
           </div>
         </div>
@@ -1218,7 +1218,7 @@
 
           const geom = computeSmartEdgeGeometry(source, target);
           const isDone = source.status === 'done';
-          const color = isDone ? '#ffffff' : '#666666';
+          const color = isDone ? '#ffffff' : '#737373';
 
           paths += `
             <g class="edge-group" onclick="handleRemoveDependency('${target.id}', '${source.id}')">
@@ -1228,7 +1228,7 @@
                     class="edge-line ${isDone ? '' : 'edge-animated'}"
                     stroke="${color}"
                     marker-end="url(#${isDone ? 'arrow-done' : 'arrow-wait'})"></path>
-              <circle cx="${geom.x1}" cy="${geom.y1}" r="3" fill="${color}"></circle>
+              <circle cx="${geom.x1}" cy="${geom.y1}" r="3.5" fill="${color}"></circle>
             </g>
           `;
         });
@@ -1247,16 +1247,22 @@
       panScrollTop = vp.scrollTop;
     }
 
+    // #1: Ignore mousedown on buttons/ports & track real movement threshold
     function handleNodeMouseDown(e, taskId) {
       if (e.button !== 0 || isConnectMode || e.shiftKey) return;
+      if (e.target.closest('button') || e.target.closest('.node-port')) return;
       e.stopPropagation();
+
       const surface = document.getElementById('mapCanvasSurface');
       const task = currentTasks.find(t => String(t.id) === String(taskId));
       if (!surface || !task) return;
 
       draggingTaskId = taskId;
+      hasNodeDragged = false;
+      dragStartClientX = e.clientX;
+      dragStartClientY = e.clientY;
+
       const surfRect = surface.getBoundingClientRect();
-      // Adjust for canvasZoom (#3)
       dragOffsetX = (e.clientX - surfRect.left) / canvasZoom - (task.pos_x || 360);
       dragOffsetY = (e.clientY - surfRect.top) / canvasZoom - (task.pos_y || 160);
     }
@@ -1272,6 +1278,11 @@
       }
 
       if (!draggingTaskId) return;
+      if (!hasNodeDragged && Math.hypot(e.clientX - dragStartClientX, e.clientY - dragStartClientY) < 5) {
+        return;
+      }
+      hasNodeDragged = true;
+
       const surface = document.getElementById('mapCanvasSurface');
       const nodeEl = document.getElementById(`node-${draggingTaskId}`);
       if (!surface || !nodeEl) return;
@@ -1293,7 +1304,7 @@
           svg.innerHTML = `
             <defs>
               <marker id="arrow-done" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#ffffff" /></marker>
-              <marker id="arrow-wait" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#737373" /></marker>
+              <marker id="arrow-wait" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#808080" /></marker>
             </defs>
             ${renderMapSvgEdges(mapTasks)}
           `;
@@ -1304,8 +1315,13 @@
     async function handleCanvasMouseUp() {
       isPanningCanvas = false;
       if (!draggingTaskId) return;
+
       const movedId = draggingTaskId;
+      const didMove = hasNodeDragged;
       draggingTaskId = null;
+
+      // #1: If user just clicked or double-clicked without dragging, DO NOT re-render DOM!
+      if (!didMove) return;
 
       const task = currentTasks.find(t => String(t.id) === String(movedId));
       if (task) {
@@ -1317,6 +1333,7 @@
           await sbClient.from('tasks').update({ pos_x: safePos.x, pos_y: safePos.y }).eq('id', task.id);
         }
       }
+      setTimeout(() => { hasNodeDragged = false; }, 50);
     }
 
     function renderMinimapNodes(mapTasks) {
@@ -1336,8 +1353,8 @@
       const scale = 0.06 / canvasZoom;
       rect.style.left = `${Math.round(vp.scrollLeft * scale)}px`;
       rect.style.top = `${Math.round(vp.scrollTop * scale)}px`;
-      rect.style.width = `${Math.min(170, Math.round(vp.clientWidth * scale))}px`;
-      rect.style.height = `${Math.min(106, Math.round(vp.clientHeight * scale))}px`;
+      rect.style.width = `${Math.min(180, Math.round(vp.clientWidth * scale))}px`;
+      rect.style.height = `${Math.min(110, Math.round(vp.clientHeight * scale))}px`;
     }
 
     function handleMinimapClick(e) {
@@ -1358,7 +1375,7 @@
       applyCanvasZoomStyle();
       const minX = Math.min(...mapTasks.map(t => t.pos_x || 360));
       const minY = Math.min(...mapTasks.map(t => t.pos_y || 160));
-      vp.scrollTo({ left: Math.max(0, minX - 320), top: Math.max(0, minY - 100), behavior: 'smooth' });
+      vp.scrollTo({ left: Math.max(0, minX - 340), top: Math.max(0, minY - 100), behavior: 'smooth' });
     }
 
     function toggleConnectMode() {
@@ -1417,7 +1434,7 @@
     async function placeTaskOnMap(taskId) {
       const task = currentTasks.find(t => String(t.id) === String(taskId));
       if (!task) return;
-      const safePos = findNonOverlappingPosition(340, 120, task.id);
+      const safePos = findNonOverlappingPosition(360, 120, task.id);
 
       task.in_map = true;
       task.pos_x = safePos.x;
@@ -1445,20 +1462,25 @@
     }
 
     // ==========================================
-    // 4. VIEW 2: MONOCHROME KANBAN BOARD
+    // 4. VIEW 2: OPEN-LANE BOARD & LINEAR LIST VIEW (#4)
     // ==========================================
     function toggleKanbanFilter(onlyMine) {
       kanbanOnlyMine = onlyMine;
       renderKanbanBoardView();
     }
 
+    function setKanbanLayoutMode(mode) {
+      kanbanLayoutMode = mode;
+      renderKanbanBoardView();
+    }
+
     function renderKanbanBoardView() {
       const app = document.getElementById('appContainer');
       const cols = [
-        { key: 'todo', title: 'TODO (대기)' },
-        { key: 'in_progress', title: 'IN PROGRESS (진행 중)' },
-        { key: 'review', title: 'REVIEW (검토)' },
-        { key: 'done', title: 'DONE (완료)' }
+        { key: 'todo', title: '대기', sub: 'Todo', icon: 'fa-regular fa-circle text-neutral-400' },
+        { key: 'in_progress', title: '진행 중', sub: 'In Progress', icon: 'fa-solid fa-circle-half-stroke text-white' },
+        { key: 'review', title: '검토 요청', sub: 'In Review', icon: 'fa-solid fa-circle-dot text-neutral-300' },
+        { key: 'done', title: '완료됨', sub: 'Done', icon: 'fa-solid fa-circle-check text-white' }
       ];
 
       const filteredTasks = kanbanOnlyMine
@@ -1468,66 +1490,180 @@
       const myCount = currentTasks.filter(t => t.assignee_name === currentUserName).length;
 
       app.innerHTML = `
-        <div class="flex-1 flex flex-col overflow-hidden bg-black p-6">
-          <div class="flex items-center justify-between gap-4 mb-5 pb-4 border-b border-[#222222]">
+        <div class="flex-1 flex flex-col overflow-hidden bg-black">
+          <!-- Sub-Header Bar (Linear Style Filter + View Switcher) -->
+          <div class="px-8 py-4 border-b border-[#1f1f1f] flex flex-wrap items-center justify-between gap-4 bg-[#050505]">
             <div class="flex items-center gap-3">
-              <div class="flex items-center bg-[#0a0a0a] p-1 rounded-lg border border-[#222222]">
-                <button onclick="toggleKanbanFilter(true)" class="px-3.5 py-1.5 rounded-md text-xs font-bold transition ${kanbanOnlyMine ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'}">
-                  내 업무만 보기 (${myCount})
+              <div class="flex items-center bg-[#0f0f0f] p-1 rounded-xl border border-[#242424]">
+                <button onclick="toggleKanbanFilter(true)" class="px-4 py-1.5 rounded-lg text-sm font-bold transition ${kanbanOnlyMine ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'}">
+                  내 업무 (${myCount})
                 </button>
-                <button onclick="toggleKanbanFilter(false)" class="px-3.5 py-1.5 rounded-md text-xs font-bold transition ${!kanbanOnlyMine ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'}">
+                <button onclick="toggleKanbanFilter(false)" class="px-4 py-1.5 rounded-lg text-sm font-bold transition ${!kanbanOnlyMine ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'}">
                   전체 업무 (${currentTasks.length})
                 </button>
               </div>
+              <span class="text-sm text-neutral-400 hidden sm:inline">
+                ${kanbanOnlyMine ? `${escapeHTML(currentUserName)} 님의 담당 업무만 표시 중` : '프로젝트의 모든 업무 표시 중'}
+              </span>
+            </div>
+
+            <!-- Layout Switcher: Open-Lane Board vs Linear Horizontal List -->
+            <div class="flex items-center bg-[#0f0f0f] p-1 rounded-xl border border-[#242424]">
+              <button onclick="setKanbanLayoutMode('board')" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${kanbanLayoutMode === 'board' ? 'bg-[#262626] text-white' : 'text-neutral-400 hover:text-white'}">
+                <i class="fa-solid fa-table-columns text-xs"></i> 보드 뷰
+              </button>
+              <button onclick="setKanbanLayoutMode('list')" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${kanbanLayoutMode === 'list' ? 'bg-[#262626] text-white' : 'text-neutral-400 hover:text-white'}">
+                <i class="fa-solid fa-bars-staggered text-xs"></i> 리스트 뷰
+              </button>
             </div>
           </div>
 
-          <div class="flex-1 overflow-x-auto">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 min-w-[960px] h-full">
-              ${cols.map(c => {
-                const list = filteredTasks.filter(t => t.status === c.key);
-                return `
-                  <div class="mono-panel rounded-lg flex flex-col h-full overflow-hidden">
-                    <div class="px-4 py-3 border-b border-[#222222] flex items-center justify-between">
-                      <span class="text-xs font-mono font-bold text-white">${c.title}</span>
-                      <span class="text-xs font-mono text-neutral-500">${list.length}</span>
+          <!-- Content Area -->
+          ${kanbanLayoutMode === 'board' ? renderOpenLaneBoard(cols, filteredTasks) : renderLinearListView(cols, filteredTasks)}
+        </div>
+      `;
+    }
+
+    // Modern Borderless Open-Lane Board (Notion / Linear Board Style)
+    function renderOpenLaneBoard(cols, filteredTasks) {
+      return `
+        <div class="flex-1 overflow-x-auto px-8 py-6">
+          <div class="flex gap-7 min-w-max h-full items-start">
+            ${cols.map(c => {
+              const list = filteredTasks.filter(t => t.status === c.key);
+              return `
+                <div class="w-84 flex flex-col max-h-full shrink-0" style="width: 336px;">
+                  <!-- Open Lane Header (No boxy container!) -->
+                  <div class="flex items-center justify-between px-1 pb-3 mb-3 border-b border-[#242424]">
+                    <div class="flex items-center gap-2.5">
+                      <i class="${c.icon} text-sm"></i>
+                      <span class="text-base font-bold text-white">${c.title}</span>
+                      <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-[#161616] text-neutral-400 border border-[#262626]">${list.length}</span>
                     </div>
-                    <div class="flex-1 overflow-y-auto p-3 space-y-2.5">
-                      ${list.length === 0 ? `
-                        <div class="h-24 flex items-center justify-center text-xs text-neutral-600 border border-dashed border-[#1f1f1f] rounded-md">업무 없음</div>
-                      ` : list.map(t => renderKanbanCard(t)).join('')}
-                    </div>
+                    <button onclick="openCreateTaskModal('${c.key}')" class="w-7 h-7 rounded-lg hover:bg-[#1a1a1a] text-neutral-400 hover:text-white flex items-center justify-center text-xs transition" title="이 상태에 새 업무 추가">
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
                   </div>
-                `;
-              }).join('')}
-            </div>
+
+                  <!-- Cards Stream -->
+                  <div class="flex-1 overflow-y-auto space-y-3 pr-1">
+                    ${list.map(t => renderKanbanCard(t)).join('')}
+
+                    <!-- Ghost Quick-Add Button at bottom of lane -->
+                    <button onclick="openCreateTaskModal('${c.key}')" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-[#242424] hover:border-[#454545] hover:bg-[#0d0d0d] text-neutral-400 hover:text-white text-sm font-medium flex items-center gap-2 transition">
+                      <i class="fa-solid fa-plus text-xs"></i> 업무 추가
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
           </div>
         </div>
       `;
     }
 
     function renderKanbanCard(task) {
-      const priMap = { urgent: 'URGENT', high: 'HIGH', medium: 'MED', low: 'LOW' };
+      const priMap = { urgent: '긴급', high: '높음', medium: '보통', low: '낮음' };
       const checkTotal = (task.checklist || []).length;
       const checkDone = (task.checklist || []).filter(c => c.done).length;
+      const checkPct = checkTotal > 0 ? Math.round((checkDone / checkTotal) * 100) : 0;
       const assignee = task.assignee_name || '미정';
 
       return `
-        <div onclick="openTaskDetailModal('${task.id}')" class="mono-card rounded-md p-3.5 cursor-pointer space-y-2.5">
-          <div class="flex items-center justify-between">
+        <div onclick="openTaskDetailModal('${task.id}')" class="mono-card rounded-xl p-4 cursor-pointer space-y-3 group">
+          <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-1.5">
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono chip-${task.priority || 'medium'}">${priMap[task.priority || 'medium']}</span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] bg-[#1a1a1a] text-neutral-300">${escapeHTML(task.label || '일반')}</span>
+              <span class="px-2 py-0.5 rounded text-xs chip-${task.priority || 'medium'}">${priMap[task.priority || 'medium']}</span>
+              <span class="px-2 py-0.5 rounded text-xs bg-[#1c1c1c] text-neutral-300">${escapeHTML(task.label || '일반')}</span>
             </div>
-            ${task.reminder_rule && task.reminder_rule !== 'none' ? `<i class="fa-solid fa-bell text-white text-xs" title="알림 켜짐"></i>` : ''}
+            <div class="flex items-center gap-2 text-neutral-400 text-xs">
+              ${task.reminder_rule && task.reminder_rule !== 'none' ? `<i class="fa-solid fa-bell text-white" title="알림 설정됨"></i>` : ''}
+              ${task.in_map ? `<i class="fa-solid fa-diagram-project text-neutral-300" title="워크플로우 맵에 배치됨"></i>` : ''}
+            </div>
           </div>
-          <h4 class="text-sm font-bold text-white leading-snug">${escapeHTML(task.title)}</h4>
-          <div class="flex items-center justify-between pt-2 border-t border-[#1f1f1f] text-xs text-neutral-400">
-            <span>${escapeHTML(assignee)}</span>
-            <div class="flex items-center gap-2 font-mono text-[11px]">
-              ${task.due_date ? `<span>${task.due_date.slice(5)}</span>` : ''}
-              ${checkTotal > 0 ? `<span>${checkDone}/${checkTotal}</span>` : ''}
+
+          <h4 class="text-base font-bold text-white leading-snug group-hover:underline ${task.status === 'done' ? 'line-through text-neutral-500' : ''}">${escapeHTML(task.title)}</h4>
+
+          ${checkTotal > 0 ? `
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs text-neutral-400">
+                <span>체크리스트</span>
+                <span class="font-mono">${checkDone}/${checkTotal}</span>
+              </div>
+              <div class="w-full h-1 bg-[#222222] rounded-full overflow-hidden">
+                <div class="h-full bg-white transition-all" style="width: ${checkPct}%"></div>
+              </div>
             </div>
+          ` : ''}
+
+          <div class="flex items-center justify-between pt-2.5 border-t border-[#1f1f1f] text-xs">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-full bg-[#242424] text-white text-[11px] font-bold flex items-center justify-center">${escapeHTML(getInitials(assignee))}</div>
+              <span class="text-neutral-200 font-medium">${escapeHTML(assignee)}</span>
+            </div>
+            <div class="flex items-center gap-2.5 font-mono text-neutral-400">
+              ${(task.files?.length || 0) > 0 ? `<span><i class="fa-solid fa-paperclip mr-0.5"></i>${task.files.length}</span>` : ''}
+              ${(task.comments?.length || 0) > 0 ? `<span><i class="fa-regular fa-comment mr-0.5"></i>${task.comments.length}</span>` : ''}
+              ${task.due_date ? `<span class="px-2 py-0.5 rounded bg-[#181818] text-neutral-300">${task.due_date.slice(5)}</span>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Linear-Style Grouped Horizontal Row View
+    function renderLinearListView(cols, filteredTasks) {
+      const priMap = { urgent: '긴급', high: '높음', medium: '보통', low: '낮음' };
+      return `
+        <div class="flex-1 overflow-y-auto px-8 py-6">
+          <div class="max-w-6xl mx-auto space-y-8">
+            ${cols.map(c => {
+              const list = filteredTasks.filter(t => t.status === c.key);
+              return `
+                <div class="space-y-2">
+                  <!-- Section Header Bar -->
+                  <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0d0d0d] border border-[#222222]">
+                    <div class="flex items-center gap-2.5">
+                      <i class="${c.icon} text-sm"></i>
+                      <span class="text-sm font-bold text-white">${c.title}</span>
+                      <span class="text-xs font-mono text-neutral-400">${list.length}</span>
+                    </div>
+                    <button onclick="openCreateTaskModal('${c.key}')" class="text-xs font-semibold text-neutral-300 hover:text-white flex items-center gap-1">
+                      <i class="fa-solid fa-plus text-[10px]"></i> 추가
+                    </button>
+                  </div>
+
+                  <!-- Rows -->
+                  ${list.length === 0 ? `
+                    <div class="px-4 py-3 text-sm text-neutral-600">등록된 업무가 없습니다.</div>
+                  ` : `
+                    <div class="divide-y divide-[#1a1a1a] border border-[#222222] rounded-xl overflow-hidden bg-[#080808]">
+                      ${list.map(t => {
+                        const checkTotal = (t.checklist || []).length;
+                        const checkDone = (t.checklist || []).filter(x => x.done).length;
+                        return `
+                          <div onclick="openTaskDetailModal('${t.id}')" class="px-4 py-3.5 hover:bg-[#141414] cursor-pointer flex items-center justify-between gap-4 transition">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                              <span class="px-2 py-0.5 rounded text-xs shrink-0 chip-${t.priority || 'medium'}">${priMap[t.priority || 'medium']}</span>
+                              <span class="px-2 py-0.5 rounded text-xs bg-[#1c1c1c] text-neutral-300 shrink-0">${escapeHTML(t.label || '일반')}</span>
+                              <span class="text-base font-semibold text-white truncate ${t.status === 'done' ? 'line-through text-neutral-500' : ''}">${escapeHTML(t.title)}</span>
+                            </div>
+                            <div class="flex items-center gap-5 shrink-0 text-xs text-neutral-400">
+                              ${checkTotal > 0 ? `<span class="font-mono"><i class="fa-solid fa-check-square mr-1"></i>${checkDone}/${checkTotal}</span>` : ''}
+                              ${t.due_date ? `<span class="font-mono">${t.due_date}</span>` : ''}
+                              <div class="flex items-center gap-2 w-28 justify-end">
+                                <div class="w-6 h-6 rounded-full bg-[#242424] text-white text-[11px] font-bold flex items-center justify-center shrink-0">${escapeHTML(getInitials(t.assignee_name || '미정'))}</div>
+                                <span class="text-neutral-200 font-medium truncate">${escapeHTML(t.assignee_name || '미정')}</span>
+                              </div>
+                            </div>
+                          </div>
+                        `;
+                      }).join('')}
+                    </div>
+                  `}
+                </div>
+              `;
+            }).join('')}
           </div>
         </div>
       `;
@@ -1547,86 +1683,86 @@
                ondragover="handleDocDragOver(event)"
                ondragleave="handleDocDragLeave(event)"
                ondrop="handleDocDrop(event)"
-               class="w-76 border-r border-[#222222] bg-[#050505] flex flex-col shrink-0 transition" style="width: 300px;">
+               class="w-80 border-r border-[#242424] bg-[#060606] flex flex-col shrink-0 transition">
             
-            <div class="p-4 border-b border-[#222222] flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-white uppercase">DOCS & NOTICES</span>
-              <button onclick="handleCreateDoc(false)" class="px-2.5 py-1 rounded text-xs btn-white">+ 새 문서</button>
+            <div class="p-4 border-b border-[#242424] flex items-center justify-between">
+              <span class="text-sm font-bold text-white">팀 문서 & 공지함</span>
+              <button onclick="handleCreateDoc(false)" class="px-3 py-1.5 rounded-lg text-xs btn-white">+ 새 문서</button>
             </div>
 
-            <div class="mx-3 mt-3 p-3 rounded-md border border-dashed border-[#333333] bg-[#0a0a0a] text-center">
-              <div class="text-xs font-semibold text-white">파일 드래그 앤 드롭 등록</div>
-              <div class="text-[11px] text-neutral-500 mt-0.5">파일을 이곳에 놓으면 즉시 문서화됩니다.</div>
+            <div class="mx-3.5 mt-3.5 p-3.5 rounded-xl border border-dashed border-[#383838] bg-[#0c0c0c] text-center">
+              <div class="text-xs font-bold text-white">파일 드래그 앤 드롭 등록</div>
+              <div class="text-xs text-neutral-400 mt-1">파일을 이곳에 끌어다 놓으면 즉시 등록됩니다.</div>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-3 space-y-1">
+            <div class="flex-1 overflow-y-auto p-3.5 space-y-1.5">
               ${currentDocs.map(d => `
-                <div onclick="selectDoc('${d.id}')" class="p-3 rounded-md cursor-pointer transition ${String(d.id) === String(activeDocId) ? 'bg-white text-black' : 'text-neutral-400 hover:bg-[#111111] hover:text-white'}">
-                  <div class="flex items-center gap-1.5">
-                    ${d.is_pinned ? `<span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold ${String(d.id) === String(activeDocId) ? 'bg-black text-white' : 'bg-white text-black'}">PIN</span>` : ''}
-                    <span class="text-xs font-bold truncate">${escapeHTML(d.title)}</span>
+                <div onclick="selectDoc('${d.id}')" class="p-3.5 rounded-xl cursor-pointer transition ${String(d.id) === String(activeDocId) ? 'bg-white text-black' : 'text-neutral-300 hover:bg-[#141414] hover:text-white'}">
+                  <div class="flex items-center gap-2">
+                    ${d.is_pinned ? `<span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold ${String(d.id) === String(activeDocId) ? 'bg-black text-white' : 'bg-white text-black'}">공지</span>` : ''}
+                    <span class="text-sm font-bold truncate">${escapeHTML(d.title)}</span>
                   </div>
-                  <div class="text-[11px] opacity-70 mt-1">${escapeHTML(d.category || '문서')} · ${escapeHTML(d.updated_by || '')}</div>
+                  <div class="text-xs opacity-75 mt-1">${escapeHTML(d.category || '문서')} · ${escapeHTML(d.updated_by || '')}</div>
                 </div>
               `).join('')}
             </div>
           </div>
 
-          <div class="flex-1 flex flex-col overflow-y-auto p-6 sm:p-8">
+          <div class="flex-1 flex flex-col overflow-y-auto p-6 sm:p-10">
             ${!activeDoc ? `
-              <div class="flex-1 flex items-center justify-center text-xs text-neutral-500">문서를 선택하세요.</div>
+              <div class="flex-1 flex items-center justify-center text-sm text-neutral-500">좌측에서 문서를 선택하세요.</div>
             ` : `
-              <div class="max-w-3xl w-full mx-auto flex-1 flex flex-col space-y-4">
-                <div class="flex items-center justify-between gap-2 pb-4 border-b border-[#222222]">
-                  <div class="flex items-center gap-2">
-                    <input type="text" id="docCategoryInput" value="${escapeHTML(activeDoc.category || '회의록')}" class="bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-1 text-xs text-white w-28">
-                    <button onclick="handleTogglePinDoc('${activeDoc.id}')" class="px-3 py-1 rounded-md text-xs ${activeDoc.is_pinned ? 'btn-white' : 'btn-outline'}">
-                      ${activeDoc.is_pinned ? '상단 고정됨' : '상단 고정'}
+              <div class="max-w-3xl w-full mx-auto flex-1 flex flex-col space-y-5">
+                <div class="flex items-center justify-between gap-2 pb-4 border-b border-[#242424]">
+                  <div class="flex items-center gap-2.5">
+                    <input type="text" id="docCategoryInput" value="${escapeHTML(activeDoc.category || '회의록')}" class="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-1.5 text-sm text-white w-32 font-medium">
+                    <button onclick="handleTogglePinDoc('${activeDoc.id}')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold ${activeDoc.is_pinned ? 'btn-white' : 'btn-outline'}">
+                      📌 ${activeDoc.is_pinned ? '상단 공지 고정됨' : '상단 공지로 고정'}
                     </button>
                   </div>
                   <div class="flex items-center gap-2">
-                    <button onclick="handleSaveDoc('${activeDoc.id}')" class="px-4 py-1.5 rounded-md text-xs btn-white">문서 저장</button>
-                    <button onclick="handleDeleteDoc('${activeDoc.id}')" class="px-2.5 py-1.5 rounded-md text-xs btn-outline">삭제</button>
+                    <button onclick="handleSaveDoc('${activeDoc.id}')" class="px-4 py-2 rounded-lg text-sm btn-white">문서 저장</button>
+                    <button onclick="handleDeleteDoc('${activeDoc.id}')" class="px-3 py-2 rounded-lg text-sm btn-outline">삭제</button>
                   </div>
                 </div>
 
-                <input type="text" id="docTitleInput" value="${escapeHTML(activeDoc.title)}" class="text-2xl font-bold text-white bg-transparent focus:outline-none">
+                <input type="text" id="docTitleInput" value="${escapeHTML(activeDoc.title)}" class="text-2xl sm:text-3xl font-bold text-white bg-transparent focus:outline-none">
 
                 ${(activeDoc.files && activeDoc.files.length > 0) ? `
-                  <div class="flex flex-wrap gap-2 p-3 rounded-md bg-[#0a0a0a] border border-[#222222]">
+                  <div class="flex flex-wrap gap-2 p-3.5 rounded-xl bg-[#0c0c0c] border border-[#242424]">
                     ${activeDoc.files.map(f => `
-                      <a href="${f.url}" target="_blank" class="px-2.5 py-1 rounded bg-[#171717] text-xs text-white hover:underline flex items-center gap-1.5">
+                      <a href="${f.url}" target="_blank" class="px-3 py-1.5 rounded-lg bg-[#1a1a1a] text-sm text-white hover:underline flex items-center gap-2">
                         <i class="fa-regular fa-file"></i> ${escapeHTML(f.name)}
                       </a>
                     `).join('')}
                   </div>
                 ` : ''}
 
-                <textarea id="docContentInput" placeholder="내용을 입력하세요..." class="flex-1 w-full bg-[#080808] border border-[#222222] rounded-lg p-5 text-sm text-neutral-100 leading-relaxed focus:outline-none focus:border-white resize-none min-h-[420px]">${escapeHTML(activeDoc.content || '')}</textarea>
+                <textarea id="docContentInput" placeholder="내용을 입력하세요..." class="flex-1 w-full bg-[#080808] border border-[#242424] rounded-xl p-5 text-base text-neutral-100 leading-relaxed focus:outline-none focus:border-white resize-none min-h-[420px]">${escapeHTML(activeDoc.content || '')}</textarea>
               </div>
             `}
           </div>
 
           ${activeDoc ? `
-            <div class="w-72 border-l border-[#222222] bg-[#050505] p-4 flex flex-col shrink-0">
-              <div class="pb-3 mb-3 border-b border-[#222222] flex items-center justify-between">
-                <span class="text-xs font-mono font-bold text-white uppercase">AGENDA CHECKER</span>
+            <div class="w-80 border-l border-[#242424] bg-[#060606] p-4 flex flex-col shrink-0">
+              <div class="pb-3.5 mb-3.5 border-b border-[#242424] flex items-center justify-between">
+                <span class="text-sm font-bold text-white">회의 안건 체커</span>
                 <span class="text-xs font-mono text-neutral-400">
                   ${(activeDoc.agenda || []).filter(a => a.done).length}/${(activeDoc.agenda || []).length}
                 </span>
               </div>
 
-              <form onsubmit="handleAddDocAgenda(event, '${activeDoc.id}')" class="flex gap-1.5 mb-3">
-                <input type="text" id="docAgendaInput" placeholder="안건 추가..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-white">
-                <button type="submit" class="px-3 py-1.5 rounded-md btn-white text-xs">추가</button>
+              <form onsubmit="handleAddDocAgenda(event, '${activeDoc.id}')" class="flex gap-2 mb-3.5">
+                <input type="text" id="docAgendaInput" placeholder="안건 추가..." class="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+                <button type="submit" class="px-3.5 py-2 rounded-lg btn-white text-xs">추가</button>
               </form>
 
-              <div class="flex-1 overflow-y-auto space-y-1.5">
+              <div class="flex-1 overflow-y-auto space-y-2">
                 ${(activeDoc.agenda || []).map((ag, idx) => `
-                  <div class="flex items-start justify-between gap-2 p-2.5 rounded-md bg-[#0d0d0d] border border-[#222222] text-xs">
-                    <label class="flex items-start gap-2 cursor-pointer flex-1">
-                      <input type="checkbox" ${ag.done ? 'checked' : ''} onchange="handleToggleDocAgenda('${activeDoc.id}', ${idx})" class="mt-0.5 accent-white">
-                      <span class="${ag.done ? 'line-through text-neutral-500' : 'text-neutral-200'}">${escapeHTML(ag.text)}</span>
+                  <div class="flex items-start justify-between gap-2 p-3 rounded-xl bg-[#0d0d0d] border border-[#242424] text-sm">
+                    <label class="flex items-start gap-2.5 cursor-pointer flex-1">
+                      <input type="checkbox" ${ag.done ? 'checked' : ''} onchange="handleToggleDocAgenda('${activeDoc.id}', ${idx})" class="mt-1 w-4 h-4 accent-white">
+                      <span class="${ag.done ? 'line-through text-neutral-500' : 'text-neutral-100'}">${escapeHTML(ag.text)}</span>
                     </label>
                     <button onclick="handleRemoveDocAgenda('${activeDoc.id}', ${idx})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
                   </div>
@@ -1763,9 +1899,10 @@
     // ==========================================
     // 6. TASK CREATION & STAGED FILE QUEUE
     // ==========================================
-    function openCreateTaskModal() {
+    function openCreateTaskModal(defaultStatus = 'todo') {
       const sel = document.getElementById('taskAssigneeSelect');
       sel.innerHTML = '<option value="">미정</option>' + currentMembers.map(m => `<option value="${escapeHTML(m.name)}">${escapeHTML(m.name)}</option>`).join('');
+      document.getElementById('taskInitialStatusInput').value = defaultStatus || 'todo';
       document.getElementById('taskTitleInput').value = '';
       document.getElementById('taskDescInput').value = '';
       document.getElementById('taskDueDateInput').value = '';
@@ -1778,6 +1915,7 @@
       const modal = document.getElementById('createTaskModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
+      setTimeout(() => document.getElementById('taskTitleInput').focus(), 50);
     }
 
     function handleStageCreationFiles(e) {
@@ -1801,16 +1939,16 @@
 
     function renderCreationStagedLists() {
       document.getElementById('createStagedFilesList').innerHTML = creationStagedFiles.map((f, i) => `
-        <div class="flex items-center justify-between px-2.5 py-1 rounded bg-[#141414] border border-[#262626] text-xs">
+        <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#141414] border border-[#2a2a2a] text-xs">
           <span class="text-white truncate">${escapeHTML(f.name)}</span>
-          <button type="button" onclick="removeStagedCreationFile(${i})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+          <button type="button" onclick="removeStagedCreationFile(${i})" class="text-neutral-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
       `).join('');
 
       document.getElementById('createStagedLinksList').innerHTML = creationStagedLinks.map((l, i) => `
-        <div class="flex items-center justify-between px-2.5 py-1 rounded bg-[#141414] border border-[#262626] text-xs">
-          <span class="text-neutral-300 truncate">${escapeHTML(l.title)}</span>
-          <button type="button" onclick="removeStagedCreationLink(${i})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#141414] border border-[#2a2a2a] text-xs">
+          <span class="text-neutral-200 truncate">${escapeHTML(l.title)}</span>
+          <button type="button" onclick="removeStagedCreationLink(${i})" class="text-neutral-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
       `).join('');
     }
@@ -1829,8 +1967,9 @@
         const label = document.getElementById('taskLabelInput').value.trim() || '일반';
         const due_date = document.getElementById('taskDueDateInput').value || null;
         const in_map = document.getElementById('taskPutInMapCheck').checked;
+        const status = document.getElementById('taskInitialStatusInput').value || 'todo';
 
-        const safePos = findNonOverlappingPosition(340, 140, null);
+        const safePos = findNonOverlappingPosition(360, 140, null);
 
         const uploadedFiles = [];
         for (const file of creationStagedFiles) {
@@ -1846,7 +1985,7 @@
         const { error } = await sbClient.from('tasks').insert([{
           project_id: currentProjectId,
           title, description, assignee_name, priority, label, due_date,
-          status: 'todo', in_map, pos_x: safePos.x, pos_y: safePos.y,
+          status, in_map, pos_x: safePos.x, pos_y: safePos.y,
           reminder_rule: 'none',
           dependencies: [], checklist: [], comments: [],
           files: uploadedFiles,
@@ -1865,7 +2004,7 @@
     }
 
     // ==========================================
-    // 7. TASK DETAIL MODAL (#1 Self-Reminder & #2 Explicit '수정 적용' Button)
+    // 7. TASK DETAIL MODAL
     // ==========================================
     function openTaskDetailModal(taskId) {
       activeTask = currentTasks.find(t => String(t.id) === String(taskId));
@@ -1883,7 +2022,6 @@
       document.getElementById('dirtyIndicatorBadge')?.classList.remove('hidden');
     }
 
-    // #2: Commit Edits ONLY when '수정 적용' button is clicked
     async function handleCommitTaskEdits() {
       if (!activeTask) return;
       const btn = document.getElementById('saveTaskEditsBtn');
@@ -1915,13 +2053,14 @@
         showToast('수정 실패: ' + err.message, 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-check text-[10px]"></i> 수정 적용`;
+        btn.innerHTML = `<i class="fa-solid fa-check text-xs"></i> 수정 적용`;
       }
     }
 
     function renderTaskDetailModalContent() {
       if (!activeTask) return;
       document.getElementById('dirtyIndicatorBadge')?.classList.add('hidden');
+      document.getElementById('modalTaskIdLabel').textContent = `TASK #${activeTask.id}`;
 
       document.getElementById('editTaskTitle').value = activeTask.title || '';
       document.getElementById('editTaskDesc').value = activeTask.description || '';
@@ -1935,16 +2074,16 @@
       assSel.innerHTML = '<option value="">미정</option>' + currentMembers.map(m => `<option value="${escapeHTML(m.name)}" ${m.name === activeTask.assignee_name ? 'selected' : ''}>${escapeHTML(m.name)}</option>`).join('');
 
       const mapBtn = document.getElementById('modalMapToggleBtn');
-      mapBtn.textContent = activeTask.in_map ? '맵에 배치됨 (트레이로 빼기)' : '트레이 보관중 (맵에 배치)';
+      mapBtn.textContent = activeTask.in_map ? '맵에 배치됨 (클릭 시 트레이로 이동)' : '트레이 보관중 (클릭 시 맵에 배치)';
 
       renderDetailStagedQueue();
 
       const checklist = Array.isArray(activeTask.checklist) ? activeTask.checklist : [];
       document.getElementById('modalChecklistContainer').innerHTML = checklist.length === 0
-        ? `<div class="text-xs text-neutral-600">등록된 체크리스트 없음</div>`
+        ? `<div class="text-sm text-neutral-500">등록된 체크리스트 없음</div>`
         : checklist.map((item, idx) => `
-          <div class="flex items-center justify-between px-3 py-2 rounded-md bg-[#0d0d0d] border border-[#222222] text-xs">
-            <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+          <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#0d0d0d] border border-[#242424] text-sm">
+            <label class="flex items-center gap-3 cursor-pointer flex-1">
               <input type="checkbox" ${item.done ? 'checked' : ''} onchange="handleToggleCheckItem(${idx})" class="w-4 h-4 accent-white">
               <span class="${item.done ? 'line-through text-neutral-500' : 'text-white'}">${escapeHTML(item.text)}</span>
             </label>
@@ -1954,7 +2093,7 @@
 
       const files = activeTask.files || [];
       document.getElementById('modalFilesList').innerHTML = files.map((f, i) => `
-        <div class="flex items-center justify-between px-3 py-2 rounded-md bg-[#0d0d0d] border border-[#222222] text-xs">
+        <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#0d0d0d] border border-[#242424] text-sm">
           <a href="${f.url}" target="_blank" class="text-white hover:underline truncate flex items-center gap-2"><i class="fa-regular fa-file"></i><span class="truncate">${escapeHTML(f.name)}</span></a>
           <button onclick="handleDeleteFile(${i})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
@@ -1962,22 +2101,22 @@
 
       const links = activeTask.links || [];
       document.getElementById('modalLinksList').innerHTML = links.map((l, i) => `
-        <div class="flex items-center justify-between px-3 py-2 rounded-md bg-[#0d0d0d] border border-[#222222] text-xs">
-          <a href="${l.url}" target="_blank" class="text-neutral-300 hover:underline truncate flex items-center gap-2"><i class="fa-solid fa-link"></i><span class="truncate">${escapeHTML(l.title || l.url)}</span></a>
+        <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#0d0d0d] border border-[#242424] text-sm">
+          <a href="${l.url}" target="_blank" class="text-neutral-200 hover:underline truncate flex items-center gap-2"><i class="fa-solid fa-link"></i><span class="truncate">${escapeHTML(l.title || l.url)}</span></a>
           <button onclick="handleDeleteLink(${i})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
       `).join('');
 
       const comments = Array.isArray(activeTask.comments) ? activeTask.comments : [];
       document.getElementById('modalCommentsList').innerHTML = comments.length === 0
-        ? `<div class="text-xs text-neutral-600">작성된 코멘트 없음</div>`
+        ? `<div class="text-sm text-neutral-500">작성된 코멘트 없음</div>`
         : comments.map(c => `
-          <div class="p-3 rounded-md bg-[#0d0d0d] border border-[#222222] text-xs space-y-1">
-            <div class="flex items-center justify-between text-[11px] text-neutral-500">
+          <div class="p-3.5 rounded-xl bg-[#0d0d0d] border border-[#242424] text-sm space-y-1">
+            <div class="flex items-center justify-between text-xs text-neutral-400">
               <span class="font-bold text-white">${escapeHTML(c.author)}</span>
               <span>${c.time || ''}</span>
             </div>
-            <div class="text-neutral-200">${escapeHTML(c.text)}</div>
+            <div class="text-neutral-100 leading-relaxed">${escapeHTML(c.text)}</div>
           </div>
         `).join('');
     }
@@ -2001,8 +2140,8 @@
         uploadBtn.classList.remove('hidden');
         countSpan.textContent = detailStagedFiles.length;
         box.innerHTML = detailStagedFiles.map((f, i) => `
-          <div class="flex items-center justify-between px-3 py-1.5 rounded bg-[#141414] border border-[#333333] text-xs">
-            <span class="text-white truncate">[대기열] ${escapeHTML(f.name)}</span>
+          <div class="flex items-center justify-between px-3.5 py-2 rounded-lg bg-[#141414] border border-[#333333] text-xs">
+            <span class="text-white truncate">[업로드 대기] ${escapeHTML(f.name)}</span>
             <button onclick="removeStagedDetailFile(${i})" class="text-neutral-400 hover:text-white ml-2"><i class="fa-solid fa-xmark"></i></button>
           </div>
         `).join('');
@@ -2123,7 +2262,7 @@
     }
 
     // ==========================================
-    // 8. MULTI-CHANNEL & DM CHAT
+    // 8. KAKAOTALK / INSTA STYLE GROUPED CHAT (#2)
     // ==========================================
     function toggleChatDrawer() {
       isChatOpen = !isChatOpen;
@@ -2148,7 +2287,7 @@
     }
 
     async function handleCreateChannel() {
-      const name = prompt('새 채널 이름:');
+      const name = prompt('새 채널 이름을 입력하세요:');
       if (!name || !name.trim()) return;
       const clean = name.trim().replace(/^#/, '');
       const channels = Array.isArray(currentProject.channels) ? [...currentProject.channels] : ['일반', '기획-논의', '제작-개발'];
@@ -2171,7 +2310,7 @@
       const channels = Array.isArray(currentProject?.channels) ? currentProject.channels : ['일반', '기획-논의', '제작-개발'];
 
       chList.innerHTML = channels.map(ch => `
-        <button onclick="selectChatChannel('${escapeHTML(ch)}')" class="w-full text-left px-2.5 py-1.5 rounded text-xs font-medium transition flex items-center gap-1.5 ${activeChatChannel === ch ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:bg-[#141414] hover:text-white'}">
+        <button onclick="selectChatChannel('${escapeHTML(ch)}')" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 ${activeChatChannel === ch ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:bg-[#141414] hover:text-white'}">
           <span>#</span> <span class="truncate">${escapeHTML(ch)}</span>
         </button>
       `).join('');
@@ -2182,8 +2321,8 @@
         const dmKey = `DM:${pair[0]}&${pair[1]}`;
         const isActive = activeChatChannel === dmKey;
         return `
-          <button onclick="selectDmMember('${escapeHTML(m.name)}')" class="w-full text-left px-2.5 py-1.5 rounded text-xs font-medium transition flex items-center gap-2 ${isActive ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:bg-[#141414] hover:text-white'}">
-            <span class="w-1.5 h-1.5 rounded-full bg-current shrink-0"></span>
+          <button onclick="selectDmMember('${escapeHTML(m.name)}')" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 ${isActive ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:bg-[#141414] hover:text-white'}">
+            <span class="w-2 h-2 rounded-full bg-current shrink-0"></span>
             <span class="truncate">${escapeHTML(m.name)}</span>
           </button>
         `;
@@ -2199,24 +2338,70 @@
 
       const roomMsgs = currentMessages.filter(m => (m.channel || '일반') === activeChatChannel);
 
-      msgBox.innerHTML = roomMsgs.length === 0
-        ? `<div class="text-center text-xs text-neutral-600 py-12">메시지가 없습니다.</div>`
-        : roomMsgs.map(m => {
-          const isMe = m.sender_name === currentUserName;
+      if (roomMsgs.length === 0) {
+        msgBox.innerHTML = `<div class="text-center text-sm text-neutral-500 py-14">첫 메시지를 보내 대화를 시작하세요.</div>`;
+        return;
+      }
+
+      // #2: Group consecutive messages from the same sender + display time
+      msgBox.innerHTML = roomMsgs.map((m, idx) => {
+        const isMe = m.sender_name === currentUserName;
+        const prevMsg = idx > 0 ? roomMsgs[idx - 1] : null;
+        const nextMsg = idx < roomMsgs.length - 1 ? roomMsgs[idx + 1] : null;
+
+        const timeStr = formatChatTime(m.created_at);
+        const prevTimeStr = prevMsg ? formatChatTime(prevMsg.created_at) : '';
+        const nextTimeStr = nextMsg ? formatChatTime(nextMsg.created_at) : '';
+
+        // Consecutive if same sender as previous message
+        const isContinuousFromPrev = prevMsg && prevMsg.sender_name === m.sender_name;
+        // Show time only on the last message of a consecutive same-minute burst (KakaoTalk style)
+        const showTime = !nextMsg || nextMsg.sender_name !== m.sender_name || nextTimeStr !== timeStr;
+
+        const topSpacing = isContinuousFromPrev ? 'mt-1' : 'mt-4';
+
+        if (isMe) {
           return `
-            <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
-              <span class="text-[11px] text-neutral-500 mb-1 px-1">${escapeHTML(m.sender_name)}</span>
-              <div class="max-w-[85%] rounded-lg px-3.5 py-2 text-xs ${isMe ? 'bg-white text-black font-medium' : 'bg-[#141414] border border-[#262626] text-neutral-100'}">
-                ${m.task_ref_id ? `
-                  <div onclick="openTaskDetailModal('${m.task_ref_id}')" class="mb-1.5 px-2 py-1 rounded bg-black/15 text-[11px] underline cursor-pointer">
-                    🔗 ${escapeHTML(m.task_ref_title || '업무 보기')}
-                  </div>
-                ` : ''}
-                <div class="leading-relaxed">${escapeHTML(m.content)}</div>
+            <div class="flex flex-col items-end ${topSpacing}">
+              <div class="flex items-end gap-1.5 max-w-[88%]">
+                ${showTime ? `<span class="text-[11px] text-neutral-500 shrink-0 mb-0.5">${timeStr}</span>` : ''}
+                <div class="rounded-2xl ${isContinuousFromPrev ? 'rounded-tr-md' : ''} px-4 py-2.5 text-sm bg-white text-black font-medium leading-relaxed">
+                  ${m.task_ref_id ? `
+                    <div onclick="openTaskDetailModal('${m.task_ref_id}')" class="mb-1.5 px-2.5 py-1 rounded bg-black/10 text-xs font-bold underline cursor-pointer">
+                      🔗 ${escapeHTML(m.task_ref_title || '업무 보기')}
+                    </div>
+                  ` : ''}
+                  <div>${escapeHTML(m.content)}</div>
+                </div>
               </div>
             </div>
           `;
-        }).join('');
+        } else {
+          return `
+            <div class="flex items-start gap-2.5 ${topSpacing}">
+              ${!isContinuousFromPrev ? `
+                <div class="w-8 h-8 rounded-full bg-[#222222] border border-[#333333] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  ${escapeHTML(getInitials(m.sender_name))}
+                </div>
+              ` : `<div class="w-8 shrink-0"></div>`}
+              <div class="flex flex-col items-start max-w-[82%]">
+                ${!isContinuousFromPrev ? `<span class="text-xs font-semibold text-neutral-300 mb-1 px-0.5">${escapeHTML(m.sender_name)}</span>` : ''}
+                <div class="flex items-end gap-1.5">
+                  <div class="rounded-2xl ${isContinuousFromPrev ? 'rounded-tl-md' : ''} px-4 py-2.5 text-sm bg-[#161616] border border-[#2a2a2a] text-neutral-100 leading-relaxed">
+                    ${m.task_ref_id ? `
+                      <div onclick="openTaskDetailModal('${m.task_ref_id}')" class="mb-1.5 px-2.5 py-1 rounded bg-white/10 text-xs font-semibold underline cursor-pointer">
+                        🔗 ${escapeHTML(m.task_ref_title || '업무 보기')}
+                      </div>
+                    ` : ''}
+                    <div>${escapeHTML(m.content)}</div>
+                  </div>
+                  ${showTime ? `<span class="text-[11px] text-neutral-500 shrink-0 mb-0.5">${timeStr}</span>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
       msgBox.scrollTop = msgBox.scrollHeight;
     }
 
@@ -2251,7 +2436,8 @@
         sender_name: currentUserName,
         content,
         task_ref_id: chatTaskRef ? chatTaskRef.id : null,
-        task_ref_title: chatTaskRef ? chatTaskRef.title : null
+        task_ref_title: chatTaskRef ? chatTaskRef.title : null,
+        created_at: new Date().toISOString()
       };
 
       input.value = '';
@@ -2286,7 +2472,7 @@
     function showToast(msg, type = 'info') {
       const t = document.getElementById('toast');
       t.textContent = msg;
-      t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-md shadow-2xl text-xs font-bold transition-all duration-200 opacity-100 ${
+      t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-lg shadow-2xl text-sm font-bold transition-all duration-200 opacity-100 ${
         type === 'error' ? 'bg-rose-600 text-white' : 'bg-white text-black'
       }`;
       setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); }, 2200);
