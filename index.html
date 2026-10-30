@@ -3,179 +3,197 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TeamFlow — All-in-One Project Workspace</title>
-  
-  <!-- 👇 브라우저 탭 아이콘 (파비콘) 추가 -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%237c3aed'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M32 14L14 23l18 9 18-9-18-9zM14 33l18 9 18-9M14 43l18 9 18-9' fill='none' stroke='%23ffffff' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <title>TeamFlow — Monochrome Workspace</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000000' stroke='%23ffffff' stroke-width='4'/%3E%3Cpath d='M32 14L14 23l18 9 18-9-18-9zM14 33l18 9 18-9M14 43l18 9 18-9' fill='none' stroke='%23ffffff' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <style>
     :root {
-      --bg-canvas: #07080c;
-      --bg-surface: rgba(17, 19, 26, 0.85);
-      --bg-card: rgba(24, 27, 36, 0.92);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-hover: rgba(99, 102, 241, 0.5);
+      --bg-pure: #000000;
+      --bg-panel: #0a0a0a;
+      --bg-card: #111111;
+      --bg-hover: #171717;
+      --border-base: #242424;
+      --border-strong: #404040;
+      --text-main: #ffffff;
+      --text-sub: #a3a3a3;
+      --text-muted: #525252;
     }
     * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; box-sizing: border-box; }
-    body { background-color: var(--bg-canvas); color: #f1f5f9; overflow: hidden; height: 100vh; font-size: 14px; letter-spacing: -0.01em; }
+    body { background-color: var(--bg-pure); color: var(--text-main); overflow: hidden; height: 100vh; font-size: 14px; letter-spacing: -0.015em; }
 
-    /* Modern Glass & Surface */
-    .surface-panel {
-      background: var(--bg-surface);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    /* Stark Monochrome Surfaces */
+    .mono-panel { background-color: var(--bg-panel); border: 1px solid var(--border-base); }
+    .mono-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-base);
+      transition: border-color 0.12s ease, background-color 0.12s ease, transform 0.12s ease;
     }
-    .surface-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
-      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.16s ease, box-shadow 0.16s ease;
-    }
-    .surface-card:hover {
-      border-color: rgba(255, 255, 255, 0.18);
-      box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-    }
+    .mono-card:hover { border-color: var(--border-strong); background-color: #141414; }
 
-    /* Infinite-feel Dot Matrix Canvas with Ambient Glow */
+    /* Monochrome Buttons */
+    .btn-white { background-color: #ffffff; color: #000000; font-weight: 600; transition: background-color 0.12s ease, opacity 0.12s ease; }
+    .btn-white:hover { background-color: #e5e5e5; }
+    .btn-white:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-outline { background-color: #0d0d0d; color: #e5e5e5; border: 1px solid #262626; transition: border-color 0.12s ease, background-color 0.12s ease; }
+    .btn-outline:hover { background-color: #171717; border-color: #404040; color: #ffffff; }
+
+    /* Minimalist Dot Grid */
     .canvas-grid {
-      background-color: #07080c;
-      background-image: 
-        radial-gradient(circle at 50% 35%, rgba(79, 70, 229, 0.08) 0%, transparent 55%),
-        radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-      background-size: 100% 100%, 28px 28px;
+      background-color: #000000;
+      background-image: radial-gradient(#262626 1px, transparent 1px);
+      background-size: 24px 24px;
     }
 
-    /* Hide ugly scrollbars on canvas, sleek scrollbars elsewhere */
+    /* Inline Hover-to-Edit Fields */
+    .inline-editable {
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 4px 8px;
+      margin: -4px -8px;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+      cursor: text;
+    }
+    .inline-editable:hover { border-color: #333333; background-color: #0f0f0f; }
+    .inline-editable:focus { border-color: #ffffff; background-color: #000000; outline: none; }
+
+    /* Hide Canvas Scrollbars */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+    ::-webkit-scrollbar-thumb { background: #262626; }
+    ::-webkit-scrollbar-thumb:hover { background: #525252; }
 
-    /* Refined Priority & Status Chips */
-    .pri-urgent { background: rgba(244, 63, 94, 0.14); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.3); }
-    .pri-high { background: rgba(249, 115, 22, 0.14); color: #fdba74; border: 1px solid rgba(249, 115, 22, 0.3); }
-    .pri-medium { background: rgba(99, 102, 241, 0.14); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); }
-    .pri-low { background: rgba(148, 163, 184, 0.12); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.25); }
+    /* Monochrome Priority Chips */
+    .chip-urgent { background: #ffffff; color: #000000; font-weight: 700; }
+    .chip-high { background: #262626; color: #ffffff; border: 1px solid #525252; }
+    .chip-medium { background: #141414; color: #a3a3a3; border: 1px solid #262626; }
+    .chip-low { background: #0a0a0a; color: #737373; border: 1px solid #1f1f1f; }
 
-    /* Node Canvas Elements */
+    /* Node Canvas Styles */
     .map-node {
       position: absolute;
-      width: 284px;
+      width: 280px;
       user-select: none;
       cursor: grab;
       z-index: 10;
     }
-    .map-node:active { cursor: grabbing; z-index: 30; transform: scale(1.015); }
-    .map-node.connect-source {
-      border-color: #818cf8 !important;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35), 0 20px 40px rgba(0,0,0,0.6) !important;
-    }
+    .map-node:active { cursor: grabbing; z-index: 30; }
+    .map-node.connect-source { border: 1.5px solid #ffffff !important; box-shadow: 0 0 0 4px rgba(255,255,255,0.12); }
 
-    /* Node Connection Ports (Handles) */
     .node-port {
       position: absolute;
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-radius: 9999px;
-      background: #1e1b4b;
-      border: 2px solid #818cf8;
+      background: #000000;
+      border: 2px solid #ffffff;
       opacity: 0;
-      transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+      transition: opacity 0.12s ease, transform 0.12s ease;
       z-index: 20;
       cursor: crosshair;
     }
     .map-node:hover .node-port, .map-node.connect-source .node-port { opacity: 1; }
-    .node-port:hover { transform: scale(1.4); background: #6366f1; }
-    .port-top { top: -5px; left: calc(50% - 5px); }
-    .port-bottom { bottom: -5px; left: calc(50% - 5px); }
-    .port-left { left: -5px; top: calc(50% - 5px); }
-    .port-right { right: -5px; top: calc(50% - 5px); }
+    .node-port:hover { transform: scale(1.4); background: #ffffff; }
+    .port-top { top: -5px; left: calc(50% - 4.5px); }
+    .port-bottom { bottom: -5px; left: calc(50% - 4.5px); }
+    .port-left { left: -5px; top: calc(50% - 4.5px); }
+    .port-right { right: -5px; top: calc(50% - 4.5px); }
 
-    /* Animated Pipeline Edges */
-    @keyframes flowDash {
-      to { stroke-dashoffset: -24; }
-    }
+    @keyframes flowDash { to { stroke-dashoffset: -20; } }
     .edge-group { pointer-events: stroke; cursor: pointer; }
     .edge-bg { fill: none; stroke: transparent; stroke-width: 16; }
-    .edge-line { fill: none; stroke-width: 2.2; transition: stroke 0.2s, stroke-width 0.2s, filter 0.2s; }
-    .edge-animated { stroke-dasharray: 7 5; animation: flowDash 0.9s linear infinite; }
-    .edge-group:hover .edge-line { stroke: #f43f5e !important; stroke-width: 3.5; filter: drop-shadow(0 0 6px rgba(244,63,94,0.6)); }
+    .edge-line { fill: none; stroke-width: 1.75; transition: stroke-width 0.15s, stroke 0.15s; }
+    .edge-animated { stroke-dasharray: 5 5; animation: flowDash 0.8s linear infinite; }
+    .edge-group:hover .edge-line { stroke: #ffffff !important; stroke-width: 3.2; }
 
-    .dropzone-active { border-color: #818cf8 !important; background-color: rgba(99, 102, 241, 0.12) !important; }
+    .dropzone-active { border-color: #ffffff !important; background-color: #141414 !important; }
   </style>
 </head>
 <body class="flex flex-col select-none">
 
-  <!-- Top Navigation Header -->
-  <header class="h-14 border-b border-white/[0.07] bg-[#0b0d13]/90 backdrop-blur-xl px-5 flex items-center justify-between shrink-0 z-30">
-    <div class="flex items-center gap-3.5">
+  <!-- Top Navigation Header (Monochrome) -->
+  <header class="h-14 border-b border-[#222222] bg-black px-5 flex items-center justify-between shrink-0 z-30">
+    <div class="flex items-center gap-4">
       <div onclick="goToWorkspaceHub()" class="flex items-center gap-2.5 cursor-pointer group" title="워크스페이스 허브로 이동">
-        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition">
-          <i class="fa-solid fa-layer-group"></i>
+        <div class="w-7 h-7 rounded-md bg-white text-black flex items-center justify-center text-xs font-black tracking-tighter group-hover:bg-neutral-200 transition">
+          TF
         </div>
-        <span class="font-bold text-base tracking-tight text-white group-hover:text-indigo-400 transition">TeamFlow</span>
+        <span class="font-bold text-base tracking-tight text-white">TeamFlow</span>
       </div>
 
-      <span id="headerDivider" class="text-slate-700 text-sm hidden">/</span>
+      <span id="headerDivider" class="text-neutral-700 text-sm hidden">/</span>
 
-      <!-- Project Selector & View Switcher -->
+      <!-- Project Switcher & Main View Tabs -->
       <div id="headerProjectArea" class="items-center gap-4 hidden">
-        <button onclick="goToWorkspaceHub()" class="flex items-center gap-2 text-sm font-semibold text-slate-200 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] transition">
-          <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
-          <span id="headerProjectTitle">프로젝트</span>
-          <i class="fa-solid fa-chevron-down text-[10px] text-slate-500 ml-0.5"></i>
+        <button onclick="goToWorkspaceHub()" class="flex items-center gap-2 text-xs font-semibold text-neutral-200 px-3 py-1.5 rounded-md btn-outline">
+          <span id="headerProjectTitle">PROJECT</span>
+          <i class="fa-solid fa-chevron-down text-[9px] text-neutral-500"></i>
         </button>
 
-        <nav class="flex items-center bg-black/40 p-1 rounded-xl border border-white/[0.07]">
-          <button onclick="switchView('map')" id="tabBtn-map" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-            <i class="fa-solid fa-diagram-project text-xs"></i> 워크플로우 맵
+        <nav class="flex items-center bg-[#0a0a0a] p-1 rounded-lg border border-[#222222]">
+          <button onclick="switchView('map')" id="tabBtn-map" class="px-3 py-1 rounded-md text-xs font-semibold transition flex items-center gap-1.5">
+            워크플로우 맵
           </button>
-          <button onclick="switchView('kanban')" id="tabBtn-kanban" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-            <i class="fa-solid fa-table-columns text-xs"></i> 칸반 보드
+          <button onclick="switchView('kanban')" id="tabBtn-kanban" class="px-3 py-1 rounded-md text-xs font-semibold transition flex items-center gap-1.5">
+            칸반 보드
           </button>
-          <button onclick="switchView('docs')" id="tabBtn-docs" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-            <i class="fa-regular fa-file-lines text-xs"></i> 팀 문서 & 공지
+          <button onclick="switchView('docs')" id="tabBtn-docs" class="px-3 py-1 rounded-md text-xs font-semibold transition flex items-center gap-1.5">
+            팀 문서 & 공지
           </button>
         </nav>
       </div>
     </div>
 
     <!-- Right Controls -->
-    <div id="headerActions" class="items-center gap-2.5 hidden">
-      <div class="hidden lg:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.07] text-xs">
-        <span class="text-slate-400">달성률</span>
-        <span id="headerProgressText" class="font-mono font-bold text-emerald-400 text-sm">0%</span>
-        <div class="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-          <div id="headerProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-300" style="width: 0%"></div>
+    <div id="headerActions" class="items-center gap-2 hidden">
+      <!-- Progress -->
+      <div class="hidden xl:flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-[#0a0a0a] border border-[#222222] text-xs">
+        <span class="text-neutral-500">PROGRESS</span>
+        <span id="headerProgressText" class="font-mono font-bold text-white">0%</span>
+        <div class="w-14 h-1 bg-neutral-800 overflow-hidden">
+          <div id="headerProgressBar" class="h-full bg-white transition-all duration-300" style="width: 0%"></div>
         </div>
       </div>
 
-      <button onclick="openCreateTaskModal()" class="px-3.5 py-1.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/25">
-        <i class="fa-solid fa-plus text-xs"></i> 새 업무
+      <!-- #1: Assignee Personal Notification Bell -->
+      <div class="relative">
+        <button onclick="toggleNotificationPopover()" class="px-3 py-1.5 rounded-md text-xs font-medium btn-outline flex items-center gap-1.5 relative" title="내가 설정한 업무 알림">
+          <i class="fa-regular fa-bell"></i>
+          <span>알림</span>
+          <span id="notifCountBadge" class="px-1.5 py-0.2 rounded-full bg-white text-black font-mono text-[10px] font-bold hidden">0</span>
+        </button>
+        <!-- Notification Popover -->
+        <div id="notifPopover" class="absolute right-0 mt-2 w-80 mono-panel rounded-lg shadow-2xl p-3 hidden z-50">
+          <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#222222] text-xs">
+            <span class="font-bold text-white">내 맞춤 알림 목록</span>
+            <span class="text-neutral-500 text-[11px]">담당자 직접 설정</span>
+          </div>
+          <div id="notifPopoverList" class="space-y-1.5 max-h-64 overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <button onclick="openCreateTaskModal()" class="px-3.5 py-1.5 rounded-md text-xs btn-white flex items-center gap-1.5">
+        <i class="fa-solid fa-plus text-[10px]"></i> 새 업무
       </button>
 
-      <button onclick="openInviteModal()" class="px-3 py-1.5 rounded-xl text-sm font-medium bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/[0.08] transition flex items-center gap-1.5">
-        <i class="fa-solid fa-user-plus text-xs text-indigo-400"></i> 초대
+      <button onclick="openInviteModal()" class="px-3 py-1.5 rounded-md text-xs font-medium btn-outline flex items-center gap-1.5">
+        초대
       </button>
 
-      <button onclick="toggleChatDrawer()" id="chatToggleBtn" class="px-3 py-1.5 rounded-xl text-sm font-medium bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/[0.08] transition flex items-center gap-1.5 relative">
-        <i class="fa-regular fa-comment-dots text-indigo-400"></i> 채널 채팅
-        <span id="chatUnreadDot" class="w-2 h-2 rounded-full bg-rose-500 absolute top-1.5 right-1.5 hidden"></span>
+      <button onclick="toggleChatDrawer()" id="chatToggleBtn" class="px-3 py-1.5 rounded-md text-xs font-medium btn-outline flex items-center gap-1.5 relative">
+        채팅
+        <span id="chatUnreadDot" class="w-2 h-2 rounded-full bg-white absolute -top-0.5 -right-0.5 hidden"></span>
       </button>
 
-      <div class="h-4 w-[1px] bg-white/[0.08] mx-0.5"></div>
+      <div class="h-4 w-[1px] bg-[#222222] mx-1"></div>
 
-      <div class="flex items-center gap-2 pl-2 pr-3 py-1 rounded-xl bg-white/[0.04] border border-white/[0.07] text-sm text-slate-200">
-        <div id="headerUserAvatar" class="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold flex items-center justify-center">U</div>
-        <span id="currentUserName" class="font-medium text-xs">멤버</span>
+      <div class="flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#0a0a0a] border border-[#222222] text-xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+        <span id="currentUserName" class="font-medium text-neutral-200">USER</span>
       </div>
     </div>
   </header>
@@ -185,42 +203,36 @@
     <main id="appContainer" class="flex-1 flex flex-col overflow-hidden relative"></main>
 
     <!-- Right Collapsible Chat Drawer -->
-    <aside id="chatDrawer" class="w-[440px] border-l border-white/[0.08] bg-[#0b0d13]/95 backdrop-blur-2xl flex-row shrink-0 hidden z-30 shadow-2xl">
-      <div class="w-40 border-r border-white/[0.06] bg-black/30 flex flex-col shrink-0">
-        <div class="p-3.5 border-b border-white/[0.06] flex items-center justify-between">
-          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">토픽 채널</span>
-          <button onclick="handleCreateChannel()" class="w-5 h-5 rounded hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center" title="새 채널 추가">
-            <i class="fa-solid fa-plus"></i>
-          </button>
+    <aside id="chatDrawer" class="w-[420px] border-l border-[#222222] bg-[#050505] flex-row shrink-0 hidden z-30">
+      <div class="w-36 border-r border-[#1f1f1f] bg-black flex flex-col shrink-0">
+        <div class="p-3 border-b border-[#1f1f1f] flex items-center justify-between">
+          <span class="text-[11px] font-mono font-bold text-neutral-500 uppercase">CHANNELS</span>
+          <button onclick="handleCreateChannel()" class="text-neutral-400 hover:text-white text-xs" title="채널 추가"><i class="fa-solid fa-plus"></i></button>
         </div>
-        <div id="chatChannelsList" class="p-2 space-y-1 overflow-y-auto max-h-52"></div>
+        <div id="chatChannelsList" class="p-2 space-y-0.5 overflow-y-auto max-h-52"></div>
 
-        <div class="p-3.5 border-t border-b border-white/[0.06] flex items-center justify-between mt-2">
-          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">1:1 DM</span>
+        <div class="p-3 border-t border-b border-[#1f1f1f] flex items-center justify-between mt-2">
+          <span class="text-[11px] font-mono font-bold text-neutral-500 uppercase">DIRECT MSG</span>
         </div>
-        <div id="chatDmMembersList" class="p-2 space-y-1 flex-1 overflow-y-auto"></div>
+        <div id="chatDmMembersList" class="p-2 space-y-0.5 flex-1 overflow-y-auto"></div>
       </div>
 
       <div class="flex-1 flex flex-col overflow-hidden">
-        <div class="h-12 px-4 border-b border-white/[0.06] flex items-center justify-between shrink-0">
-          <span id="activeChatRoomTitle" class="text-sm font-bold text-white truncate"># 일반</span>
-          <button onclick="toggleChatDrawer()" class="w-7 h-7 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-sm flex items-center justify-center">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
+        <div class="h-11 px-4 border-b border-[#1f1f1f] flex items-center justify-between shrink-0">
+          <span id="activeChatRoomTitle" class="text-xs font-mono font-bold text-white truncate"># 일반</span>
+          <button onclick="toggleChatDrawer()" class="text-neutral-500 hover:text-white text-xs"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
         <div id="chatMessagesList" class="flex-1 overflow-y-auto p-4 space-y-3 select-text"></div>
 
-        <div id="chatTaskRefBanner" class="px-3.5 py-2 bg-indigo-950/60 border-t border-indigo-500/30 hidden items-center justify-between text-xs text-indigo-300">
+        <div id="chatTaskRefBanner" class="px-3.5 py-2 bg-[#141414] border-t border-[#262626] hidden items-center justify-between text-xs text-neutral-300">
           <span id="chatTaskRefText" class="truncate"></span>
-          <button onclick="clearChatTaskRef()" class="text-indigo-400 hover:text-white ml-2"><i class="fa-solid fa-xmark"></i></button>
+          <button onclick="clearChatTaskRef()" class="text-neutral-400 hover:text-white ml-2"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
-        <form onsubmit="handleSendMessage(event)" class="p-3 border-t border-white/[0.06] bg-black/30 flex gap-2">
-          <input type="text" id="chatInput" placeholder="메시지 입력..." class="flex-1 bg-white/[0.05] border border-white/[0.08] rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
-          <button type="submit" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition">
-            <i class="fa-solid fa-paper-plane text-xs"></i>
-          </button>
+        <form onsubmit="handleSendMessage(event)" class="p-3 border-t border-[#1f1f1f] bg-black flex gap-2">
+          <input type="text" id="chatInput" placeholder="메시지 입력..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-xs text-white placeholder-neutral-600 focus:outline-none focus:border-white">
+          <button type="submit" class="px-3.5 py-2 rounded-md btn-white text-xs">전송</button>
         </form>
       </div>
     </aside>
@@ -231,36 +243,34 @@
   =========================================== -->
 
   <!-- 1. Create Task Modal -->
-  <div id="createTaskModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="surface-panel w-full max-w-xl rounded-2xl overflow-hidden max-h-[92vh] flex flex-col">
-      <div class="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between">
-        <h3 class="text-base font-bold text-white flex items-center gap-2.5">
-          <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> 새 업무 생성
-        </h3>
-        <button onclick="closeModal('createTaskModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+  <div id="createTaskModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="mono-panel w-full max-w-xl rounded-xl overflow-hidden max-h-[92vh] flex flex-col shadow-2xl">
+      <div class="px-6 py-4 border-b border-[#222222] flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">새 업무 생성</h3>
+        <button onclick="closeModal('createTaskModal')" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <form onsubmit="handleCreateTask(event)" class="p-6 space-y-4 overflow-y-auto flex-1">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">업무 제목 *</label>
-          <input type="text" id="taskTitleInput" required placeholder="예: 결제 API 연동 / 경쟁사 리서치 정리" class="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+          <label class="block text-xs font-medium text-neutral-400 mb-1.5">업무 제목 *</label>
+          <input type="text" id="taskTitleInput" required placeholder="업무 핵심 내용을 입력하세요" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3.5 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-white">
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">상세 설명 & 메모</label>
-          <textarea id="taskDescInput" rows="3" placeholder="업무 요구사항, 배경 맥락, 참고 메모를 적어주세요..." class="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"></textarea>
+          <label class="block text-xs font-medium text-neutral-400 mb-1.5">상세 설명 & 메모</label>
+          <textarea id="taskDescInput" rows="3" placeholder="요구사항이나 참고 내용을 기록하세요" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3.5 py-2.5 text-sm text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-white"></textarea>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">담당자</label>
-            <select id="taskAssigneeSelect" class="w-full bg-black/40 border border-white/[0.1] rounded-xl px-2.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+            <label class="block text-[11px] text-neutral-400 mb-1">담당자</label>
+            <select id="taskAssigneeSelect" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-2 text-xs text-white focus:outline-none focus:border-white">
               <option value="">미정</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">우선순위</label>
-            <select id="taskPrioritySelect" class="w-full bg-black/40 border border-white/[0.1] rounded-xl px-2.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+            <label class="block text-[11px] text-neutral-400 mb-1">우선순위</label>
+            <select id="taskPrioritySelect" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-2 text-xs text-white focus:outline-none focus:border-white">
               <option value="medium">보통</option>
               <option value="urgent">긴급</option>
               <option value="high">높음</option>
@@ -268,82 +278,91 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">라벨 (태그)</label>
-            <input type="text" id="taskLabelInput" placeholder="기획, 개발, 디자인..." value="일반" class="w-full bg-black/40 border border-white/[0.1] rounded-xl px-2.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+            <label class="block text-[11px] text-neutral-400 mb-1">라벨</label>
+            <input type="text" id="taskLabelInput" value="일반" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-2 text-xs text-white focus:outline-none focus:border-white">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">마감 기한</label>
-            <input type="date" id="taskDueDateInput" class="w-full bg-black/40 border border-white/[0.1] rounded-xl px-2.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+            <label class="block text-[11px] text-neutral-400 mb-1">마감 기한</label>
+            <input type="date" id="taskDueDateInput" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-2 text-xs text-white focus:outline-none focus:border-white">
           </div>
         </div>
 
-        <div class="p-4 rounded-xl bg-black/30 border border-white/[0.07] space-y-3">
-          <div class="text-xs font-semibold text-slate-300 flex items-center justify-between">
-            <span><i class="fa-solid fa-paperclip text-indigo-400 mr-1.5"></i>초기 첨부 파일 & 참고 링크</span>
-            <span class="text-[11px] text-slate-500">여러 폴더의 파일을 하나씩 대기열에 추가 가능</span>
+        <!-- Staged Attachments -->
+        <div class="p-4 rounded-lg bg-[#070707] border border-[#222222] space-y-3">
+          <div class="text-xs font-semibold text-neutral-300 flex items-center justify-between">
+            <span>첨부 파일 & 링크 대기열</span>
+            <span class="text-[11px] text-neutral-500">여러 폴더의 파일을 모아 한 번에 등록</span>
           </div>
 
-          <div class="flex items-center gap-2">
-            <label class="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 text-xs font-medium cursor-pointer border border-white/[0.08] transition">
-              <i class="fa-solid fa-folder-open mr-1.5 text-indigo-400"></i>+ 파일 선택하여 대기열 추가
+          <div>
+            <label class="inline-block px-3 py-1.5 rounded-md btn-outline text-xs cursor-pointer">
+              + 파일 선택 (대기열 추가)
               <input type="file" multiple onchange="handleStageCreationFiles(event)" class="hidden">
             </label>
           </div>
-          <div id="createStagedFilesList" class="space-y-1.5"></div>
+          <div id="createStagedFilesList" class="space-y-1"></div>
 
           <div class="flex gap-2 pt-1">
-            <input type="text" id="createLinkTitleInput" placeholder="링크 제목 (예: 피그마)" class="w-1/3 bg-black/40 border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs text-white">
-            <input type="url" id="createLinkUrlInput" placeholder="https://..." class="flex-1 bg-black/40 border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs text-white">
-            <button type="button" onclick="handleStageCreationLink()" class="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-xs font-medium text-slate-200 border border-white/[0.08] whitespace-nowrap">
-              + 링크 추가
-            </button>
+            <input type="text" id="createLinkTitleInput" placeholder="링크 제목" class="w-1/3 bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white">
+            <input type="url" id="createLinkUrlInput" placeholder="https://..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white">
+            <button type="button" onclick="handleStageCreationLink()" class="px-3 py-1.5 rounded-md btn-outline text-xs whitespace-nowrap">+ 링크</button>
           </div>
-          <div id="createStagedLinksList" class="space-y-1.5"></div>
+          <div id="createStagedLinksList" class="space-y-1"></div>
         </div>
 
-        <div class="pt-3 flex items-center justify-between border-t border-white/[0.08]">
-          <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
-            <input type="checkbox" id="taskPutInMapCheck" class="w-4 h-4 rounded bg-black/40 border-slate-700 text-indigo-600 focus:ring-0">
+        <div class="pt-3 flex items-center justify-between border-t border-[#222222]">
+          <label class="flex items-center gap-2 text-xs text-neutral-300 cursor-pointer">
+            <input type="checkbox" id="taskPutInMapCheck" class="w-4 h-4 accent-white">
             <span>생성 즉시 워크플로우 맵에 배치</span>
           </label>
           <div class="flex gap-2">
-            <button type="button" onclick="closeModal('createTaskModal')" class="px-4 py-2 rounded-xl text-sm text-slate-400 hover:text-white">취소</button>
-            <button type="submit" id="createTaskSubmitBtn" class="px-5 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25">업무 등록</button>
+            <button type="button" onclick="closeModal('createTaskModal')" class="px-4 py-2 rounded-md text-xs btn-outline">취소</button>
+            <button type="submit" id="createTaskSubmitBtn" class="px-5 py-2 rounded-md text-xs btn-white">생성하기</button>
           </div>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- 2. Task Detail Modal -->
-  <div id="taskDetailModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="surface-panel w-full max-w-3xl rounded-2xl max-h-[90vh] flex flex-col overflow-hidden select-text">
-      <div class="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-black/30">
-        <div class="flex items-center gap-2.5">
-          <span id="modalTaskLabelBadge" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/[0.06] text-slate-200 border border-white/[0.08]">일반</span>
-          <span id="modalTaskPriorityBadge" class="px-2.5 py-1 rounded-lg text-xs font-semibold">보통</span>
-          <button onclick="shareActiveTaskToChat()" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-indigo-500/15 text-indigo-300 hover:bg-indigo-500/25 border border-indigo-500/30 transition flex items-center gap-1.5">
-            <i class="fa-regular fa-paper-plane text-[11px]"></i> 채팅에 공유
-          </button>
+  <!-- 2. Task Detail Modal (#1 Self-Reminder + #2 Click-to-Edit & Explicit '수정' Button) -->
+  <div id="taskDetailModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="mono-panel w-full max-w-3xl rounded-xl max-h-[92vh] flex flex-col overflow-hidden select-text shadow-2xl">
+      <!-- Top Action Header -->
+      <div class="px-6 py-3.5 border-b border-[#222222] flex items-center justify-between bg-[#050505]">
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-mono text-neutral-500">TASK DETAIL</span>
+          <span id="dirtyIndicatorBadge" class="px-2 py-0.5 rounded bg-white/10 text-white text-[11px] font-medium hidden">● 수정 중 (미저장)</span>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="handleDeleteTask()" class="text-sm text-slate-400 hover:text-rose-400 px-2.5 py-1 transition">
-            <i class="fa-regular fa-trash-can"></i> 삭제
+          <!-- #2: Explicit Save ('수정') Button -->
+          <button id="saveTaskEditsBtn" onclick="handleCommitTaskEdits()" class="px-4 py-1.5 rounded-md text-xs btn-white flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> 수정 적용
           </button>
-          <button onclick="closeModal('taskDetailModal')" class="text-slate-400 hover:text-white px-1.5"><i class="fa-solid fa-xmark text-xl"></i></button>
+          <button onclick="shareActiveTaskToChat()" class="px-3 py-1.5 rounded-md text-xs btn-outline">
+            채팅 공유
+          </button>
+          <button onclick="handleDeleteTask()" class="px-2.5 py-1.5 rounded-md text-xs btn-outline text-neutral-400 hover:text-rose-400">
+            삭제
+          </button>
+          <button onclick="closeModal('taskDetailModal')" class="text-neutral-500 hover:text-white pl-2"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
       </div>
 
       <div class="flex-1 overflow-y-auto p-6 space-y-6">
-        <div>
-          <h2 id="modalTaskTitle" class="text-xl font-bold text-white tracking-tight mb-2.5"></h2>
-          <p id="modalTaskDesc" class="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap bg-black/30 p-4 rounded-xl border border-white/[0.07]"></p>
+        <!-- #2: Hover & Click Inline Editable Title & Description -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-[11px] text-neutral-500">
+            <span>💡 제목이나 내용을 클릭하여 수정한 뒤 상단의 [수정 적용] 버튼을 누르세요.</span>
+          </div>
+          <input type="text" id="editTaskTitle" oninput="markTaskDetailDirty()" class="w-full text-xl font-bold text-white bg-transparent inline-editable" placeholder="업무 제목">
+          <textarea id="editTaskDesc" rows="3" oninput="markTaskDetailDirty()" class="w-full text-sm text-neutral-300 bg-transparent inline-editable leading-relaxed resize-y" placeholder="클릭하여 상세 설명을 입력하거나 수정하세요..."></textarea>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-xl bg-black/30 border border-white/[0.07] text-sm">
+        <!-- Properties Grid (All Staged until '수정 적용' is clicked) -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-lg bg-[#050505] border border-[#222222] text-xs">
           <div>
-            <span class="text-xs text-slate-400 block mb-1">진행 상태</span>
-            <select id="modalStatusSelect" onchange="handleTaskFieldUpdate('status', this.value)" class="w-full bg-[#141720] border border-white/[0.1] rounded-lg px-2.5 py-1.5 text-sm text-white">
+            <span class="text-[11px] text-neutral-500 block mb-1">진행 상태</span>
+            <select id="editTaskStatus" onchange="markTaskDetailDirty()" class="w-full bg-[#111111] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
               <option value="todo">대기 (Todo)</option>
               <option value="in_progress">진행 중 (In Progress)</option>
               <option value="review">검토 요청 (Review)</option>
@@ -351,89 +370,102 @@
             </select>
           </div>
           <div>
-            <span class="text-xs text-slate-400 block mb-1">담당자</span>
-            <select id="modalAssigneeSelect" onchange="handleTaskFieldUpdate('assignee_name', this.value || null)" class="w-full bg-[#141720] border border-white/[0.1] rounded-lg px-2.5 py-1.5 text-sm text-white">
+            <span class="text-[11px] text-neutral-500 block mb-1">담당자</span>
+            <select id="editTaskAssignee" onchange="markTaskDetailDirty()" class="w-full bg-[#111111] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
               <option value="">미정</option>
             </select>
           </div>
           <div>
-            <span class="text-xs text-slate-400 block mb-1">우선순위</span>
-            <select id="modalPrioritySelect" onchange="handleTaskFieldUpdate('priority', this.value)" class="w-full bg-[#141720] border border-white/[0.1] rounded-lg px-2.5 py-1.5 text-sm text-white">
-              <option value="urgent">긴급</option>
-              <option value="high">높음</option>
-              <option value="medium">보통</option>
-              <option value="low">낮음</option>
+            <span class="text-[11px] text-neutral-500 block mb-1">우선순위</span>
+            <select id="editTaskPriority" onchange="markTaskDetailDirty()" class="w-full bg-[#111111] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
+              <option value="urgent">긴급 (Urgent)</option>
+              <option value="high">높음 (High)</option>
+              <option value="medium">보통 (Medium)</option>
+              <option value="low">낮음 (Low)</option>
             </select>
           </div>
           <div>
-            <span class="text-xs text-slate-400 block mb-1">맵 캔버스 상태</span>
-            <button id="modalMapToggleBtn" onclick="toggleActiveTaskInMap()" class="w-full px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition"></button>
+            <span class="text-[11px] text-neutral-500 block mb-1">라벨 (태그)</span>
+            <input type="text" id="editTaskLabel" oninput="markTaskDetailDirty()" class="w-full bg-[#111111] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
+          </div>
+          <div>
+            <span class="text-[11px] text-neutral-500 block mb-1">마감 기한</span>
+            <input type="date" id="editTaskDueDate" onchange="markTaskDetailDirty()" class="w-full bg-[#111111] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
+          </div>
+          <!-- #1: Assignee Self-Notification Setting -->
+          <div>
+            <span class="text-[11px] text-white font-semibold block mb-1"><i class="fa-regular fa-bell mr-1"></i>담당자 개인 알림 설정</span>
+            <select id="editTaskReminder" onchange="markTaskDetailDirty()" class="w-full bg-[#111111] border border-white/40 rounded-md px-2.5 py-1.5 text-xs text-white focus:border-white focus:outline-none">
+              <option value="none">알림 받기 해제</option>
+              <option value="always">상시 고정 알림 켜두기</option>
+              <option value="d_day">마감 당일 (D-Day) 알림</option>
+              <option value="d_1">마감 하루 전 (D-1) 알림</option>
+              <option value="d_3">마감 3일 전 (D-3) 알림</option>
+            </select>
           </div>
         </div>
 
-        <!-- Checklist -->
+        <!-- Map Placement Toggle -->
+        <div class="flex items-center justify-between px-4 py-2.5 rounded-lg bg-[#080808] border border-[#222222] text-xs">
+          <span class="text-neutral-400">워크플로우 맵 배치 상태</span>
+          <button id="modalMapToggleBtn" onclick="toggleActiveTaskInMap()" class="px-3 py-1 rounded-md text-xs font-semibold btn-outline"></button>
+        </div>
+
+        <!-- Sub-Checklist -->
         <div class="space-y-2.5">
           <div class="flex items-center justify-between">
-            <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <i class="fa-solid fa-list-check text-indigo-400"></i> 세부 체크리스트
-            </h4>
-            <button onclick="toggleChecklistInput()" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300">+ 항목 추가</button>
+            <h4 class="text-xs font-bold text-white uppercase tracking-wider">세부 체크리스트</h4>
+            <button onclick="toggleChecklistInput()" class="text-xs font-semibold text-neutral-300 hover:text-white">+ 항목 추가</button>
           </div>
 
           <form id="checklistAddForm" onsubmit="handleAddChecklistItem(event)" class="hidden gap-2">
-            <input type="text" id="checklistInput" placeholder="할 일 입력 후 엔터..." class="flex-1 bg-black/40 border border-white/[0.1] rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-            <button type="submit" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold">추가</button>
+            <input type="text" id="checklistInput" placeholder="세부 할 일 입력 후 엔터..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-1.5 text-xs text-white focus:outline-none focus:border-white">
+            <button type="submit" class="px-3.5 py-1.5 rounded-md btn-white text-xs">추가</button>
           </form>
 
           <div id="modalChecklistContainer" class="space-y-1.5"></div>
         </div>
 
         <!-- Staged File Upload & Links -->
-        <div class="space-y-3 pt-4 border-t border-white/[0.08]">
+        <div class="space-y-3 pt-4 border-t border-[#222222]">
           <div class="flex items-center justify-between">
-            <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <i class="fa-solid fa-paperclip text-indigo-400"></i> 산출물 파일 & 레퍼런스 링크
-            </h4>
-            <span class="text-xs text-slate-400">파일을 대기열에 모아서 한 번에 업로드 가능</span>
+            <h4 class="text-xs font-bold text-white uppercase tracking-wider">산출물 파일 & 링크</h4>
+            <span class="text-[11px] text-neutral-500">대기열에 파일을 모아서 일괄 업로드</span>
           </div>
 
-          <div class="p-4 rounded-xl bg-black/30 border border-white/[0.07] space-y-3">
+          <div class="p-4 rounded-lg bg-[#070707] border border-[#222222] space-y-3">
             <div class="flex flex-wrap items-center gap-2">
-              <label class="px-3.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 text-xs font-semibold cursor-pointer border border-white/[0.08] transition">
-                <i class="fa-solid fa-plus mr-1 text-indigo-400"></i> 파일 선택 (대기열 추가)
+              <label class="px-3 py-1.5 rounded-md btn-outline text-xs cursor-pointer">
+                + 파일 선택 (대기열 추가)
                 <input type="file" multiple onchange="handleStageDetailFiles(event)" class="hidden">
               </label>
-              <button onclick="handleUploadStagedDetailFiles()" id="detailQueueUploadBtn" class="px-4 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm hidden">
-                <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 대기열 일괄 업로드 (<span id="detailQueueCount">0</span>)
+              <button onclick="handleUploadStagedDetailFiles()" id="detailQueueUploadBtn" class="px-4 py-1.5 rounded-md text-xs btn-white hidden">
+                대기열 파일 일괄 업로드 (<span id="detailQueueCount">0</span>)
               </button>
             </div>
 
-            <div id="detailStagedFilesList" class="space-y-1.5"></div>
+            <div id="detailStagedFilesList" class="space-y-1"></div>
 
-            <div class="flex gap-2 pt-2 border-t border-white/[0.06]">
-              <input type="text" id="linkTitleInput" placeholder="링크 제목 (예: 피그마, 노션)" class="w-1/3 bg-black/40 border border-white/[0.08] rounded-lg px-3 py-1.5 text-sm text-white">
-              <input type="url" id="linkUrlInput" placeholder="https://..." class="flex-1 bg-black/40 border border-white/[0.08] rounded-lg px-3 py-1.5 text-sm text-white">
-              <button onclick="handleAddLink()" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 border border-white/[0.08] whitespace-nowrap">
-                링크 등록
-              </button>
+            <div class="flex gap-2 pt-2 border-t border-[#1f1f1f]">
+              <input type="text" id="linkTitleInput" placeholder="링크 제목" class="w-1/3 bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-1.5 text-xs text-white">
+              <input type="url" id="linkUrlInput" placeholder="https://..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-1.5 text-xs text-white">
+              <button onclick="handleAddLink()" class="px-3.5 py-1.5 rounded-md text-xs btn-outline whitespace-nowrap">링크 등록</button>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <div id="modalFilesList" class="space-y-1.5"></div>
-            <div id="modalLinksList" class="space-y-1.5"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div id="modalFilesList" class="space-y-1"></div>
+            <div id="modalLinksList" class="space-y-1"></div>
           </div>
         </div>
 
         <!-- Comments -->
-        <div class="space-y-3 pt-4 border-t border-white/[0.08]">
-          <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-            <i class="fa-regular fa-comments text-indigo-400"></i> 업무 코멘트 & 피드백
-          </h4>
-          <div id="modalCommentsList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
+        <div class="space-y-3 pt-4 border-t border-[#222222]">
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider">코멘트 & 피드백</h4>
+          <div id="modalCommentsList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
           <form onsubmit="handleAddComment(event)" class="flex gap-2">
-            <input type="text" id="commentInput" placeholder="피드백이나 진행 상황을 남겨주세요..." class="flex-1 bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-            <button type="submit" class="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-white text-sm font-semibold">등록</button>
+            <input type="text" id="commentInput" placeholder="피드백을 남겨주세요..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-3.5 py-2 text-xs text-white focus:outline-none focus:border-white">
+            <button type="submit" class="px-4 py-2 rounded-md btn-outline text-xs font-semibold">등록</button>
           </form>
         </div>
       </div>
@@ -441,30 +473,27 @@
   </div>
 
   <!-- 3. Invite Modal -->
-  <div id="inviteModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="surface-panel w-full max-w-md rounded-2xl p-6">
-      <div class="flex items-center justify-between pb-3.5 border-b border-white/[0.08]">
-        <h3 class="text-base font-bold text-white">팀원 초대 및 워크스페이스 공유</h3>
-        <button onclick="closeModal('inviteModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+  <div id="inviteModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="mono-panel w-full max-w-md rounded-xl p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[#222222]">
+        <h3 class="text-sm font-bold text-white">워크스페이스 초대</h3>
+        <button onclick="closeModal('inviteModal')" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="mt-4 space-y-4">
-        <div>
-          <label class="block text-xs text-slate-400 mb-1.5">초대 링크 (클릭 한 번으로 팀원 합류)</label>
-          <div class="flex gap-2">
-            <input type="text" id="inviteUrlField" readonly class="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2 text-sm text-slate-200 font-mono select-all">
-            <button onclick="copyInviteUrl()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white whitespace-nowrap">복사</button>
-          </div>
+        <div class="flex gap-2">
+          <input type="text" id="inviteUrlField" readonly class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-xs text-neutral-200 font-mono select-all">
+          <button onclick="copyInviteUrl()" class="px-4 py-2 rounded-md text-xs btn-white whitespace-nowrap">복사</button>
         </div>
-        <div class="text-xs text-slate-400 flex justify-between px-1 pt-2 border-t border-white/[0.08]">
-          <span>워크스페이스 고유 코드</span>
-          <span id="inviteCodeField" class="font-mono font-bold text-indigo-400 text-sm"></span>
+        <div class="text-xs text-neutral-500 flex justify-between pt-2 border-t border-[#1f1f1f]">
+          <span>WORKSPACE ID</span>
+          <span id="inviteCodeField" class="font-mono font-bold text-white"></span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Toast -->
-  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl shadow-2xl text-sm font-semibold transition-all duration-200 opacity-0 pointer-events-none"></div>
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-md shadow-2xl text-xs font-semibold transition-all duration-200 opacity-0 pointer-events-none"></div>
 
   <script>
     // ==========================================
@@ -482,6 +511,7 @@
     let currentDocs = [];
     let activeTask = null;
     let activeDocId = null;
+    let isTaskDetailDirty = false;
 
     let currentUserId = localStorage.getItem('teamflow_user_id') || ('usr-' + Math.random().toString(36).substring(2, 9));
     localStorage.setItem('teamflow_user_id', currentUserId);
@@ -499,7 +529,8 @@
     let creationStagedLinks = [];
     let detailStagedFiles = [];
 
-    // Map Interaction State (Drag Node + Pan Canvas)
+    // Map & Zoom State (#3)
+    let canvasZoom = 1.0;
     let isConnectMode = false;
     let connectSourceTaskId = null;
     let draggingTaskId = null;
@@ -562,89 +593,81 @@
 
       app.innerHTML = `
         <div class="flex-1 overflow-y-auto p-6 sm:p-12 canvas-grid select-text">
-          <div class="max-w-5xl mx-auto space-y-8">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-6">
+          <div class="max-w-5xl mx-auto space-y-10">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#222222] pb-6">
               <div>
-                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Next-Gen Visual Workspace</span>
-                <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-2.5">워크스페이스 허브</h1>
-                <p class="text-sm text-slate-400 mt-1">스타트업 스프린트, 프로덕트 TF, 대학 프로젝트까지 한 곳에서 연결하고 관리하세요.</p>
+                <span class="text-[11px] font-mono uppercase tracking-widest text-neutral-500">WORKSPACE DIRECTORY</span>
+                <h1 class="text-3xl font-bold text-white tracking-tight mt-1">TeamFlow</h1>
               </div>
               ${currentUserName ? `
-                <div class="flex items-center gap-2.5 surface-panel px-4 py-2 rounded-xl text-sm">
-                  <div class="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold flex items-center justify-center">${escapeHTML(getInitials(currentUserName))}</div>
-                  <span class="text-slate-200 font-medium">${escapeHTML(currentUserName)}</span>
-                  <button onclick="handleChangeGlobalUserName()" class="text-xs text-indigo-400 hover:underline ml-1">변경</button>
+                <div class="flex items-center gap-3 mono-panel px-3.5 py-2 rounded-md text-xs">
+                  <span class="w-2 h-2 rounded-full bg-white"></span>
+                  <span class="text-white font-semibold">${escapeHTML(currentUserName)}</span>
+                  <button onclick="handleChangeGlobalUserName()" class="text-neutral-400 hover:text-white underline ml-1">이름 변경</button>
                 </div>
               ` : ''}
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
               <div class="lg:col-span-2 space-y-4">
-                <h2 class="text-base font-bold text-white flex items-center gap-2">
-                  <i class="fa-solid fa-layer-group text-indigo-400 text-sm"></i> 내가 참여 중인 워크스페이스 (${savedList.length})
-                </h2>
+                <h2 class="text-xs font-mono uppercase tracking-wider text-neutral-400">내가 참여 중인 워크스페이스 (${savedList.length})</h2>
 
                 ${savedList.length === 0 ? `
-                  <div class="surface-panel rounded-2xl p-10 text-center space-y-2">
-                    <div class="text-slate-300 text-sm font-medium">아직 최근 접속한 워크스페이스가 없습니다.</div>
-                    <div class="text-slate-500 text-xs">우측에서 새 워크스페이스를 개설하거나 초대 코드로 합류하세요.</div>
+                  <div class="mono-panel rounded-lg p-10 text-center space-y-1">
+                    <div class="text-neutral-300 text-sm font-medium">접속 기록이 있는 워크스페이스가 없습니다.</div>
+                    <div class="text-neutral-500 text-xs">우측에서 새 워크스페이스를 생성하거나 코드로 입장하세요.</div>
                   </div>
                 ` : `
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     ${savedList.map(w => `
-                      <div onclick="window.location.search = '?p=${w.id}'" class="surface-card rounded-2xl p-5 cursor-pointer flex flex-col justify-between gap-4 group">
+                      <div onclick="window.location.search = '?p=${w.id}'" class="mono-card rounded-lg p-5 cursor-pointer flex flex-col justify-between gap-5 group">
                         <div class="flex items-start justify-between gap-2">
                           <div>
-                            <span class="text-[11px] font-mono text-indigo-300 bg-indigo-500/15 px-2 py-0.5 rounded-md border border-indigo-500/25">${w.id}</span>
-                            <h3 class="text-base font-bold text-white mt-2.5 group-hover:text-indigo-400 transition">${escapeHTML(w.title)}</h3>
+                            <span class="text-[11px] font-mono text-neutral-400">${w.id}</span>
+                            <h3 class="text-base font-bold text-white mt-1 group-hover:underline">${escapeHTML(w.title)}</h3>
                           </div>
-                          <button onclick="event.stopPropagation(); removeWorkspaceFromLocal('${w.id}')" class="text-slate-500 hover:text-rose-400 p-1" title="목록에서 제거">
+                          <button onclick="event.stopPropagation(); removeWorkspaceFromLocal('${w.id}')" class="text-neutral-600 hover:text-white p-1" title="목록에서 제거">
                             <i class="fa-solid fa-xmark"></i>
                           </button>
                         </div>
-                        <div class="flex items-center justify-between text-xs text-slate-400 pt-3 border-t border-white/[0.06]">
-                          <span>최근 접속: ${w.accessed_at || '-'}</span>
-                          <span class="text-indigo-400 font-semibold group-hover:translate-x-0.5 transition">입장하기 →</span>
+                        <div class="flex items-center justify-between text-xs text-neutral-500 pt-3 border-t border-[#1f1f1f]">
+                          <span>${w.accessed_at || '-'}</span>
+                          <span class="text-white font-semibold">열기 →</span>
                         </div>
                       </div>
                     `).join('')}
                   </div>
                 `}
 
-                <div class="surface-panel rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="mono-panel rounded-lg p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
                   <div>
-                    <h4 class="text-sm font-bold text-white">초대 코드로 합류</h4>
-                    <p class="text-xs text-slate-400">전달받은 프로젝트 코드(tf-xxxxxx) 또는 초대 링크를 붙여넣으세요.</p>
+                    <h4 class="text-sm font-bold text-white">코드로 워크스페이스 합류</h4>
+                    <p class="text-xs text-neutral-500">전달받은 프로젝트 코드(tf-xxxxxx) 또는 URL 입력</p>
                   </div>
                   <form onsubmit="handleJoinByCode(event)" class="flex gap-2 w-full sm:w-auto">
-                    <input type="text" id="joinCodeInput" required placeholder="tf-xxxxxx" class="bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 w-full sm:w-44 font-mono">
-                    <button type="submit" class="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-sm font-semibold text-white whitespace-nowrap">합류</button>
+                    <input type="text" id="joinCodeInput" required placeholder="tf-xxxxxx" class="bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-xs text-white focus:outline-none focus:border-white w-full sm:w-44 font-mono">
+                    <button type="submit" class="px-4 py-2 rounded-md text-xs btn-outline whitespace-nowrap">합류</button>
                   </form>
                 </div>
               </div>
 
-              <div class="surface-panel rounded-2xl p-6 space-y-4">
-                <div class="flex items-center gap-2.5">
-                  <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-                    <i class="fa-solid fa-plus"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-base font-bold text-white">새 워크스페이스 개설</h3>
-                    <p class="text-xs text-slate-400">팀 프로젝트·스타트업 보드 즉시 생성</p>
-                  </div>
+              <div class="mono-panel rounded-lg p-6 space-y-5">
+                <div>
+                  <span class="text-[10px] font-mono uppercase tracking-widest text-neutral-500">NEW WORKSPACE</span>
+                  <h3 class="text-base font-bold text-white mt-0.5">새 워크스페이스 개설</h3>
                 </div>
 
-                <form onsubmit="handleCreateProject(event)" class="space-y-4 pt-1">
+                <form onsubmit="handleCreateProject(event)" class="space-y-4">
                   <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">워크스페이스 이름 *</label>
-                    <input type="text" id="newProjectTitle" required placeholder="예: Q4 프로덕트 런칭 TF / 캡스톤 2조" class="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    <label class="block text-xs text-neutral-400 mb-1.5">워크스페이스 이름 *</label>
+                    <input type="text" id="newProjectTitle" required placeholder="예: 프로덕트 런칭 TF / 캡스톤 2팀" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
                   </div>
                   <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">본인 이름 (닉네임 / 역할) *</label>
-                    <input type="text" id="newProjectLeader" required value="${escapeHTML(currentUserName || '')}" placeholder="예: 최유겸 (PM)" class="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    <label class="block text-xs text-neutral-400 mb-1.5">본인 이름 (닉네임 / 역할) *</label>
+                    <input type="text" id="newProjectLeader" required value="${escapeHTML(currentUserName || '')}" placeholder="예: 최유겸 (PM)" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
                   </div>
-                  <button type="submit" id="createProjectBtn" class="w-full py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 transition shadow-lg shadow-indigo-600/25">
-                    워크스페이스 생성하기 →
+                  <button type="submit" id="createProjectBtn" class="w-full py-2.5 rounded-md text-xs btn-white">
+                    워크스페이스 생성 →
                   </button>
                 </form>
               </div>
@@ -662,7 +685,7 @@
     }
 
     function handleChangeGlobalUserName() {
-      const next = prompt('변경할 이름(닉네임)을 입력하세요:', currentUserName || '');
+      const next = prompt('변경할 이름을 입력하세요:', currentUserName || '');
       if (next && next.trim()) {
         currentUserName = next.trim();
         localStorage.setItem('teamflow_user_name', currentUserName);
@@ -695,11 +718,8 @@
           title: '📌 프로젝트 핵심 목표 & 공지사항',
           category: '필수 공지',
           is_pinned: true,
-          content: '■ 핵심 목표:\n\n■ 주요 마일스톤 일정:\n\n■ 그라운드 룰 & 레퍼런스:',
-          agenda: [
-            { text: '킥오프 미팅 및 목표 정렬', done: true },
-            { text: '핵심 마일스톤 및 담당 파트 분배', done: false }
-          ],
+          content: '■ 핵심 목표:\n\n■ 주요 마일스톤 일정:\n\n■ 그라운드 룰:',
+          agenda: [{ text: '킥오프 및 목표 정렬', done: false }],
           updated_by: leaderName
         }]);
 
@@ -711,7 +731,7 @@
       } catch (err) {
         showToast('생성 실패: ' + err.message, 'error');
         btn.disabled = false;
-        btn.textContent = '워크스페이스 생성하기 →';
+        btn.textContent = '워크스페이스 생성 →';
       }
     }
 
@@ -719,12 +739,12 @@
       const app = document.getElementById('appContainer');
       app.innerHTML = `
         <div class="flex-1 flex flex-col items-center justify-center p-6 canvas-grid">
-          <div class="w-full max-w-md surface-panel rounded-2xl p-7">
-            <h2 class="text-lg font-bold text-white mb-1">워크스페이스 멤버 합류</h2>
-            <p class="text-sm text-slate-400 mb-5">팀원들과 협업할 본인의 이름이나 역할을 입력해 주세요.</p>
-            <form onsubmit="handleOnboardUser(event)" class="space-y-4">
-              <input type="text" id="onboardNameInput" required placeholder="예: 김민수 (프론트엔드 / 디자인)" class="w-full bg-black/40 border border-white/[0.1] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-              <button type="submit" class="w-full py-2.5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition">입장하기</button>
+          <div class="w-full max-w-sm mono-panel rounded-xl p-6">
+            <h2 class="text-base font-bold text-white mb-1">워크스페이스 입장</h2>
+            <p class="text-xs text-neutral-400 mb-4">팀원들과 협업할 본인의 이름을 입력하세요.</p>
+            <form onsubmit="handleOnboardUser(event)" class="space-y-3">
+              <input type="text" id="onboardNameInput" required placeholder="이름 (예: 김민수)" class="w-full bg-[#0d0d0d] border border-[#262626] rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+              <button type="submit" class="w-full py-2.5 rounded-md text-xs btn-white">입장하기</button>
             </form>
           </div>
         </div>
@@ -742,12 +762,12 @@
     }
 
     // ==========================================
-    // 2. LOAD WORKSPACE & REALTIME
+    // 2. LOAD WORKSPACE, REALTIME & NOTIFICATIONS (#1)
     // ==========================================
     async function loadWorkspace() {
       try {
         const { data: proj, error } = await sbClient.from('projects').select('*').eq('id', currentProjectId).single();
-        if (error || !proj) throw new Error('해당 워크스페이스를 찾을 수 없습니다.');
+        if (error || !proj) throw new Error('워크스페이스를 찾을 수 없습니다.');
         currentProject = proj;
         saveWorkspaceToLocal(proj);
 
@@ -776,7 +796,6 @@
         document.getElementById('headerActions').classList.add('flex');
 
         document.getElementById('currentUserName').textContent = currentUserName;
-        document.getElementById('headerUserAvatar').textContent = getInitials(currentUserName);
         updateTopBarStats();
         renderActiveViewport();
         renderChatDrawerUI();
@@ -784,6 +803,61 @@
         showToast(err.message, 'error');
         setTimeout(() => goToWorkspaceHub(), 1500);
       }
+    }
+
+    // #1: Evaluate Assignee Custom Notifications
+    function getMyActiveNotifications() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      return currentTasks.filter(t => {
+        if (t.status === 'done') return false;
+        if (t.assignee_name !== currentUserName) return false;
+        const rule = t.reminder_rule || 'none';
+        if (rule === 'none') return false;
+        if (rule === 'always') return true;
+        if (!t.due_date) return false;
+
+        const due = new Date(t.due_date + 'T00:00:00');
+        const diffDays = Math.round((due - today) / (1000 * 60 * 60 * 24));
+        if (rule === 'd_day' && diffDays <= 0) return true;
+        if (rule === 'd_1' && diffDays <= 1) return true;
+        if (rule === 'd_3' && diffDays <= 3) return true;
+        return false;
+      });
+    }
+
+    function toggleNotificationPopover() {
+      const pop = document.getElementById('notifPopover');
+      pop.classList.toggle('hidden');
+      renderNotificationList();
+    }
+
+    function renderNotificationList() {
+      const alerts = getMyActiveNotifications();
+      const badge = document.getElementById('notifCountBadge');
+      const box = document.getElementById('notifPopoverList');
+      if (!badge || !box) return;
+
+      if (alerts.length > 0) {
+        badge.textContent = alerts.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      const ruleLabel = { always: '상시 고정', d_day: 'D-Day 도래', d_1: 'D-1 임박', d_3: 'D-3 임박' };
+      box.innerHTML = alerts.length === 0
+        ? `<div class="text-xs text-neutral-500 py-6 text-center">현재 활성화된 내 알림이 없습니다.<br><span class="text-[11px]">업무 상세창에서 알림 조건을 직접 설정하세요.</span></div>`
+        : alerts.map(t => `
+          <div onclick="document.getElementById('notifPopover').classList.add('hidden'); openTaskDetailModal('${t.id}')" class="p-2.5 rounded-md bg-[#111111] hover:bg-[#1a1a1a] border border-[#262626] cursor-pointer space-y-1">
+            <div class="flex items-center justify-between text-[10px]">
+              <span class="px-1.5 py-0.5 rounded bg-white text-black font-bold">${ruleLabel[t.reminder_rule] || '알림'}</span>
+              <span class="font-mono text-neutral-400">${t.due_date || '기한 미정'}</span>
+            </div>
+            <div class="text-xs font-semibold text-white truncate">${escapeHTML(t.title)}</div>
+          </div>
+        `).join('');
     }
 
     function updateTopBarStats() {
@@ -799,11 +873,13 @@
       ['map', 'kanban', 'docs'].forEach(v => {
         const btn = document.getElementById(`tabBtn-${v}`);
         if (v === currentView) {
-          btn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-semibold transition flex items-center gap-2 bg-indigo-600 text-white shadow-sm';
+          btn.className = 'px-3 py-1 rounded-md text-xs font-bold transition bg-white text-black';
         } else {
-          btn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-white';
+          btn.className = 'px-3 py-1 rounded-md text-xs font-medium transition text-neutral-400 hover:text-white';
         }
       });
+
+      renderNotificationList();
     }
 
     function switchView(view) {
@@ -820,13 +896,13 @@
 
     function initRealtimeSubscription() {
       if (!sbClient || !currentProjectId) return;
-      sbClient.channel(`tf-v3-${currentProjectId}`)
+      sbClient.channel(`tf-mono-${currentProjectId}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks', filter: `project_id=eq.${currentProjectId}` }, async () => {
           const { data } = await sbClient.from('tasks').select('*').eq('project_id', currentProjectId).order('created_at', { ascending: true });
           currentTasks = data || [];
           updateTopBarStats();
           if (!draggingTaskId) renderActiveViewport();
-          if (activeTask) {
+          if (activeTask && !isTaskDetailDirty) {
             const found = currentTasks.find(t => String(t.id) === String(activeTask.id));
             if (found) { activeTask = found; renderTaskDetailModalContent(); }
           }
@@ -849,28 +925,28 @@
     }
 
     // ==========================================
-    // 3. VIEW 1: SMART 4-SIDED ROUTING WORKFLOW MAP
+    // 3. VIEW 1: MONOCHROME WORKFLOW MAP + ZOOM (#3)
     // ==========================================
-    const NODE_WIDTH = 284;
-    const NODE_HEIGHT = 132;
+    const NODE_WIDTH = 280;
+    const NODE_HEIGHT = 126;
     const NODE_GAP = 24;
 
     function findNonOverlappingPosition(targetX, targetY, excludeTaskId) {
-      let x = Math.max(40, Math.round(targetX / 14) * 14);
-      let y = Math.max(80, Math.round(targetY / 14) * 14);
+      let x = Math.max(40, Math.round(targetX / 12) * 12);
+      let y = Math.max(80, Math.round(targetY / 12) * 12);
       const others = currentTasks.filter(t => t.in_map && String(t.id) !== String(excludeTaskId));
 
       let guard = 0;
       while (guard < 60) {
         const hit = others.find(o => {
-          const ox = o.pos_x || 360;
-          const oy = o.pos_y || 160;
+          const ox = o.pos_x || 340;
+          const oy = o.pos_y || 140;
           return Math.abs(x - ox) < (NODE_WIDTH + NODE_GAP) && Math.abs(y - oy) < (NODE_HEIGHT + NODE_GAP);
         });
         if (!hit) break;
-        x = (hit.pos_x || 360) + NODE_WIDTH + NODE_GAP;
+        x = (hit.pos_x || 340) + NODE_WIDTH + NODE_GAP;
         if (x > 1800) {
-          x = 360;
+          x = 340;
           y += NODE_HEIGHT + NODE_GAP;
         }
         guard++;
@@ -883,6 +959,36 @@
       renderWorkflowMapView();
     }
 
+    // #3: Zoom Controls
+    function changeCanvasZoom(delta) {
+      canvasZoom = Math.min(1.5, Math.max(0.4, Math.round((canvasZoom + delta) * 10) / 10));
+      applyCanvasZoomStyle();
+    }
+
+    function resetCanvasZoom() {
+      canvasZoom = 1.0;
+      applyCanvasZoomStyle();
+    }
+
+    function applyCanvasZoomStyle() {
+      const surf = document.getElementById('mapCanvasSurface');
+      const label = document.getElementById('zoomPercentLabel');
+      if (surf) {
+        surf.style.transform = `scale(${canvasZoom})`;
+        surf.style.transformOrigin = '0 0';
+      }
+      if (label) label.textContent = `${Math.round(canvasZoom * 100)}%`;
+      updateMinimapViewport();
+    }
+
+    function handleCanvasWheel(e) {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.1 : -0.1;
+        changeCanvasZoom(delta);
+      }
+    }
+
     function renderWorkflowMapView() {
       const app = document.getElementById('appContainer');
       const trayTasks = currentTasks.filter(t => !t.in_map);
@@ -890,48 +996,31 @@
 
       app.innerHTML = `
         <div class="flex-1 flex overflow-hidden relative">
-          
-          <!-- Floating Left Task Tray (Collapsible Glass Dock) -->
+          <!-- Floating Left Tray -->
           <div class="absolute top-4 left-4 bottom-4 z-20 flex flex-col pointer-events-none">
             ${isTrayCollapsed ? `
-              <button onclick="toggleTrayCollapse()" class="pointer-events-auto surface-panel px-3.5 py-2.5 rounded-2xl flex items-center gap-2 text-xs font-bold text-slate-200 hover:border-indigo-500/50 transition">
-                <i class="fa-solid fa-inbox text-indigo-400"></i>
-                <span>보관 트레이 (${trayTasks.length})</span>
-                <i class="fa-solid fa-chevron-right text-[10px] text-slate-400 ml-1"></i>
+              <button onclick="toggleTrayCollapse()" class="pointer-events-auto mono-panel px-3.5 py-2 rounded-lg flex items-center gap-2 text-xs font-bold text-white hover:border-white transition">
+                <span>트레이 (${trayTasks.length})</span>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
               </button>
             ` : `
-              <div class="pointer-events-auto w-72 surface-panel rounded-2xl flex flex-col max-h-full overflow-hidden">
-                <div class="p-3.5 border-b border-white/[0.07] flex items-center justify-between">
+              <div class="pointer-events-auto w-68 mono-panel rounded-lg flex flex-col max-h-full overflow-hidden" style="width: 268px;">
+                <div class="p-3 border-b border-[#222222] flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 text-xs">
-                      <i class="fa-solid fa-inbox"></i>
-                    </div>
-                    <span class="text-sm font-bold text-white">대기 트레이</span>
-                    <span class="text-xs font-mono px-2 py-0.5 rounded-md bg-white/[0.06] text-slate-300">${trayTasks.length}</span>
+                    <span class="text-xs font-bold text-white uppercase tracking-wider">TRAY</span>
+                    <span class="text-[11px] font-mono px-1.5 py-0.2 rounded bg-[#1a1a1a] text-neutral-300">${trayTasks.length}</span>
                   </div>
-                  <button onclick="toggleTrayCollapse()" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center" title="트레이 접기">
-                    <i class="fa-solid fa-chevron-left"></i>
-                  </button>
+                  <button onclick="toggleTrayCollapse()" class="text-neutral-500 hover:text-white text-xs"><i class="fa-solid fa-chevron-left"></i></button>
                 </div>
-
-                <div class="px-3.5 py-2 bg-black/25 border-b border-white/[0.05] text-[11px] text-slate-400 leading-relaxed">
-                  캔버스에 올릴 업무만 <span class="text-indigo-400 font-semibold">[맵에 배치]</span>를 눌러 꺼내세요.
-                </div>
-
-                <div class="flex-1 overflow-y-auto p-3 space-y-2">
+                <div class="flex-1 overflow-y-auto p-2.5 space-y-2">
                   ${trayTasks.length === 0 ? `
-                    <div class="py-10 flex flex-col items-center justify-center text-xs text-slate-500 text-center px-4">
-                      <i class="fa-regular fa-Circle-check text-lg text-slate-600 mb-2"></i>
-                      미배치 업무가 없습니다.
-                    </div>
+                    <div class="py-10 text-center text-xs text-neutral-600">보관된 미배치 업무 없음</div>
                   ` : trayTasks.map(t => `
-                    <div class="surface-card rounded-xl p-3 space-y-2">
-                      <div onclick="openTaskDetailModal('${t.id}')" class="text-sm font-semibold text-slate-100 hover:text-indigo-400 cursor-pointer leading-snug">${escapeHTML(t.title)}</div>
+                    <div class="mono-card rounded-md p-3 space-y-2">
+                      <div onclick="openTaskDetailModal('${t.id}')" class="text-xs font-semibold text-white hover:underline cursor-pointer">${escapeHTML(t.title)}</div>
                       <div class="flex items-center justify-between pt-1">
-                        <span class="text-xs text-slate-400">${escapeHTML(t.assignee_name || '미정')}</span>
-                        <button onclick="placeTaskOnMap('${t.id}')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-500/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 transition">
-                          맵에 배치 →
-                        </button>
+                        <span class="text-[11px] text-neutral-500">${escapeHTML(t.assignee_name || '미정')}</span>
+                        <button onclick="placeTaskOnMap('${t.id}')" class="px-2 py-0.5 rounded text-[11px] btn-white">배치 →</button>
                       </div>
                     </div>
                   `).join('')}
@@ -940,62 +1029,62 @@
             `}
           </div>
 
-          <!-- Top-Center Floating Canvas Pill Toolbar -->
-          <div class="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 surface-panel p-1.5 rounded-2xl">
-            <button onclick="toggleConnectMode()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-2 ${isConnectMode ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'text-slate-200 hover:bg-white/[0.06]'}">
-              <i class="fa-solid fa-bezier-curve text-indigo-400 ${isConnectMode ? '!text-white' : ''}"></i>
-              <span>${isConnectMode ? (connectSourceTaskId ? '후행 업무 카드를 클릭하세요' : '선행 업무 카드를 클릭하세요') : '화살표 연결 (또는 Shift+클릭)'}</span>
+          <!-- Top-Center Floating Toolbar (Connect + Zoom #3) -->
+          <div class="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 mono-panel p-1.5 rounded-lg shadow-2xl">
+            <button onclick="toggleConnectMode()" class="px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 ${isConnectMode ? 'bg-white text-black' : 'text-neutral-300 hover:text-white'}">
+              <i class="fa-solid fa-arrow-Right-long text-[10px]"></i>
+              <span>${isConnectMode ? (connectSourceTaskId ? '후행 카드 클릭' : '선행 카드 클릭') : '화살표 연결 (Shift+클릭)'}</span>
             </button>
-            <div class="h-4 w-[1px] bg-white/[0.08]"></div>
-            <button onclick="fitCanvasToNodes()" class="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-white/[0.06] transition flex items-center gap-1.5">
-              <i class="fa-solid fa-compress text-slate-400"></i> 한눈에 맞춤
-            </button>
-            <div class="h-4 w-[1px] bg-white/[0.08] hidden md:block"></div>
-            <span class="text-[11px] text-slate-400 px-2.5 hidden md:inline">
-              빈 배경 드래그로 화면 이동 · 선 클릭 시 연결 해제
-            </span>
+            <div class="h-4 w-[1px] bg-[#222222]"></div>
+            <!-- Zoom Controls -->
+            <div class="flex items-center gap-0.5">
+              <button onclick="changeCanvasZoom(-0.1)" class="w-7 h-7 rounded hover:bg-[#1a1a1a] text-neutral-300 hover:text-white text-xs flex items-center justify-center" title="축소 (Ctrl+휠)"><i class="fa-solid fa-minus text-[10px]"></i></button>
+              <button onclick="resetCanvasZoom()" id="zoomPercentLabel" class="px-2 py-1 rounded hover:bg-[#1a1a1a] font-mono text-[11px] text-white" title="100% 초기화">${Math.round(canvasZoom * 100)}%</button>
+              <button onclick="changeCanvasZoom(0.1)" class="w-7 h-7 rounded hover:bg-[#1a1a1a] text-neutral-300 hover:text-white text-xs flex items-center justify-center" title="확대 (Ctrl+휠)"><i class="fa-solid fa-plus text-[10px]"></i></button>
+            </div>
+            <div class="h-4 w-[1px] bg-[#222222]"></div>
+            <button onclick="fitCanvasToNodes()" class="px-2.5 py-1.5 rounded-md text-xs text-neutral-400 hover:text-white transition">화면 맞춤</button>
           </div>
 
-          <!-- Seamless Infinite-feel Canvas Viewport (No ugly scrollbars) -->
+          <!-- Canvas Viewport -->
           <div id="mapCanvasViewport"
                onscroll="updateMinimapViewport()"
+               onwheel="handleCanvasWheel(event)"
                onmousedown="handleViewportPanStart(event)"
                class="flex-1 overflow-auto no-scrollbar canvas-grid relative cursor-grab active:cursor-grabbing">
             <div id="mapCanvasSurface"
+                 style="transform: scale(${canvasZoom}); transform-origin: 0 0;"
                  class="relative w-[2800px] h-[1800px]"
                  onmousemove="handleCanvasMouseMove(event)"
                  onmouseup="handleCanvasMouseUp(event)">
               
-              <!-- SVG Smart-Routed Edges Layer -->
               <svg id="mapEdgesSvg" class="absolute inset-0 w-full h-full pointer-events-none z-0">
                 <defs>
-                  <marker id="arrow-done" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
-                    <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#34d399" />
+                  <marker id="arrow-done" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#ffffff" />
                   </marker>
-                  <marker id="arrow-wait" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
-                    <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#818cf8" />
+                  <marker id="arrow-wait" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#737373" />
                   </marker>
                 </defs>
                 ${renderMapSvgEdges(mapTasks)}
               </svg>
 
-              <!-- HTML Nodes Layer -->
               ${mapTasks.map(t => renderMapNodeHTML(t, mapTasks)).join('')}
             </div>
           </div>
 
-          <!-- Bottom-Right Floating Minimap -->
-          <div class="absolute bottom-4 right-4 z-20 surface-panel rounded-2xl p-2.5 w-52">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 px-1 mb-1.5">
-              <span class="font-semibold text-slate-300"><i class="fa-regular fa-compass mr-1 text-indigo-400"></i>미니맵</span>
-              <span class="font-mono text-[10px]">${mapTasks.length} nodes</span>
+          <!-- Bottom-Right Minimap -->
+          <div class="absolute bottom-4 right-4 z-20 mono-panel rounded-lg p-2.5 w-48">
+            <div class="flex items-center justify-between text-[10px] font-mono text-neutral-500 mb-1.5">
+              <span>MINIMAP</span>
+              <span>${mapTasks.length} NODES</span>
             </div>
-            <div id="minimapBox" onclick="handleMinimapClick(event)" class="relative w-full bg-black/60 border border-white/[0.07] rounded-xl overflow-hidden cursor-crosshair" style="height: 116px;">
+            <div id="minimapBox" onclick="handleMinimapClick(event)" class="relative w-full bg-black border border-[#222222] rounded overflow-hidden cursor-crosshair" style="height: 108px;">
               ${renderMinimapNodes(mapTasks)}
-              <div id="minimapViewportRect" class="absolute border border-indigo-400/80 bg-indigo-500/15 pointer-events-none rounded" style="left:0; top:0; width:40px; height:30px;"></div>
+              <div id="minimapViewportRect" class="absolute border border-white/70 bg-white/10 pointer-events-none" style="left:0; top:0; width:40px; height:30px;"></div>
             </div>
           </div>
-
         </div>
       `;
 
@@ -1003,27 +1092,15 @@
     }
 
     function renderMapNodeHTML(task, mapTasks) {
-      const x = task.pos_x || 380;
+      const x = task.pos_x || 360;
       const y = task.pos_y || 160;
       const deps = Array.isArray(task.dependencies) ? task.dependencies : [];
       const parentTasks = mapTasks.filter(p => deps.some(d => String(d) === String(p.id)));
       const isBlocked = parentTasks.some(p => p.status !== 'done');
       const isSource = String(connectSourceTaskId) === String(task.id);
 
-      const priMap = { urgent: '긴급', high: '높음', medium: '보통', low: '낮음' };
-      const statusAccent = {
-        todo: 'bg-slate-500',
-        in_progress: 'bg-blue-500',
-        review: 'bg-amber-500',
-        done: 'bg-emerald-500'
-      }[task.status] || 'bg-slate-500';
-
-      const statusLabel = {
-        todo: '대기',
-        in_progress: '진행 중',
-        review: '검토',
-        done: '완료'
-      }[task.status] || '대기';
+      const priMap = { urgent: 'URGENT', high: 'HIGH', medium: 'MED', low: 'LOW' };
+      const statusLabel = { todo: 'TODO', in_progress: 'ACTIVE', review: 'REVIEW', done: 'DONE' }[task.status] || 'TODO';
 
       const checkTotal = (task.checklist || []).length;
       const checkDone = (task.checklist || []).filter(c => c.done).length;
@@ -1035,72 +1112,57 @@
              onmousedown="handleNodeMouseDown(event, '${task.id}')"
              onclick="handleNodeClick(event, '${task.id}')"
              ondblclick="openTaskDetailModal('${task.id}')"
-             class="map-node surface-card rounded-2xl p-4 group ${isSource ? 'connect-source' : ''}">
+             class="map-node mono-card rounded-lg p-3.5 group ${isSource ? 'connect-source' : ''} ${task.status === 'done' ? 'opacity-60' : ''}">
           
-          <!-- Left Status Accent Strip -->
-          <div class="absolute left-0 top-3.5 bottom-3.5 w-1 rounded-r-full ${statusAccent}"></div>
+          <!-- 4-Sided Ports -->
+          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-top"></div>
+          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-right"></div>
+          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-bottom"></div>
+          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-left"></div>
 
-          <!-- 4-Sided Connection Ports -->
-          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-top" title="클릭하여 연결"></div>
-          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-right" title="클릭하여 연결"></div>
-          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-bottom" title="클릭하여 연결"></div>
-          <div onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" class="node-port port-left" title="클릭하여 연결"></div>
-
-          <!-- Header Chips & Quick Actions -->
-          <div class="flex items-center justify-between gap-1.5 mb-2.5 pl-1.5">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold pri-${task.priority || 'medium'}">${priMap[task.priority || 'medium']}</span>
-              <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/[0.06] text-slate-300">${escapeHTML(task.label || '일반')}</span>
-              ${isBlocked && task.status !== 'done' ? `
-                <span class="text-[11px] px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 font-medium">
-                  <i class="fa-solid fa-lock text-[9px] mr-0.5"></i>선행대기
-                </span>
-              ` : ''}
+          <!-- Top Meta -->
+          <div class="flex items-center justify-between gap-1 mb-2">
+            <div class="flex items-center gap-1.5">
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono chip-${task.priority || 'medium'}">${priMap[task.priority || 'medium']}</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] bg-[#1a1a1a] text-neutral-300">${escapeHTML(task.label || '일반')}</span>
+              ${isBlocked && task.status !== 'done' ? `<span class="text-[10px] px-1.5 py-0.5 rounded border border-neutral-600 text-neutral-300 font-mono">LOCKED</span>` : ''}
             </div>
 
-            <!-- Hover Action Bar -->
-            <div class="flex items-center gap-0.5 opacity-70 group-hover:opacity-100 transition">
-              <button onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" title="화살표 연결" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-indigo-400 flex items-center justify-center text-xs">
+            <div class="flex items-center gap-0.5 opacity-60 group-hover:opacity-100 transition">
+              <button onclick="event.stopPropagation(); startConnectFromNode('${task.id}')" title="화살표 연결" class="w-5 h-5 rounded hover:bg-[#262626] text-neutral-400 hover:text-white flex items-center justify-center text-[10px]">
                 <i class="fa-solid fa-share-nodes"></i>
               </button>
-              <button onclick="event.stopPropagation(); removeTaskFromMapToTray('${task.id}')" title="트레이로 보관" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-amber-400 flex items-center justify-center text-xs">
+              <button onclick="event.stopPropagation(); removeTaskFromMapToTray('${task.id}')" title="트레이로 이동" class="w-5 h-5 rounded hover:bg-[#262626] text-neutral-400 hover:text-white flex items-center justify-center text-[10px]">
                 <i class="fa-solid fa-inbox"></i>
               </button>
-              <button onclick="event.stopPropagation(); openTaskDetailModal('${task.id}')" title="상세 열기" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-xs">
-                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              <button onclick="event.stopPropagation(); openTaskDetailModal('${task.id}')" title="열기" class="w-5 h-5 rounded hover:bg-[#262626] text-neutral-400 hover:text-white flex items-center justify-center text-[10px]">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
               </button>
             </div>
           </div>
 
-          <!-- Task Title -->
-          <div class="pl-1.5 mb-3">
-            <h4 class="text-[15px] font-bold text-white leading-snug line-clamp-2 ${task.status === 'done' ? 'line-through text-slate-500' : ''}">${escapeHTML(task.title)}</h4>
+          <!-- Title -->
+          <div class="mb-3">
+            <h4 class="text-sm font-bold text-white leading-snug line-clamp-2 ${task.status === 'done' ? 'line-through text-neutral-500' : ''}">${escapeHTML(task.title)}</h4>
           </div>
 
-          <!-- Footer Assignee Avatar & Meta -->
-          <div class="flex items-center justify-between pt-2.5 border-t border-white/[0.06] pl-1.5 text-xs">
-            <div class="flex items-center gap-2 truncate">
-              <div class="w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-[10px] font-bold flex items-center justify-center shrink-0">
-                ${escapeHTML(getInitials(assignee))}
-              </div>
-              <span class="text-slate-300 font-medium truncate max-w-[110px]">${escapeHTML(assignee)}</span>
-            </div>
-
-            <div class="flex items-center gap-2.5 text-slate-400">
-              ${checkTotal > 0 ? `<span class="${checkDone === checkTotal ? 'text-emerald-400 font-semibold' : ''}"><i class="fa-solid fa-check-double mr-1 text-[10px]"></i>${checkDone}/${checkTotal}</span>` : ''}
-              ${(task.files?.length || 0) > 0 ? `<span><i class="fa-solid fa-paperclip mr-0.5 text-[10px]"></i>${task.files.length}</span>` : ''}
-              <span class="text-[11px] font-medium px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300">${statusLabel}</span>
+          <!-- Footer -->
+          <div class="flex items-center justify-between pt-2 border-t border-[#1f1f1f] text-[11px]">
+            <span class="text-neutral-300 font-medium truncate max-w-[120px]">${escapeHTML(assignee)}</span>
+            <div class="flex items-center gap-2 font-mono text-[10px] text-neutral-500">
+              ${task.reminder_rule && task.reminder_rule !== 'none' ? `<i class="fa-solid fa-bell text-white" title="알림 설정됨"></i>` : ''}
+              ${checkTotal > 0 ? `<span class="${checkDone === checkTotal ? 'text-white' : ''}">${checkDone}/${checkTotal}</span>` : ''}
+              <span class="px-1.5 py-0.2 rounded ${task.status === 'done' ? 'bg-white text-black font-bold' : 'bg-[#1a1a1a] text-neutral-300'}">${statusLabel}</span>
             </div>
           </div>
         </div>
       `;
     }
 
-    // #2: 4방향 스마트 앵커 라우팅 (상하좌우 중 가장 자연스러운 면끼리 부드럽게 연결)
     function computeSmartEdgeGeometry(source, target) {
-      const sx = source.pos_x || 380;
+      const sx = source.pos_x || 360;
       const sy = source.pos_y || 160;
-      const tx = target.pos_x || 380;
+      const tx = target.pos_x || 360;
       const ty = target.pos_y || 160;
 
       const scx = sx + NODE_WIDTH / 2;
@@ -1113,46 +1175,37 @@
 
       let x1, y1, x2, y2, c1x, c1y, c2x, c2y;
 
-      // 가로 거리가 세로 거리보다 넓거나 비슷할 때 -> 좌/우 포트 연결
       if (Math.abs(dx) >= Math.abs(dy) * 0.85) {
         if (dx >= 0) {
-          // Source 오른쪽 -> Target 왼쪽
           x1 = sx + NODE_WIDTH; y1 = scy;
           x2 = tx;              y2 = tcy;
-          const offset = Math.max(Math.abs(x2 - x1) * 0.45, 48);
+          const offset = Math.max(Math.abs(x2 - x1) * 0.45, 45);
           c1x = x1 + offset; c1y = y1;
           c2x = x2 - offset; c2y = y2;
         } else {
-          // Source 왼쪽 -> Target 오른쪽 (역주행 꼬임 방지!)
           x1 = sx;              y1 = scy;
           x2 = tx + NODE_WIDTH; y2 = tcy;
-          const offset = Math.max(Math.abs(x2 - x1) * 0.45, 48);
+          const offset = Math.max(Math.abs(x2 - x1) * 0.45, 45);
           c1x = x1 - offset; c1y = y1;
           c2x = x2 + offset; c2y = y2;
         }
       } else {
-        // 세로 배치가 주를 이룰 때 -> 상/하 포트 연결
         if (dy >= 0) {
-          // Source 아래쪽 -> Target 위쪽
           x1 = scx; y1 = sy + NODE_HEIGHT;
           x2 = tcx; y2 = ty;
-          const offset = Math.max(Math.abs(y2 - y1) * 0.45, 48);
+          const offset = Math.max(Math.abs(y2 - y1) * 0.45, 45);
           c1x = x1; c1y = y1 + offset;
           c2x = x2; c2y = y2 - offset;
         } else {
-          // Source 위쪽 -> Target 아래쪽
           x1 = scx; y1 = sy;
           x2 = tcx; y2 = ty + NODE_HEIGHT;
-          const offset = Math.max(Math.abs(y2 - y1) * 0.45, 48);
+          const offset = Math.max(Math.abs(y2 - y1) * 0.45, 45);
           c1x = x1; c1y = y1 - offset;
           c2x = x2; c2y = y2 + offset;
         }
       }
 
-      return {
-        x1, y1, x2, y2,
-        d: `M ${x1} ${y1} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${x2} ${y2}`
-      };
+      return { x1, y1, x2, y2, d: `M ${x1} ${y1} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${x2} ${y2}` };
     }
 
     function renderMapSvgEdges(mapTasks) {
@@ -1165,17 +1218,17 @@
 
           const geom = computeSmartEdgeGeometry(source, target);
           const isDone = source.status === 'done';
-          const color = isDone ? '#34d399' : '#818cf8';
+          const color = isDone ? '#ffffff' : '#666666';
 
           paths += `
             <g class="edge-group" onclick="handleRemoveDependency('${target.id}', '${source.id}')">
-              <title>클릭하여 연결 해제 (${escapeHTML(source.title)} → ${escapeHTML(target.title)})</title>
+              <title>클릭하여 연결 해제</title>
               <path d="${geom.d}" class="edge-bg"></path>
               <path d="${geom.d}"
                     class="edge-line ${isDone ? '' : 'edge-animated'}"
                     stroke="${color}"
                     marker-end="url(#${isDone ? 'arrow-done' : 'arrow-wait'})"></path>
-              <circle cx="${geom.x1}" cy="${geom.y1}" r="3.5" fill="${color}"></circle>
+              <circle cx="${geom.x1}" cy="${geom.y1}" r="3" fill="${color}"></circle>
             </g>
           `;
         });
@@ -1183,7 +1236,6 @@
       return paths;
     }
 
-    // Canvas Background Panning
     function handleViewportPanStart(e) {
       if (e.target.closest('.map-node') || e.target.closest('.edge-group')) return;
       const vp = document.getElementById('mapCanvasViewport');
@@ -1198,12 +1250,15 @@
     function handleNodeMouseDown(e, taskId) {
       if (e.button !== 0 || isConnectMode || e.shiftKey) return;
       e.stopPropagation();
-      const nodeEl = document.getElementById(`node-${taskId}`);
-      if (!nodeEl) return;
+      const surface = document.getElementById('mapCanvasSurface');
+      const task = currentTasks.find(t => String(t.id) === String(taskId));
+      if (!surface || !task) return;
+
       draggingTaskId = taskId;
-      const rect = nodeEl.getBoundingClientRect();
-      dragOffsetX = e.clientX - rect.left;
-      dragOffsetY = e.clientY - rect.top;
+      const surfRect = surface.getBoundingClientRect();
+      // Adjust for canvasZoom (#3)
+      dragOffsetX = (e.clientX - surfRect.left) / canvasZoom - (task.pos_x || 360);
+      dragOffsetY = (e.clientY - surfRect.top) / canvasZoom - (task.pos_y || 160);
     }
 
     function handleCanvasMouseMove(e) {
@@ -1222,8 +1277,8 @@
       if (!surface || !nodeEl) return;
 
       const surfRect = surface.getBoundingClientRect();
-      const rawX = Math.max(20, Math.round(e.clientX - surfRect.left - dragOffsetX));
-      const rawY = Math.max(20, Math.round(e.clientY - surfRect.top - dragOffsetY));
+      const rawX = Math.max(20, Math.round((e.clientX - surfRect.left) / canvasZoom - dragOffsetX));
+      const rawY = Math.max(20, Math.round((e.clientY - surfRect.top) / canvasZoom - dragOffsetY));
 
       nodeEl.style.left = `${rawX}px`;
       nodeEl.style.top = `${rawY}px`;
@@ -1237,8 +1292,8 @@
           const mapTasks = currentTasks.filter(t => t.in_map);
           svg.innerHTML = `
             <defs>
-              <marker id="arrow-done" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#34d399" /></marker>
-              <marker id="arrow-wait" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#818cf8" /></marker>
+              <marker id="arrow-done" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#ffffff" /></marker>
+              <marker id="arrow-wait" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#737373" /></marker>
             </defs>
             ${renderMapSvgEdges(mapTasks)}
           `;
@@ -1265,12 +1320,12 @@
     }
 
     function renderMinimapNodes(mapTasks) {
-      const scale = 0.068;
+      const scale = 0.06;
       return mapTasks.map(t => {
-        const left = Math.round((t.pos_x || 380) * scale);
+        const left = Math.round((t.pos_x || 360) * scale);
         const top = Math.round((t.pos_y || 160) * scale);
-        const color = t.status === 'done' ? 'bg-emerald-400' : (t.status === 'in_progress' ? 'bg-blue-400' : 'bg-indigo-400');
-        return `<div class="absolute ${color} rounded-xs" style="left:${left}px; top:${top}px; width:18px; height:8px;"></div>`;
+        const bg = t.status === 'done' ? 'bg-neutral-600' : 'bg-white';
+        return `<div class="absolute ${bg}" style="left:${left}px; top:${top}px; width:16px; height:7px;"></div>`;
       }).join('');
     }
 
@@ -1278,11 +1333,11 @@
       const vp = document.getElementById('mapCanvasViewport');
       const rect = document.getElementById('minimapViewportRect');
       if (!vp || !rect) return;
-      const scale = 0.068;
+      const scale = 0.06 / canvasZoom;
       rect.style.left = `${Math.round(vp.scrollLeft * scale)}px`;
       rect.style.top = `${Math.round(vp.scrollTop * scale)}px`;
-      rect.style.width = `${Math.min(188, Math.round(vp.clientWidth * scale))}px`;
-      rect.style.height = `${Math.min(114, Math.round(vp.clientHeight * scale))}px`;
+      rect.style.width = `${Math.min(170, Math.round(vp.clientWidth * scale))}px`;
+      rect.style.height = `${Math.min(106, Math.round(vp.clientHeight * scale))}px`;
     }
 
     function handleMinimapClick(e) {
@@ -1290,8 +1345,8 @@
       const box = document.getElementById('minimapBox');
       if (!vp || !box) return;
       const r = box.getBoundingClientRect();
-      const clickX = (e.clientX - r.left) / 0.068;
-      const clickY = (e.clientY - r.top) / 0.068;
+      const clickX = ((e.clientX - r.left) / 0.06) * canvasZoom;
+      const clickY = ((e.clientY - r.top) / 0.06) * canvasZoom;
       vp.scrollTo({ left: Math.max(0, clickX - vp.clientWidth / 2), top: Math.max(0, clickY - vp.clientHeight / 2), behavior: 'smooth' });
     }
 
@@ -1299,9 +1354,11 @@
       const vp = document.getElementById('mapCanvasViewport');
       const mapTasks = currentTasks.filter(t => t.in_map);
       if (!vp || mapTasks.length === 0) return;
-      const minX = Math.min(...mapTasks.map(t => t.pos_x || 380));
+      canvasZoom = 1.0;
+      applyCanvasZoomStyle();
+      const minX = Math.min(...mapTasks.map(t => t.pos_x || 360));
       const minY = Math.min(...mapTasks.map(t => t.pos_y || 160));
-      vp.scrollTo({ left: Math.max(0, minX - 340), top: Math.max(0, minY - 100), behavior: 'smooth' });
+      vp.scrollTo({ left: Math.max(0, minX - 320), top: Math.max(0, minY - 100), behavior: 'smooth' });
     }
 
     function toggleConnectMode() {
@@ -1339,7 +1396,7 @@
           deps.push(connectSourceTaskId);
           targetTask.dependencies = deps;
           await sbClient.from('tasks').update({ dependencies: deps }).eq('id', targetTask.id);
-          showToast('선후 화살표가 연결되었습니다.');
+          showToast('화살표가 연결되었습니다.');
         }
       }
       connectSourceTaskId = null;
@@ -1354,13 +1411,13 @@
       target.dependencies = deps;
       renderWorkflowMapView();
       await sbClient.from('tasks').update({ dependencies: deps }).eq('id', target.id);
-      showToast('화살표 연결이 해제되었습니다.');
+      showToast('연결이 해제되었습니다.');
     }
 
     async function placeTaskOnMap(taskId) {
       const task = currentTasks.find(t => String(t.id) === String(taskId));
       if (!task) return;
-      const safePos = findNonOverlappingPosition(360, 120, task.id);
+      const safePos = findNonOverlappingPosition(340, 120, task.id);
 
       task.in_map = true;
       task.pos_x = safePos.x;
@@ -1384,11 +1441,11 @@
 
       await sbClient.from('tasks').update({ in_map: false, dependencies: [] }).eq('id', task.id);
       renderActiveViewport();
-      showToast('트레이로 이동하며 기존 화살표 연결이 초기화되었습니다.');
+      showToast('트레이로 이동되었습니다.');
     }
 
     // ==========================================
-    // 4. VIEW 2: PERSONALIZED KANBAN BOARD
+    // 4. VIEW 2: MONOCHROME KANBAN BOARD
     // ==========================================
     function toggleKanbanFilter(onlyMine) {
       kanbanOnlyMine = onlyMine;
@@ -1398,10 +1455,10 @@
     function renderKanbanBoardView() {
       const app = document.getElementById('appContainer');
       const cols = [
-        { key: 'todo', title: '대기 (Todo)', dot: 'bg-slate-400' },
-        { key: 'in_progress', title: '진행 중 (In Progress)', dot: 'bg-blue-500' },
-        { key: 'review', title: '검토 요청 (Review)', dot: 'bg-amber-500' },
-        { key: 'done', title: '완료됨 (Done)', dot: 'bg-emerald-500' }
+        { key: 'todo', title: 'TODO (대기)' },
+        { key: 'in_progress', title: 'IN PROGRESS (진행 중)' },
+        { key: 'review', title: 'REVIEW (검토)' },
+        { key: 'done', title: 'DONE (완료)' }
       ];
 
       const filteredTasks = kanbanOnlyMine
@@ -1411,20 +1468,17 @@
       const myCount = currentTasks.filter(t => t.assignee_name === currentUserName).length;
 
       app.innerHTML = `
-        <div class="flex-1 flex flex-col overflow-hidden canvas-grid p-6">
-          <div class="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-white/[0.08]">
+        <div class="flex-1 flex flex-col overflow-hidden bg-black p-6">
+          <div class="flex items-center justify-between gap-4 mb-5 pb-4 border-b border-[#222222]">
             <div class="flex items-center gap-3">
-              <div class="flex items-center bg-black/40 p-1 rounded-xl border border-white/[0.08]">
-                <button onclick="toggleKanbanFilter(true)" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition ${kanbanOnlyMine ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'}">
-                  <i class="fa-solid fa-user-check mr-1.5 text-xs"></i>내 업무만 보기 (${myCount})
+              <div class="flex items-center bg-[#0a0a0a] p-1 rounded-lg border border-[#222222]">
+                <button onclick="toggleKanbanFilter(true)" class="px-3.5 py-1.5 rounded-md text-xs font-bold transition ${kanbanOnlyMine ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'}">
+                  내 업무만 보기 (${myCount})
                 </button>
-                <button onclick="toggleKanbanFilter(false)" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition ${!kanbanOnlyMine ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'}">
-                  <i class="fa-solid fa-users mr-1.5 text-xs"></i>팀 전체 업무 (${currentTasks.length})
+                <button onclick="toggleKanbanFilter(false)" class="px-3.5 py-1.5 rounded-md text-xs font-bold transition ${!kanbanOnlyMine ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'}">
+                  전체 업무 (${currentTasks.length})
                 </button>
               </div>
-              <span class="text-xs text-slate-400">
-                ${kanbanOnlyMine ? `현재 <b>${escapeHTML(currentUserName)}</b> 님에게 배정된 업무만 집중해서 표시합니다.` : '팀 전체의 모든 업무를 표시합니다.'}
-              </span>
             </div>
           </div>
 
@@ -1433,19 +1487,14 @@
               ${cols.map(c => {
                 const list = filteredTasks.filter(t => t.status === c.key);
                 return `
-                  <div class="surface-panel rounded-2xl flex flex-col h-full overflow-hidden">
-                    <div class="px-4 py-3.5 border-b border-white/[0.07] flex items-center justify-between">
-                      <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full ${c.dot}"></span>
-                        <span class="text-sm font-bold text-white">${c.title}</span>
-                      </div>
-                      <span class="text-xs font-mono px-2 py-0.5 rounded-md bg-white/[0.06] text-slate-300">${list.length}</span>
+                  <div class="mono-panel rounded-lg flex flex-col h-full overflow-hidden">
+                    <div class="px-4 py-3 border-b border-[#222222] flex items-center justify-between">
+                      <span class="text-xs font-mono font-bold text-white">${c.title}</span>
+                      <span class="text-xs font-mono text-neutral-500">${list.length}</span>
                     </div>
                     <div class="flex-1 overflow-y-auto p-3 space-y-2.5">
                       ${list.length === 0 ? `
-                        <div class="h-28 flex items-center justify-center text-xs text-slate-500 border border-dashed border-white/[0.07] rounded-xl">
-                          업무 없음
-                        </div>
+                        <div class="h-24 flex items-center justify-center text-xs text-neutral-600 border border-dashed border-[#1f1f1f] rounded-md">업무 없음</div>
                       ` : list.map(t => renderKanbanCard(t)).join('')}
                     </div>
                   </div>
@@ -1458,29 +1507,26 @@
     }
 
     function renderKanbanCard(task) {
-      const priMap = { urgent: '긴급', high: '높음', medium: '보통', low: '낮음' };
+      const priMap = { urgent: 'URGENT', high: 'HIGH', medium: 'MED', low: 'LOW' };
       const checkTotal = (task.checklist || []).length;
       const checkDone = (task.checklist || []).filter(c => c.done).length;
       const assignee = task.assignee_name || '미정';
 
       return `
-        <div onclick="openTaskDetailModal('${task.id}')" class="surface-card rounded-xl p-4 cursor-pointer space-y-2.5">
-          <div class="flex items-center justify-between gap-1.5">
+        <div onclick="openTaskDetailModal('${task.id}')" class="mono-card rounded-md p-3.5 cursor-pointer space-y-2.5">
+          <div class="flex items-center justify-between">
             <div class="flex items-center gap-1.5">
-              <span class="px-2 py-0.5 rounded-md text-xs font-semibold pri-${task.priority || 'medium'}">${priMap[task.priority || 'medium']}</span>
-              <span class="px-2 py-0.5 rounded-md text-xs bg-white/[0.06] text-slate-300">${escapeHTML(task.label || '일반')}</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono chip-${task.priority || 'medium'}">${priMap[task.priority || 'medium']}</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] bg-[#1a1a1a] text-neutral-300">${escapeHTML(task.label || '일반')}</span>
             </div>
-            ${task.in_map ? `<span class="text-xs text-indigo-400" title="워크플로우 맵에 배치됨"><i class="fa-solid fa-diagram-project"></i></span>` : ''}
+            ${task.reminder_rule && task.reminder_rule !== 'none' ? `<i class="fa-solid fa-bell text-white text-xs" title="알림 켜짐"></i>` : ''}
           </div>
           <h4 class="text-sm font-bold text-white leading-snug">${escapeHTML(task.title)}</h4>
-          <div class="flex items-center justify-between pt-2.5 border-t border-white/[0.06] text-xs text-slate-400">
-            <div class="flex items-center gap-1.5">
-              <div class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-bold flex items-center justify-center">${escapeHTML(getInitials(assignee))}</div>
-              <span>${escapeHTML(assignee)}</span>
-            </div>
-            <div class="flex items-center gap-2 text-slate-400">
-              ${task.due_date ? `<span class="font-mono">${task.due_date.slice(5)}</span>` : ''}
-              ${checkTotal > 0 ? `<span><i class="fa-solid fa-check-double mr-0.5"></i>${checkDone}/${checkTotal}</span>` : ''}
+          <div class="flex items-center justify-between pt-2 border-t border-[#1f1f1f] text-xs text-neutral-400">
+            <span>${escapeHTML(assignee)}</span>
+            <div class="flex items-center gap-2 font-mono text-[11px]">
+              ${task.due_date ? `<span>${task.due_date.slice(5)}</span>` : ''}
+              ${checkTotal > 0 ? `<span>${checkDone}/${checkTotal}</span>` : ''}
             </div>
           </div>
         </div>
@@ -1488,7 +1534,7 @@
     }
 
     // ==========================================
-    // 5. VIEW 3: TEAM DOCS & PINNED NOTICE + DRAG-DROP + AGENDA CHECKER
+    // 5. VIEW 3: TEAM DOCS & AGENDA CHECKER
     // ==========================================
     function renderDocsWikiView() {
       const app = document.getElementById('appContainer');
@@ -1496,33 +1542,31 @@
       const activeDoc = currentDocs.find(d => String(d.id) === String(activeDocId)) || null;
 
       app.innerHTML = `
-        <div class="flex-1 flex overflow-hidden canvas-grid select-text">
+        <div class="flex-1 flex overflow-hidden bg-black select-text">
           <div id="docsSidebarDropzone"
                ondragover="handleDocDragOver(event)"
                ondragleave="handleDocDragLeave(event)"
                ondrop="handleDocDrop(event)"
-               class="w-80 border-r border-white/[0.08] bg-[#0b0d13]/85 backdrop-blur-xl flex flex-col shrink-0 transition">
+               class="w-76 border-r border-[#222222] bg-[#050505] flex flex-col shrink-0 transition" style="width: 300px;">
             
-            <div class="p-4 border-b border-white/[0.07] flex items-center justify-between">
-              <span class="text-sm font-bold text-white">팀 공유 문서 & 공지함</span>
-              <button onclick="handleCreateDoc(false)" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white">+ 새 문서</button>
+            <div class="p-4 border-b border-[#222222] flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-white uppercase">DOCS & NOTICES</span>
+              <button onclick="handleCreateDoc(false)" class="px-2.5 py-1 rounded text-xs btn-white">+ 새 문서</button>
             </div>
 
-            <div class="mx-3 mt-3 p-3 rounded-xl border border-dashed border-white/[0.15] bg-white/[0.02] text-center space-y-1">
-              <div class="text-xs font-semibold text-indigo-400"><i class="fa-solid fa-file-arrow-up mr-1"></i>파일 드래그 앤 드롭 등록</div>
-              <div class="text-[11px] text-slate-400">문서(.txt, .md)나 참고 파일을 이곳에 끌어다 놓으면 즉시 등록됩니다.</div>
+            <div class="mx-3 mt-3 p-3 rounded-md border border-dashed border-[#333333] bg-[#0a0a0a] text-center">
+              <div class="text-xs font-semibold text-white">파일 드래그 앤 드롭 등록</div>
+              <div class="text-[11px] text-neutral-500 mt-0.5">파일을 이곳에 놓으면 즉시 문서화됩니다.</div>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-3 space-y-1.5">
+            <div class="flex-1 overflow-y-auto p-3 space-y-1">
               ${currentDocs.map(d => `
-                <div onclick="selectDoc('${d.id}')" class="p-3 rounded-xl cursor-pointer transition flex items-start justify-between gap-2 ${String(d.id) === String(activeDocId) ? 'bg-indigo-600/20 text-white border border-indigo-500/40' : 'text-slate-400 hover:bg-white/[0.04] hover:text-slate-200'}">
-                  <div class="truncate">
-                    <div class="flex items-center gap-1.5">
-                      ${d.is_pinned ? `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">📌 공지</span>` : ''}
-                      <span class="text-sm font-semibold truncate">${escapeHTML(d.title)}</span>
-                    </div>
-                    <div class="text-xs text-slate-500 mt-1">${escapeHTML(d.category || '일반 문서')} · ${escapeHTML(d.updated_by || '')}</div>
+                <div onclick="selectDoc('${d.id}')" class="p-3 rounded-md cursor-pointer transition ${String(d.id) === String(activeDocId) ? 'bg-white text-black' : 'text-neutral-400 hover:bg-[#111111] hover:text-white'}">
+                  <div class="flex items-center gap-1.5">
+                    ${d.is_pinned ? `<span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold ${String(d.id) === String(activeDocId) ? 'bg-black text-white' : 'bg-white text-black'}">PIN</span>` : ''}
+                    <span class="text-xs font-bold truncate">${escapeHTML(d.title)}</span>
                   </div>
+                  <div class="text-[11px] opacity-70 mt-1">${escapeHTML(d.category || '문서')} · ${escapeHTML(d.updated_by || '')}</div>
                 </div>
               `).join('')}
             </div>
@@ -1530,65 +1574,61 @@
 
           <div class="flex-1 flex flex-col overflow-y-auto p-6 sm:p-8">
             ${!activeDoc ? `
-              <div class="flex-1 flex items-center justify-center text-sm text-slate-500">좌측에서 문서를 선택하거나 파일을 드래그해 등록하세요.</div>
+              <div class="flex-1 flex items-center justify-center text-xs text-neutral-500">문서를 선택하세요.</div>
             ` : `
-              <div class="max-w-4xl w-full mx-auto flex-1 flex flex-col space-y-4">
-                <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-white/[0.08]">
+              <div class="max-w-3xl w-full mx-auto flex-1 flex flex-col space-y-4">
+                <div class="flex items-center justify-between gap-2 pb-4 border-b border-[#222222]">
                   <div class="flex items-center gap-2">
-                    <input type="text" id="docCategoryInput" value="${escapeHTML(activeDoc.category || '회의록')}" class="bg-black/40 border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-indigo-400 w-32 font-semibold">
-                    <button onclick="handleTogglePinDoc('${activeDoc.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${activeDoc.is_pinned ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' : 'bg-white/[0.04] text-slate-400 border-white/[0.08] hover:text-white'}">
-                      📌 ${activeDoc.is_pinned ? '상단 공지 고정됨' : '공지로 상단 고정'}
+                    <input type="text" id="docCategoryInput" value="${escapeHTML(activeDoc.category || '회의록')}" class="bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-1 text-xs text-white w-28">
+                    <button onclick="handleTogglePinDoc('${activeDoc.id}')" class="px-3 py-1 rounded-md text-xs ${activeDoc.is_pinned ? 'btn-white' : 'btn-outline'}">
+                      ${activeDoc.is_pinned ? '상단 고정됨' : '상단 고정'}
                     </button>
                   </div>
                   <div class="flex items-center gap-2">
-                    <button onclick="handleSaveDoc('${activeDoc.id}')" class="px-4 py-1.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow">저장하기</button>
-                    <button onclick="handleDeleteDoc('${activeDoc.id}')" class="px-3 py-1.5 rounded-xl text-sm text-slate-400 hover:text-rose-400"><i class="fa-regular fa-trash-can"></i></button>
+                    <button onclick="handleSaveDoc('${activeDoc.id}')" class="px-4 py-1.5 rounded-md text-xs btn-white">문서 저장</button>
+                    <button onclick="handleDeleteDoc('${activeDoc.id}')" class="px-2.5 py-1.5 rounded-md text-xs btn-outline">삭제</button>
                   </div>
                 </div>
 
-                <input type="text" id="docTitleInput" value="${escapeHTML(activeDoc.title)}" placeholder="문서 제목을 입력하세요" class="text-2xl font-bold text-white bg-transparent focus:outline-none">
+                <input type="text" id="docTitleInput" value="${escapeHTML(activeDoc.title)}" class="text-2xl font-bold text-white bg-transparent focus:outline-none">
 
                 ${(activeDoc.files && activeDoc.files.length > 0) ? `
-                  <div class="flex flex-wrap gap-2 p-3 rounded-xl bg-black/30 border border-white/[0.08]">
+                  <div class="flex flex-wrap gap-2 p-3 rounded-md bg-[#0a0a0a] border border-[#222222]">
                     ${activeDoc.files.map(f => `
-                      <a href="${f.url}" target="_blank" class="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-xs text-indigo-300 flex items-center gap-1.5">
+                      <a href="${f.url}" target="_blank" class="px-2.5 py-1 rounded bg-[#171717] text-xs text-white hover:underline flex items-center gap-1.5">
                         <i class="fa-regular fa-file"></i> ${escapeHTML(f.name)}
                       </a>
                     `).join('')}
                   </div>
                 ` : ''}
 
-                <textarea id="docContentInput" placeholder="회의록, 프로젝트 공지사항, 기획 스펙 등을 자유롭게 작성하세요..." class="flex-1 w-full bg-black/35 border border-white/[0.08] rounded-2xl p-5 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-indigo-500 resize-none min-h-[420px]">${escapeHTML(activeDoc.content || '')}</textarea>
+                <textarea id="docContentInput" placeholder="내용을 입력하세요..." class="flex-1 w-full bg-[#080808] border border-[#222222] rounded-lg p-5 text-sm text-neutral-100 leading-relaxed focus:outline-none focus:border-white resize-none min-h-[420px]">${escapeHTML(activeDoc.content || '')}</textarea>
               </div>
             `}
           </div>
 
           ${activeDoc ? `
-            <div class="w-80 border-l border-white/[0.08] bg-[#0b0d13]/85 backdrop-blur-xl p-4 flex flex-col shrink-0">
-              <div class="pb-3 mb-3 border-b border-white/[0.08] flex items-center justify-between">
-                <span class="text-sm font-bold text-white flex items-center gap-2">
-                  <i class="fa-solid fa-clipboard-check text-emerald-400"></i> 회의 안건 체커
-                </span>
-                <span class="text-xs font-mono text-slate-400">
+            <div class="w-72 border-l border-[#222222] bg-[#050505] p-4 flex flex-col shrink-0">
+              <div class="pb-3 mb-3 border-b border-[#222222] flex items-center justify-between">
+                <span class="text-xs font-mono font-bold text-white uppercase">AGENDA CHECKER</span>
+                <span class="text-xs font-mono text-neutral-400">
                   ${(activeDoc.agenda || []).filter(a => a.done).length}/${(activeDoc.agenda || []).length}
                 </span>
               </div>
 
               <form onsubmit="handleAddDocAgenda(event, '${activeDoc.id}')" class="flex gap-1.5 mb-3">
-                <input type="text" id="docAgendaInput" placeholder="논의할 안건 추가..." class="flex-1 bg-black/40 border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
-                <button type="submit" class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold">추가</button>
+                <input type="text" id="docAgendaInput" placeholder="안건 추가..." class="flex-1 bg-[#0d0d0d] border border-[#262626] rounded-md px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-white">
+                <button type="submit" class="px-3 py-1.5 rounded-md btn-white text-xs">추가</button>
               </form>
 
-              <div class="flex-1 overflow-y-auto space-y-2">
-                ${(activeDoc.agenda || []).length === 0 ? `
-                  <div class="text-xs text-slate-500 text-center py-8">등록된 회의 안건이 없습니다.</div>
-                ` : (activeDoc.agenda || []).map((ag, idx) => `
-                  <div class="flex items-start justify-between gap-2 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.07] text-xs">
+              <div class="flex-1 overflow-y-auto space-y-1.5">
+                ${(activeDoc.agenda || []).map((ag, idx) => `
+                  <div class="flex items-start justify-between gap-2 p-2.5 rounded-md bg-[#0d0d0d] border border-[#222222] text-xs">
                     <label class="flex items-start gap-2 cursor-pointer flex-1">
-                      <input type="checkbox" ${ag.done ? 'checked' : ''} onchange="handleToggleDocAgenda('${activeDoc.id}', ${idx})" class="mt-0.5 rounded bg-black border-slate-700 text-emerald-500">
-                      <span class="leading-snug ${ag.done ? 'line-through text-slate-500' : 'text-slate-200'}">${escapeHTML(ag.text)}</span>
+                      <input type="checkbox" ${ag.done ? 'checked' : ''} onchange="handleToggleDocAgenda('${activeDoc.id}', ${idx})" class="mt-0.5 accent-white">
+                      <span class="${ag.done ? 'line-through text-neutral-500' : 'text-neutral-200'}">${escapeHTML(ag.text)}</span>
                     </label>
-                    <button onclick="handleRemoveDocAgenda('${activeDoc.id}', ${idx})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-xmark"></i></button>
+                    <button onclick="handleRemoveDocAgenda('${activeDoc.id}', ${idx})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
                   </div>
                 `).join('')}
               </div>
@@ -1608,7 +1648,7 @@
       const files = Array.from(e.dataTransfer.files || []);
       if (files.length === 0) return;
 
-      showToast(`${files.length}개 파일을 문서함에 등록 중입니다...`);
+      showToast(`${files.length}개 파일 등록 중...`);
       for (const file of files) {
         let textContent = '';
         if (file.type.startsWith('text/') || /\.(md|txt|csv|json)$/i.test(file.name)) {
@@ -1627,8 +1667,8 @@
         const { data: newDoc } = await sbClient.from('docs').insert([{
           project_id: currentProjectId,
           title: file.name.replace(/\.[^/.]+$/, ''),
-          category: '드롭 파일',
-          content: textContent || `첨부된 파일(${file.name})을 상단 링크에서 열람하세요.`,
+          category: '파일 문서',
+          content: textContent || `첨부파일: ${file.name}`,
           files: uploadedFiles,
           agenda: [],
           updated_by: currentUserName
@@ -1640,14 +1680,14 @@
         }
       }
       renderDocsWikiView();
-      showToast('드롭한 파일이 팀 문서함에 등록되었습니다.');
+      showToast('문서함에 등록되었습니다.');
     }
 
     async function handleCreateDoc(isPinned = false) {
       const { data, error } = await sbClient.from('docs').insert([{
         project_id: currentProjectId,
-        title: isPinned ? '📌 새 팀 공지사항' : '새 회의록 / 문서',
-        category: isPinned ? '필수 공지' : '회의록',
+        title: '새 문서',
+        category: '회의록',
         is_pinned: isPinned,
         content: '',
         files: [],
@@ -1668,7 +1708,6 @@
       doc.is_pinned = !doc.is_pinned;
       await sbClient.from('docs').update({ is_pinned: doc.is_pinned }).eq('id', docId);
       renderDocsWikiView();
-      showToast(doc.is_pinned ? '상단 고정 공지로 설정되었습니다.' : '상단 고정이 해제되었습니다.');
     }
 
     async function handleSaveDoc(docId) {
@@ -1679,7 +1718,7 @@
       await sbClient.from('docs').update({
         title, category, content, updated_by: currentUserName, updated_at: new Date().toISOString()
       }).eq('id', docId);
-      showToast('문서가 저장되었습니다.');
+      showToast('저장되었습니다.');
     }
 
     async function handleAddDocAgenda(e, docId) {
@@ -1713,7 +1752,7 @@
     }
 
     async function handleDeleteDoc(docId) {
-      if (!confirm('이 문서를 삭제하시겠습니까?')) return;
+      if (!confirm('삭제하시겠습니까?')) return;
       await sbClient.from('docs').delete().eq('id', docId);
       activeDocId = null;
       const { data } = await sbClient.from('docs').select('*').eq('project_id', currentProjectId).order('is_pinned', { ascending: false }).order('updated_at', { ascending: false });
@@ -1742,47 +1781,36 @@
     }
 
     function handleStageCreationFiles(e) {
-      const added = Array.from(e.target.files || []);
-      creationStagedFiles.push(...added);
+      creationStagedFiles.push(...Array.from(e.target.files || []));
       e.target.value = '';
       renderCreationStagedLists();
     }
-
-    function removeStagedCreationFile(idx) {
-      creationStagedFiles.splice(idx, 1);
-      renderCreationStagedLists();
-    }
+    function removeStagedCreationFile(idx) { creationStagedFiles.splice(idx, 1); renderCreationStagedLists(); }
 
     function handleStageCreationLink() {
       const tIn = document.getElementById('createLinkTitleInput');
       const uIn = document.getElementById('createLinkUrlInput');
       const url = uIn.value.trim();
       const title = tIn.value.trim() || url;
-      if (!url) return showToast('링크 URL을 입력하세요.', 'error');
+      if (!url) return;
       creationStagedLinks.push({ title, url });
       tIn.value = ''; uIn.value = '';
       renderCreationStagedLists();
     }
-
-    function removeStagedCreationLink(idx) {
-      creationStagedLinks.splice(idx, 1);
-      renderCreationStagedLists();
-    }
+    function removeStagedCreationLink(idx) { creationStagedLinks.splice(idx, 1); renderCreationStagedLists(); }
 
     function renderCreationStagedLists() {
-      const fBox = document.getElementById('createStagedFilesList');
-      fBox.innerHTML = creationStagedFiles.map((f, i) => `
-        <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-black/40 border border-white/[0.08] text-xs">
-          <span class="text-indigo-300 truncate"><i class="fa-regular fa-file mr-1.5"></i>${escapeHTML(f.name)} <span class="text-slate-500">(대기열)</span></span>
-          <button type="button" onclick="removeStagedCreationFile(${i})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-xmark"></i></button>
+      document.getElementById('createStagedFilesList').innerHTML = creationStagedFiles.map((f, i) => `
+        <div class="flex items-center justify-between px-2.5 py-1 rounded bg-[#141414] border border-[#262626] text-xs">
+          <span class="text-white truncate">${escapeHTML(f.name)}</span>
+          <button type="button" onclick="removeStagedCreationFile(${i})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
       `).join('');
 
-      const lBox = document.getElementById('createStagedLinksList');
-      lBox.innerHTML = creationStagedLinks.map((l, i) => `
-        <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-black/40 border border-white/[0.08] text-xs">
-          <span class="text-cyan-300 truncate"><i class="fa-solid fa-link mr-1.5"></i>${escapeHTML(l.title)}</span>
-          <button type="button" onclick="removeStagedCreationLink(${i})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-xmark"></i></button>
+      document.getElementById('createStagedLinksList').innerHTML = creationStagedLinks.map((l, i) => `
+        <div class="flex items-center justify-between px-2.5 py-1 rounded bg-[#141414] border border-[#262626] text-xs">
+          <span class="text-neutral-300 truncate">${escapeHTML(l.title)}</span>
+          <button type="button" onclick="removeStagedCreationLink(${i})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
       `).join('');
     }
@@ -1791,7 +1819,7 @@
       e.preventDefault();
       const btn = document.getElementById('createTaskSubmitBtn');
       btn.disabled = true;
-      btn.textContent = '등록 중...';
+      btn.textContent = '생성 중...';
 
       try {
         const title = document.getElementById('taskTitleInput').value.trim();
@@ -1802,7 +1830,7 @@
         const due_date = document.getElementById('taskDueDateInput').value || null;
         const in_map = document.getElementById('taskPutInMapCheck').checked;
 
-        const safePos = findNonOverlappingPosition(360, 140, null);
+        const safePos = findNonOverlappingPosition(340, 140, null);
 
         const uploadedFiles = [];
         for (const file of creationStagedFiles) {
@@ -1819,6 +1847,7 @@
           project_id: currentProjectId,
           title, description, assignee_name, priority, label, due_date,
           status: 'todo', in_map, pos_x: safePos.x, pos_y: safePos.y,
+          reminder_rule: 'none',
           dependencies: [], checklist: [], comments: [],
           files: uploadedFiles,
           links: creationStagedLinks
@@ -1826,39 +1855,139 @@
 
         if (error) throw error;
         closeModal('createTaskModal');
-        showToast('새 업무가 등록되었습니다.');
+        showToast('업무가 생성되었습니다.');
       } catch (err) {
-        showToast('생성 실패: ' + err.message, 'error');
+        showToast('오류: ' + err.message, 'error');
       } finally {
         btn.disabled = false;
-        btn.textContent = '업무 등록';
+        btn.textContent = '생성하기';
       }
     }
 
     // ==========================================
-    // 7. TASK DETAIL MODAL & STAGED FILE UPLOAD
+    // 7. TASK DETAIL MODAL (#1 Self-Reminder & #2 Explicit '수정 적용' Button)
     // ==========================================
     function openTaskDetailModal(taskId) {
       activeTask = currentTasks.find(t => String(t.id) === String(taskId));
       if (!activeTask) return;
       detailStagedFiles = [];
+      isTaskDetailDirty = false;
       renderTaskDetailModalContent();
       const modal = document.getElementById('taskDetailModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
 
+    function markTaskDetailDirty() {
+      isTaskDetailDirty = true;
+      document.getElementById('dirtyIndicatorBadge')?.classList.remove('hidden');
+    }
+
+    // #2: Commit Edits ONLY when '수정 적용' button is clicked
+    async function handleCommitTaskEdits() {
+      if (!activeTask) return;
+      const btn = document.getElementById('saveTaskEditsBtn');
+      btn.disabled = true;
+      btn.textContent = '저장 중...';
+
+      const payload = {
+        title: document.getElementById('editTaskTitle').value.trim() || activeTask.title,
+        description: document.getElementById('editTaskDesc').value,
+        status: document.getElementById('editTaskStatus').value,
+        assignee_name: document.getElementById('editTaskAssignee').value || null,
+        priority: document.getElementById('editTaskPriority').value,
+        label: document.getElementById('editTaskLabel').value.trim() || '일반',
+        due_date: document.getElementById('editTaskDueDate').value || null,
+        reminder_rule: document.getElementById('editTaskReminder').value || 'none'
+      };
+
+      try {
+        const { error } = await sbClient.from('tasks').update(payload).eq('id', activeTask.id);
+        if (error) throw error;
+
+        Object.assign(activeTask, payload);
+        isTaskDetailDirty = false;
+        document.getElementById('dirtyIndicatorBadge')?.classList.add('hidden');
+        updateTopBarStats();
+        renderActiveViewport();
+        showToast('수정 사항이 적용되었습니다.');
+      } catch (err) {
+        showToast('수정 실패: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-check text-[10px]"></i> 수정 적용`;
+      }
+    }
+
+    function renderTaskDetailModalContent() {
+      if (!activeTask) return;
+      document.getElementById('dirtyIndicatorBadge')?.classList.add('hidden');
+
+      document.getElementById('editTaskTitle').value = activeTask.title || '';
+      document.getElementById('editTaskDesc').value = activeTask.description || '';
+      document.getElementById('editTaskStatus').value = activeTask.status || 'todo';
+      document.getElementById('editTaskPriority').value = activeTask.priority || 'medium';
+      document.getElementById('editTaskLabel').value = activeTask.label || '일반';
+      document.getElementById('editTaskDueDate').value = activeTask.due_date || '';
+      document.getElementById('editTaskReminder').value = activeTask.reminder_rule || 'none';
+
+      const assSel = document.getElementById('editTaskAssignee');
+      assSel.innerHTML = '<option value="">미정</option>' + currentMembers.map(m => `<option value="${escapeHTML(m.name)}" ${m.name === activeTask.assignee_name ? 'selected' : ''}>${escapeHTML(m.name)}</option>`).join('');
+
+      const mapBtn = document.getElementById('modalMapToggleBtn');
+      mapBtn.textContent = activeTask.in_map ? '맵에 배치됨 (트레이로 빼기)' : '트레이 보관중 (맵에 배치)';
+
+      renderDetailStagedQueue();
+
+      const checklist = Array.isArray(activeTask.checklist) ? activeTask.checklist : [];
+      document.getElementById('modalChecklistContainer').innerHTML = checklist.length === 0
+        ? `<div class="text-xs text-neutral-600">등록된 체크리스트 없음</div>`
+        : checklist.map((item, idx) => `
+          <div class="flex items-center justify-between px-3 py-2 rounded-md bg-[#0d0d0d] border border-[#222222] text-xs">
+            <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+              <input type="checkbox" ${item.done ? 'checked' : ''} onchange="handleToggleCheckItem(${idx})" class="w-4 h-4 accent-white">
+              <span class="${item.done ? 'line-through text-neutral-500' : 'text-white'}">${escapeHTML(item.text)}</span>
+            </label>
+            <button onclick="handleRemoveCheckItem(${idx})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        `).join('');
+
+      const files = activeTask.files || [];
+      document.getElementById('modalFilesList').innerHTML = files.map((f, i) => `
+        <div class="flex items-center justify-between px-3 py-2 rounded-md bg-[#0d0d0d] border border-[#222222] text-xs">
+          <a href="${f.url}" target="_blank" class="text-white hover:underline truncate flex items-center gap-2"><i class="fa-regular fa-file"></i><span class="truncate">${escapeHTML(f.name)}</span></a>
+          <button onclick="handleDeleteFile(${i})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      `).join('');
+
+      const links = activeTask.links || [];
+      document.getElementById('modalLinksList').innerHTML = links.map((l, i) => `
+        <div class="flex items-center justify-between px-3 py-2 rounded-md bg-[#0d0d0d] border border-[#222222] text-xs">
+          <a href="${l.url}" target="_blank" class="text-neutral-300 hover:underline truncate flex items-center gap-2"><i class="fa-solid fa-link"></i><span class="truncate">${escapeHTML(l.title || l.url)}</span></a>
+          <button onclick="handleDeleteLink(${i})" class="text-neutral-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      `).join('');
+
+      const comments = Array.isArray(activeTask.comments) ? activeTask.comments : [];
+      document.getElementById('modalCommentsList').innerHTML = comments.length === 0
+        ? `<div class="text-xs text-neutral-600">작성된 코멘트 없음</div>`
+        : comments.map(c => `
+          <div class="p-3 rounded-md bg-[#0d0d0d] border border-[#222222] text-xs space-y-1">
+            <div class="flex items-center justify-between text-[11px] text-neutral-500">
+              <span class="font-bold text-white">${escapeHTML(c.author)}</span>
+              <span>${c.time || ''}</span>
+            </div>
+            <div class="text-neutral-200">${escapeHTML(c.text)}</div>
+          </div>
+        `).join('');
+    }
+
     function handleStageDetailFiles(e) {
-      const files = Array.from(e.target.files || []);
-      detailStagedFiles.push(...files);
+      detailStagedFiles.push(...Array.from(e.target.files || []));
       e.target.value = '';
       renderDetailStagedQueue();
     }
-
-    function removeStagedDetailFile(idx) {
-      detailStagedFiles.splice(idx, 1);
-      renderDetailStagedQueue();
-    }
+    function removeStagedDetailFile(idx) { detailStagedFiles.splice(idx, 1); renderDetailStagedQueue(); }
 
     function renderDetailStagedQueue() {
       const box = document.getElementById('detailStagedFilesList');
@@ -1872,9 +2001,9 @@
         uploadBtn.classList.remove('hidden');
         countSpan.textContent = detailStagedFiles.length;
         box.innerHTML = detailStagedFiles.map((f, i) => `
-          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-indigo-950/40 border border-indigo-500/30 text-xs">
-            <span class="text-indigo-200 truncate"><i class="fa-solid fa-clock mr-1.5 text-indigo-400"></i>[업로드 대기] ${escapeHTML(f.name)}</span>
-            <button onclick="removeStagedDetailFile(${i})" class="text-slate-400 hover:text-rose-400 ml-2"><i class="fa-solid fa-xmark"></i></button>
+          <div class="flex items-center justify-between px-3 py-1.5 rounded bg-[#141414] border border-[#333333] text-xs">
+            <span class="text-white truncate">[대기열] ${escapeHTML(f.name)}</span>
+            <button onclick="removeStagedDetailFile(${i})" class="text-neutral-400 hover:text-white ml-2"><i class="fa-solid fa-xmark"></i></button>
           </div>
         `).join('');
       }
@@ -1884,7 +2013,7 @@
       if (detailStagedFiles.length === 0 || !activeTask) return;
       const btn = document.getElementById('detailQueueUploadBtn');
       btn.disabled = true;
-      btn.textContent = '일괄 업로드 중...';
+      btn.textContent = '업로드 중...';
 
       try {
         const uploaded = [...(activeTask.files || [])];
@@ -1897,9 +2026,8 @@
           uploaded.push({ name: file.name, url: data.publicUrl });
         }
         detailStagedFiles = [];
-        renderDetailStagedQueue();
-        await handleTaskFieldUpdate('files', uploaded);
-        showToast('대기열의 모든 파일이 업로드되었습니다.');
+        await handleImmediateArrayUpdate('files', uploaded);
+        showToast('파일 업로드 완료');
       } catch (err) {
         showToast('업로드 실패: ' + err.message, 'error');
       } finally {
@@ -1907,78 +2035,7 @@
       }
     }
 
-    function renderTaskDetailModalContent() {
-      if (!activeTask) return;
-      const priMap = { urgent: '긴급', high: '높음', medium: '보통', low: '낮음' };
-      document.getElementById('modalTaskTitle').textContent = activeTask.title;
-      document.getElementById('modalTaskDesc').textContent = activeTask.description || '작성된 상세 설명이 없습니다.';
-      document.getElementById('modalTaskLabelBadge').textContent = activeTask.label || '일반';
-
-      const priBadge = document.getElementById('modalTaskPriorityBadge');
-      priBadge.textContent = priMap[activeTask.priority || 'medium'];
-      priBadge.className = `px-2.5 py-1 rounded-lg text-xs font-semibold pri-${activeTask.priority || 'medium'}`;
-
-      document.getElementById('modalStatusSelect').value = activeTask.status || 'todo';
-      document.getElementById('modalPrioritySelect').value = activeTask.priority || 'medium';
-
-      const assSel = document.getElementById('modalAssigneeSelect');
-      assSel.innerHTML = '<option value="">미정</option>' + currentMembers.map(m => `<option value="${escapeHTML(m.name)}" ${m.name === activeTask.assignee_name ? 'selected' : ''}>${escapeHTML(m.name)}</option>`).join('');
-
-      const mapBtn = document.getElementById('modalMapToggleBtn');
-      if (activeTask.in_map) {
-        mapBtn.textContent = '맵에 배치됨 (트레이로 빼기)';
-        mapBtn.className = 'w-full px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30';
-      } else {
-        mapBtn.textContent = '트레이 보관중 (맵에 배치)';
-        mapBtn.className = 'w-full px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.05] text-slate-300 border border-white/[0.08]';
-      }
-
-      renderDetailStagedQueue();
-
-      const checklist = Array.isArray(activeTask.checklist) ? activeTask.checklist : [];
-      document.getElementById('modalChecklistContainer').innerHTML = checklist.length === 0
-        ? `<div class="text-xs text-slate-500">등록된 체크리스트가 없습니다.</div>`
-        : checklist.map((item, idx) => `
-          <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.07] text-sm">
-            <label class="flex items-center gap-2.5 cursor-pointer flex-1">
-              <input type="checkbox" ${item.done ? 'checked' : ''} onchange="handleToggleCheckItem(${idx})" class="w-4 h-4 rounded bg-black border-slate-700 text-indigo-600">
-              <span class="${item.done ? 'line-through text-slate-500' : 'text-slate-100'}">${escapeHTML(item.text)}</span>
-            </label>
-            <button onclick="handleRemoveCheckItem(${idx})" class="text-slate-500 hover:text-rose-400 text-xs"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-        `).join('');
-
-      const files = activeTask.files || [];
-      document.getElementById('modalFilesList').innerHTML = files.map((f, i) => `
-        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.07] text-xs">
-          <a href="${f.url}" target="_blank" class="text-indigo-400 hover:underline truncate flex items-center gap-2"><i class="fa-regular fa-file"></i><span class="truncate">${escapeHTML(f.name)}</span></a>
-          <button onclick="handleDeleteFile(${i})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-      `).join('');
-
-      const links = activeTask.links || [];
-      document.getElementById('modalLinksList').innerHTML = links.map((l, i) => `
-        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.07] text-xs">
-          <a href="${l.url}" target="_blank" class="text-cyan-400 hover:underline truncate flex items-center gap-2"><i class="fa-solid fa-link"></i><span class="truncate">${escapeHTML(l.title || l.url)}</span></a>
-          <button onclick="handleDeleteLink(${i})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-      `).join('');
-
-      const comments = Array.isArray(activeTask.comments) ? activeTask.comments : [];
-      document.getElementById('modalCommentsList').innerHTML = comments.length === 0
-        ? `<div class="text-xs text-slate-500">아직 코멘트가 없습니다.</div>`
-        : comments.map(c => `
-          <div class="p-3 rounded-xl bg-white/[0.03] border border-white/[0.07] text-sm space-y-1">
-            <div class="flex items-center justify-between text-xs text-slate-400">
-              <span class="font-bold text-slate-200">${escapeHTML(c.author)}</span>
-              <span>${c.time || ''}</span>
-            </div>
-            <div class="text-slate-100">${escapeHTML(c.text)}</div>
-          </div>
-        `).join('');
-    }
-
-    async function handleTaskFieldUpdate(field, value) {
+    async function handleImmediateArrayUpdate(field, value) {
       if (!activeTask) return;
       activeTask[field] = value;
       renderTaskDetailModalContent();
@@ -1988,13 +2045,9 @@
 
     async function toggleActiveTaskInMap() {
       if (!activeTask) return;
-      if (activeTask.in_map) {
-        await removeTaskFromMapToTray(activeTask.id);
-        renderTaskDetailModalContent();
-      } else {
-        await placeTaskOnMap(activeTask.id);
-        renderTaskDetailModalContent();
-      }
+      if (activeTask.in_map) await removeTaskFromMapToTray(activeTask.id);
+      else await placeTaskOnMap(activeTask.id);
+      renderTaskDetailModalContent();
     }
 
     function toggleChecklistInput() {
@@ -2011,20 +2064,20 @@
       if (!text || !activeTask) return;
       const list = [...(activeTask.checklist || []), { text, done: false }];
       input.value = '';
-      await handleTaskFieldUpdate('checklist', list);
+      await handleImmediateArrayUpdate('checklist', list);
     }
 
     async function handleToggleCheckItem(idx) {
       const list = [...(activeTask.checklist || [])];
       if (!list[idx]) return;
       list[idx].done = !list[idx].done;
-      await handleTaskFieldUpdate('checklist', list);
+      await handleImmediateArrayUpdate('checklist', list);
     }
 
     async function handleRemoveCheckItem(idx) {
       const list = [...(activeTask.checklist || [])];
       list.splice(idx, 1);
-      await handleTaskFieldUpdate('checklist', list);
+      await handleImmediateArrayUpdate('checklist', list);
     }
 
     async function handleAddComment(e) {
@@ -2036,7 +2089,7 @@
       const time = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
       const comments = [...(activeTask.comments || []), { author: currentUserName, text, time }];
       input.value = '';
-      await handleTaskFieldUpdate('comments', comments);
+      await handleImmediateArrayUpdate('comments', comments);
     }
 
     async function handleAddLink() {
@@ -2047,30 +2100,30 @@
       if (!url) return;
       const links = [...(activeTask.links || []), { title, url }];
       tIn.value = ''; uIn.value = '';
-      await handleTaskFieldUpdate('links', links);
+      await handleImmediateArrayUpdate('links', links);
     }
 
     async function handleDeleteFile(idx) {
       const files = [...(activeTask.files || [])];
       files.splice(idx, 1);
-      await handleTaskFieldUpdate('files', files);
+      await handleImmediateArrayUpdate('files', files);
     }
 
     async function handleDeleteLink(idx) {
       const links = [...(activeTask.links || [])];
       links.splice(idx, 1);
-      await handleTaskFieldUpdate('links', links);
+      await handleImmediateArrayUpdate('links', links);
     }
 
     async function handleDeleteTask() {
-      if (!activeTask || !confirm('이 업무를 영구 삭제하시겠습니까?')) return;
+      if (!activeTask || !confirm('이 업무를 삭제하시겠습니까?')) return;
       await sbClient.from('tasks').delete().eq('id', activeTask.id);
       closeModal('taskDetailModal');
-      showToast('업무가 삭제되었습니다.');
+      showToast('삭제되었습니다.');
     }
 
     // ==========================================
-    // 8. DISCORD-STYLE MULTI-CHANNEL & DM CHAT
+    // 8. MULTI-CHANNEL & DM CHAT
     // ==========================================
     function toggleChatDrawer() {
       isChatOpen = !isChatOpen;
@@ -2087,11 +2140,7 @@
       }
     }
 
-    function selectChatChannel(ch) {
-      activeChatChannel = ch;
-      renderChatDrawerUI();
-    }
-
+    function selectChatChannel(ch) { activeChatChannel = ch; renderChatDrawerUI(); }
     function selectDmMember(memberName) {
       const pair = [currentUserName, memberName].sort();
       activeChatChannel = `DM:${pair[0]}&${pair[1]}`;
@@ -2099,7 +2148,7 @@
     }
 
     async function handleCreateChannel() {
-      const name = prompt('새 토픽 채널 이름을 입력하세요 (예: 디자인, 백엔드, 공지):');
+      const name = prompt('새 채널 이름:');
       if (!name || !name.trim()) return;
       const clean = name.trim().replace(/^#/, '');
       const channels = Array.isArray(currentProject.channels) ? [...currentProject.channels] : ['일반', '기획-논의', '제작-개발'];
@@ -2122,25 +2171,23 @@
       const channels = Array.isArray(currentProject?.channels) ? currentProject.channels : ['일반', '기획-논의', '제작-개발'];
 
       chList.innerHTML = channels.map(ch => `
-        <button onclick="selectChatChannel('${escapeHTML(ch)}')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-1.5 ${activeChatChannel === ch ? 'bg-indigo-600 text-white font-semibold shadow' : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-200'}">
-          <span class="opacity-60">#</span> <span class="truncate">${escapeHTML(ch)}</span>
+        <button onclick="selectChatChannel('${escapeHTML(ch)}')" class="w-full text-left px-2.5 py-1.5 rounded text-xs font-medium transition flex items-center gap-1.5 ${activeChatChannel === ch ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:bg-[#141414] hover:text-white'}">
+          <span>#</span> <span class="truncate">${escapeHTML(ch)}</span>
         </button>
       `).join('');
 
       const otherMembers = currentMembers.filter(m => m.name !== currentUserName);
-      dmList.innerHTML = otherMembers.length === 0
-        ? `<div class="text-[11px] text-slate-500 px-2 py-2 leading-relaxed">팀원이 합류하면 1:1 DM이 표시됩니다.</div>`
-        : otherMembers.map(m => {
-          const pair = [currentUserName, m.name].sort();
-          const dmKey = `DM:${pair[0]}&${pair[1]}`;
-          const isActive = activeChatChannel === dmKey;
-          return `
-            <button onclick="selectDmMember('${escapeHTML(m.name)}')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-2 ${isActive ? 'bg-indigo-600 text-white font-semibold shadow' : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-200'}">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-              <span class="truncate">${escapeHTML(m.name)}</span>
-            </button>
-          `;
-        }).join('');
+      dmList.innerHTML = otherMembers.map(m => {
+        const pair = [currentUserName, m.name].sort();
+        const dmKey = `DM:${pair[0]}&${pair[1]}`;
+        const isActive = activeChatChannel === dmKey;
+        return `
+          <button onclick="selectDmMember('${escapeHTML(m.name)}')" class="w-full text-left px-2.5 py-1.5 rounded text-xs font-medium transition flex items-center gap-2 ${isActive ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:bg-[#141414] hover:text-white'}">
+            <span class="w-1.5 h-1.5 rounded-full bg-current shrink-0"></span>
+            <span class="truncate">${escapeHTML(m.name)}</span>
+          </button>
+        `;
+      }).join('');
 
       if (activeChatChannel.startsWith('DM:')) {
         const names = activeChatChannel.replace('DM:', '').split('&');
@@ -2153,16 +2200,16 @@
       const roomMsgs = currentMessages.filter(m => (m.channel || '일반') === activeChatChannel);
 
       msgBox.innerHTML = roomMsgs.length === 0
-        ? `<div class="text-center text-xs text-slate-500 py-12">첫 메시지를 남겨 대화를 시작하세요!</div>`
+        ? `<div class="text-center text-xs text-neutral-600 py-12">메시지가 없습니다.</div>`
         : roomMsgs.map(m => {
           const isMe = m.sender_name === currentUserName;
           return `
             <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
-              <span class="text-[11px] text-slate-400 mb-1 px-1">${escapeHTML(m.sender_name)}</span>
-              <div class="max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm ${isMe ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md' : 'bg-white/[0.06] border border-white/[0.08] text-slate-100'}">
+              <span class="text-[11px] text-neutral-500 mb-1 px-1">${escapeHTML(m.sender_name)}</span>
+              <div class="max-w-[85%] rounded-lg px-3.5 py-2 text-xs ${isMe ? 'bg-white text-black font-medium' : 'bg-[#141414] border border-[#262626] text-neutral-100'}">
                 ${m.task_ref_id ? `
-                  <div onclick="openTaskDetailModal('${m.task_ref_id}')" class="mb-1.5 px-2.5 py-1 rounded-lg bg-black/30 text-xs text-indigo-200 cursor-pointer hover:underline flex items-center gap-1.5">
-                    <i class="fa-solid fa-link text-[10px]"></i> ${escapeHTML(m.task_ref_title || '업무 바로가기')}
+                  <div onclick="openTaskDetailModal('${m.task_ref_id}')" class="mb-1.5 px-2 py-1 rounded bg-black/15 text-[11px] underline cursor-pointer">
+                    🔗 ${escapeHTML(m.task_ref_title || '업무 보기')}
                   </div>
                 ` : ''}
                 <div class="leading-relaxed">${escapeHTML(m.content)}</div>
@@ -2181,7 +2228,7 @@
       const banner = document.getElementById('chatTaskRefBanner');
       banner.classList.remove('hidden');
       banner.classList.add('flex');
-      document.getElementById('chatTaskRefText').textContent = `🔗 언급된 업무: ${activeTask.title}`;
+      document.getElementById('chatTaskRefText').textContent = `🔗 ${activeTask.title}`;
       document.getElementById('chatInput').focus();
     }
 
@@ -2227,7 +2274,7 @@
     function copyInviteUrl() {
       const input = document.getElementById('inviteUrlField');
       navigator.clipboard.writeText(input.value);
-      showToast('초대 링크가 복사되었습니다.');
+      showToast('복사되었습니다.');
     }
 
     function closeModal(id) {
@@ -2239,10 +2286,10 @@
     function showToast(msg, type = 'info') {
       const t = document.getElementById('toast');
       t.textContent = msg;
-      t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl shadow-2xl text-sm font-semibold transition-all duration-200 opacity-100 ${
-        type === 'error' ? 'bg-rose-600 text-white' : 'surface-panel text-white'
+      t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-md shadow-2xl text-xs font-bold transition-all duration-200 opacity-100 ${
+        type === 'error' ? 'bg-rose-600 text-white' : 'bg-white text-black'
       }`;
-      setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); }, 2500);
+      setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); }, 2200);
     }
 
     function escapeHTML(str) {
